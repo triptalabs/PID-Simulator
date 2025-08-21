@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -12,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Separator } from "@/components/ui/separator";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { PlayCircle, PauseCircle, RotateCw, Download, Zap } from "lucide-react";
+import { PlayCircle, PauseCircle, RotateCw, Download, Zap, Info } from "lucide-react";
 import { Mode, SimulatorState } from "@/lib/types";
 import { presets } from "@/lib/presets";
 import { toast } from "@/hooks/use-toast";
@@ -95,31 +94,41 @@ export const ControlsPanel = ({ state, onStateChange }: ControlsPanelProps) => {
     tooltip: string;
     sliderKey: string;
   }) => (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label className="text-sm">{label}</Label>
-              <Badge variant="outline" className="control-value">
-                {value.toFixed(step < 1 ? (step < 0.1 ? 3 : 2) : 0)}{unit}
-              </Badge>
-            </div>
-            <Slider
-              value={[value]}
-              onValueChange={(values) => handleSliderChange(sliderKey, values)}
-              min={min}
-              max={max}
-              step={step}
-              className="w-full"
-            />
-          </div>
-        </TooltipTrigger>
-        <TooltipContent>
-          <p>{tooltip}</p>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+    <div className="space-y-2">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Label className="text-sm">{label}</Label>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  type="button"
+                  aria-label={`Información: ${label}`}
+                  className="inline-flex h-5 w-5 items-center justify-center rounded text-muted-foreground hover:text-foreground"
+                >
+                  <Info className="h-4 w-4" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{tooltip}</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
+        <Badge variant="outline" className="control-value">
+          {value.toFixed(step < 1 ? (step < 0.1 ? 3 : 2) : 0)}{unit}
+        </Badge>
+      </div>
+      <Slider
+        value={[value]}
+        onValueChange={(values) => handleSliderChange(sliderKey, values)}
+        min={min}
+        max={max}
+        step={step}
+        aria-label={label}
+        className="w-full"
+      />
+    </div>
   );
 
   return (

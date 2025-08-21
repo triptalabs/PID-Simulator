@@ -25,31 +25,31 @@ interface ControlsPanelProps {
 export const ControlsPanel = ({ state, onStateChange }: ControlsPanelProps) => {
   const [selectedPreset, setSelectedPreset] = useState<string>("");
 
-  const handleSliderChange = (key: string, value: number[]) => {
-    const newValue = value[0];
+  const handleSliderChange = (key: string, values: number[]) => {
+    const value = values[0];
     
     if (key.startsWith('pid.')) {
       const pidKey = key.split('.')[1] as keyof typeof state.pid;
       onStateChange({
-        pid: { ...state.pid, [pidKey]: newValue }
+        pid: { ...state.pid, [pidKey]: value }
       });
     } else if (key.startsWith('plant.')) {
       const plantKey = key.split('.')[1] as keyof typeof state.plant;
       onStateChange({
-        plant: { ...state.plant, [plantKey]: newValue }
+        plant: { ...state.plant, [plantKey]: value }
       });
     } else if (key.startsWith('noise.')) {
       const noiseKey = key.split('.')[1] as keyof typeof state.noise;
       onStateChange({
-        noise: { ...state.noise, [noiseKey]: newValue }
+        noise: { ...state.noise, [noiseKey]: value }
       });
     } else if (key.startsWith('ssr.')) {
       const ssrKey = key.split('.')[1] as keyof typeof state.ssr;
       onStateChange({
-        ssr: { ...state.ssr, [ssrKey]: newValue }
+        ssr: { ...state.ssr, [ssrKey]: value }
       });
     } else if (key === 'setpoint') {
-      onStateChange({ setpoint: newValue });
+      onStateChange({ setpoint: value });
     }
   };
 
@@ -84,7 +84,7 @@ export const ControlsPanel = ({ state, onStateChange }: ControlsPanelProps) => {
     step, 
     unit, 
     tooltip, 
-    onChange 
+    sliderKey
   }: {
     label: string;
     value: number;
@@ -93,7 +93,7 @@ export const ControlsPanel = ({ state, onStateChange }: ControlsPanelProps) => {
     step: number;
     unit: string;
     tooltip: string;
-    onChange: (value: number[]) => void;
+    sliderKey: string;
   }) => (
     <TooltipProvider>
       <Tooltip>
@@ -102,12 +102,12 @@ export const ControlsPanel = ({ state, onStateChange }: ControlsPanelProps) => {
             <div className="flex items-center justify-between">
               <Label className="text-sm">{label}</Label>
               <Badge variant="outline" className="control-value">
-                {value.toFixed(step < 1 ? 3 : step < 0.1 ? 2 : 1)}{unit}
+                {value.toFixed(step < 1 ? (step < 0.1 ? 3 : 2) : 0)}{unit}
               </Badge>
             </div>
             <Slider
               value={[value]}
-              onValueChange={onChange}
+              onValueChange={(values) => handleSliderChange(sliderKey, values)}
               min={min}
               max={max}
               step={step}
@@ -166,7 +166,7 @@ export const ControlsPanel = ({ state, onStateChange }: ControlsPanelProps) => {
             step={1}
             unit="°C"
             tooltip="Temperatura objetivo del proceso"
-            onChange={(value) => handleSliderChange('setpoint', value)}
+            sliderKey="setpoint"
           />
         </CardContent>
       </Card>
@@ -185,7 +185,7 @@ export const ControlsPanel = ({ state, onStateChange }: ControlsPanelProps) => {
             step={0.01}
             unit=""
             tooltip="Ganancia proporcional"
-            onChange={(value) => handleSliderChange('pid.kp', value)}
+            sliderKey="pid.kp"
           />
           <SliderWithInput
             label="Ki (s⁻¹)"
@@ -195,7 +195,7 @@ export const ControlsPanel = ({ state, onStateChange }: ControlsPanelProps) => {
             step={0.001}
             unit=" s⁻¹"
             tooltip="Ganancia integral"
-            onChange={(value) => handleSliderChange('pid.ki', value)}
+            sliderKey="pid.ki"
           />
           <SliderWithInput
             label="Kd (s)"
@@ -205,7 +205,7 @@ export const ControlsPanel = ({ state, onStateChange }: ControlsPanelProps) => {
             step={1}
             unit=" s"
             tooltip="Ganancia derivativa"
-            onChange={(value) => handleSliderChange('pid.kd', value)}
+            sliderKey="pid.kd"
           />
         </CardContent>
       </Card>
@@ -226,7 +226,7 @@ export const ControlsPanel = ({ state, onStateChange }: ControlsPanelProps) => {
               step={0.001}
               unit=""
               tooltip="Ganancia estática del proceso"
-              onChange={(value) => handleSliderChange('plant.k', value)}
+              sliderKey="plant.k"
             />
             <SliderWithInput
               label="τ (constante de tiempo, s)"
@@ -236,7 +236,7 @@ export const ControlsPanel = ({ state, onStateChange }: ControlsPanelProps) => {
               step={1}
               unit=" s"
               tooltip="Constante de tiempo del proceso"
-              onChange={(value) => handleSliderChange('plant.tau', value)}
+              sliderKey="plant.tau"
             />
             <SliderWithInput
               label="L (tiempo muerto, s)"
@@ -246,7 +246,7 @@ export const ControlsPanel = ({ state, onStateChange }: ControlsPanelProps) => {
               step={0.1}
               unit=" s"
               tooltip="Tiempo muerto del proceso"
-              onChange={(value) => handleSliderChange('plant.l', value)}
+              sliderKey="plant.l"
             />
             <SliderWithInput
               label="T_amb (°C)"
@@ -256,7 +256,7 @@ export const ControlsPanel = ({ state, onStateChange }: ControlsPanelProps) => {
               step={0.5}
               unit="°C"
               tooltip="Temperatura ambiente"
-              onChange={(value) => handleSliderChange('plant.t_amb', value)}
+              sliderKey="plant.t_amb"
             />
           </AccordionContent>
         </AccordionItem>
@@ -285,7 +285,7 @@ export const ControlsPanel = ({ state, onStateChange }: ControlsPanelProps) => {
                 step={0.1}
                 unit=""
                 tooltip="Intensidad del ruido en la señal"
-                onChange={(value) => handleSliderChange('noise.intensity', value)}
+                sliderKey="noise.intensity"
               />
             )}
             <Button 
@@ -352,7 +352,7 @@ export const ControlsPanel = ({ state, onStateChange }: ControlsPanelProps) => {
               step={0.5}
               unit=" s"
               tooltip="Periodo de la ventana SSR"
-              onChange={(value) => handleSliderChange('ssr.period', value)}
+              sliderKey="ssr.period"
             />
           )}
         </CardContent>

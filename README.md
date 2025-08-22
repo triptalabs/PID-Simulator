@@ -1,73 +1,78 @@
-# Welcome to your Lovable project
+# Simulador PID — Horno/Chiller
 
-## Project info
+Una aplicación web que simula en tiempo real la respuesta térmica de un horno o chiller frente a un setpoint usando un controlador PID ajustable desde la UI.
 
-**URL**: https://lovable.dev/projects/4e0e32dc-0fd2-442e-ad8e-627d6a4e572f
+## Características
 
-## How can I edit this code?
+- Simulación en tiempo real del modelo FOPDT (First Order Plus Dead Time)
+- Controlador PID ajustable con anti-windup
+- Interfaz intuitiva con controles deslizantes y métricas en vivo
+- Soporte para modo Horno y Chiller
+- Gráficas de PV vs SP y salida del controlador
+- Presets predefinidos para diferentes tipos de proceso
+- Simulación de ruido y disturbios
+- SSR por ventana de tiempo
+- Exportación de datos en CSV
 
-There are several ways of editing your application.
+## Instalación y Uso
 
-**Use Lovable**
+### Prerequisitos
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/4e0e32dc-0fd2-442e-ad8e-627d6a4e572f) and start prompting.
+- Node.js 18+ y npm
 
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
+### Instalación
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
+# Clonar el repositorio
 git clone <YOUR_GIT_URL>
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+# Navegar al directorio del proyecto
+cd PID-Simulator
 
-# Step 3: Install the necessary dependencies.
-npm i
+# Instalar dependencias
+npm install
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Iniciar servidor de desarrollo
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+### Scripts disponibles
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+- `npm run dev` - Inicia el servidor de desarrollo
+- `npm run build` - Construye la aplicación para producción
+- `npm run preview` - Previsualiza la build de producción
+- `npm run lint` - Ejecuta el linter
 
-**Use GitHub Codespaces**
+## Stack Tecnológico
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+- **Frontend**: React 18 + TypeScript
+- **Build**: Vite
+- **UI**: shadcn/ui + Tailwind CSS
+- **Gráficas**: Recharts
+- **Routing**: React Router DOM
 
-## What technologies are used for this project?
+## Estructura del Proyecto
 
-This project is built with:
+```
+src/
+├── components/          # Componentes React
+│   ├── ui/             # Componentes de UI base (shadcn/ui)
+│   ├── ChartPVSP.tsx   # Gráfica PV vs SP
+│   ├── ChartOutput.tsx # Gráfica de salida del PID
+│   └── ControlsPanel.tsx # Panel de controles
+├── pages/              # Páginas de la aplicación
+├── lib/                # Utilidades y tipos
+└── hooks/              # Hooks personalizados
+```
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## Documentación
 
-## How can I deploy this project?
+Ver `docs/brief_funcional_simulador_pid_markdown.md` para especificaciones técnicas detalladas.
 
-Simply open [Lovable](https://lovable.dev/projects/4e0e32dc-0fd2-442e-ad8e-627d6a4e572f) and click on Share -> Publish.
+## Desarrollo
 
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+Este proyecto utiliza:
+- Convenciones de código con ESLint
+- TypeScript para tipado estático
+- Componentes modulares y reutilizables
+- Tema oscuro por defecto con estilo industrial

@@ -61,7 +61,7 @@ src/
 
 ## 📋 Estado de Desarrollo
 
-### ✅ COMPLETADO (Fases 0-1)
+### ✅ COMPLETADO (Fases 0-1 + Sprint 1)
 - [x] **Análisis técnico completo** - Requisitos, decisiones, riesgos
 - [x] **Product Vision y NFRs** - Objetivos y métricas de éxito  
 - [x] **Arquitectura definida** - Contrato de mensajes UI ↔ Worker
@@ -69,33 +69,41 @@ src/
 - [x] **Plan de pruebas** - Validación numérica y KPIs
 - [x] **Gestión de riesgos** - 12+ riesgos con mitigaciones
 - [x] **ADRs críticos** - Discretización exacta, PID filtrado
+- [x] **Sprint 1 - Fundación Técnica** - Worker + FOPDT + UI básica (15/15 pts)
+
+### ✅ COMPLETADO (Sprint 2)
+- [x] **H2.1 - PID Posicional Básico** - Controlador completo con ganancias ajustables (5 pts)
+- [x] **H4.1 - Cálculo de Overshoot** - Métricas automáticas con detección de picos (3 pts)
+- [x] **H3.3 - Comunicación Tipada** - Eventos METRICS y validación robusta (5 pts)
+- [x] **H6.1 - Sincronización Controles** - UI bidireccional con debouncing (3 pts)
+- [x] **Total Sprint 2: 16/16 pts (100%)** - PID funcional + métricas + comunicación robusta
 
 ### 🔄 EN PROGRESO
-**Ningún desarrollo activo** - Esperando confirmación para iniciar Sprint 1
+**Sprint 3 - Precisión y Robustez** - Listo para iniciar
 
 ### ⏳ PRÓXIMOS PASOS
-1. **Sprint 1 (Semanas 1-2):** Worker + modelo FOPDT + UI básica
-2. **Sprint 2 (Semanas 3-4):** PID completo + métricas + controles  
+1. ~~**Sprint 1 (Semanas 1-2):** Worker + modelo FOPDT + UI básica~~ ✅ COMPLETADO
+2. ~~**Sprint 2 (Semanas 3-4):** PID completo + métricas + controles~~ ✅ COMPLETADO
 3. **Sprint 3 (Semanas 5-6):** Precisión numérica + robustez
 4. **Sprint 4 (Semanas 7-8):** Features completas + polish
 
 ## 🎯 Objetivos por Sprint
 
-### Sprint 1: "Fundación Técnica" (15 pts)
+### Sprint 1: "Fundación Técnica" (15 pts) ✅ COMPLETADO
 **Objetivo:** Arquitectura base funcional  
 **Entregables:**
-- Worker de simulación a 10 Hz estable
-- Modelo FOPDT básico respondiendo a escalones
-- UI mostrando estado de simulación
-- Demo escalón básico funcionando
+- ✅ Worker de simulación a 10 Hz estable
+- ✅ Modelo FOPDT básico respondiendo a escalones
+- ✅ UI mostrando estado de simulación
+- ✅ Demo escalón básico funcionando
 
-### Sprint 2: "Control PID Core" (16 pts)  
+### Sprint 2: "Control PID Core" (16 pts) ✅ COMPLETADO
 **Objetivo:** PID funcional con ganancias ajustables
 **Entregables:**
-- PID completo (Kp, Ki, Kd) ajustable en tiempo real
-- Overshoot % calculado automáticamente
-- Controles UI totalmente funcionales
-- Comunicación tipada UI ↔ Worker
+- ✅ PID completo (Kp, Ki, Kd) ajustable en tiempo real
+- ✅ Overshoot % calculado automáticamente
+- ✅ Controles UI totalmente funcionales
+- ✅ Comunicación tipada UI ↔ Worker
 
 ### Sprint 3: "Precisión y Robustez" (18 pts)
 **Objetivo:** Precisión numérica y control robusto
@@ -214,9 +222,9 @@ pnpm lint             # Linting y formatting
 4. **Seguir** roadmap de sprint activo en `docs/03-scrum-roadmap.md`
 
 ### Estado Esperado Próxima Sesión
-- **Sprint activo:** Sprint 1 (semanas 1-2)
-- **Foco:** Worker + modelo FOPDT + UI básica  
-- **Prioridad:** Estabilidad de simulación y arquitectura base
+- **Sprint activo:** Sprint 3 - Precisión y Robustez (semanas 5-6)
+- **Foco:** Validación numérica + anti-windup + estabilidad  
+- **Prioridad:** Precisión vs analítico < 0.5% y control robusto
 
 ---
 

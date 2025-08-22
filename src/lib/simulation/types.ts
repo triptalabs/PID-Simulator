@@ -184,6 +184,22 @@ export interface ErrorEvent extends EventMessage {
   }
 }
 
+export interface MetricsEvent extends EventMessage {
+  type: 'METRICS'
+  payload: {
+    overshoot: number        // Overshoot porcentual actual
+    t_peak: number          // Tiempo del pico máximo [s]
+    settling_time: number   // Tiempo de establecimiento [s]
+    is_calculating: boolean // True si está calculando métricas
+    sp_previous: number     // Setpoint anterior para detectar cambios
+    pv_max: number          // Valor máximo de PV detectado
+    pv_min: number          // Valor mínimo de PV detectado
+    t_start: number         // Tiempo de inicio del cálculo [s]
+    t_current: number       // Tiempo actual [s]
+    samples_count: number   // Número de muestras procesadas
+  }
+}
+
 // ============================================================================
 // UNION TYPES
 // ============================================================================
@@ -194,7 +210,7 @@ export type SimulationCommand =
   | SetNoiseCommand
 
 export type SimulationEvent = 
-  | TickEvent | StateEvent | ReadyEvent | ErrorEvent
+  | TickEvent | StateEvent | ReadyEvent | ErrorEvent | MetricsEvent
 
 // ============================================================================
 // TIPOS DE ESTADO DE SIMULACIÓN

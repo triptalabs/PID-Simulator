@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Slider } from "@/components/ui/slider";
@@ -24,33 +24,53 @@ interface ControlsPanelProps {
 export const ControlsPanel = ({ state, onStateChange }: ControlsPanelProps) => {
   const [selectedPreset, setSelectedPreset] = useState<string>("");
 
-  const handleSliderChange = (key: string, values: number[]) => {
+  // Debouncing para evitar spam de mensajes al Worker
+  const [debounceTimers, setDebounceTimers] = useState<Record<string, NodeJS.Timeout>>({});
+
+  const handleSliderChange = useCallback((key: string, values: number[]) => {
     const value = values[0];
     
-    if (key.startsWith('pid.')) {
-      const pidKey = key.split('.')[1] as keyof typeof state.pid;
-      onStateChange({
-        pid: { ...state.pid, [pidKey]: value }
-      });
-    } else if (key.startsWith('plant.')) {
-      const plantKey = key.split('.')[1] as keyof typeof state.plant;
-      onStateChange({
-        plant: { ...state.plant, [plantKey]: value }
-      });
-    } else if (key.startsWith('noise.')) {
-      const noiseKey = key.split('.')[1] as keyof typeof state.noise;
-      onStateChange({
-        noise: { ...state.noise, [noiseKey]: value }
-      });
-    } else if (key.startsWith('ssr.')) {
-      const ssrKey = key.split('.')[1] as keyof typeof state.ssr;
-      onStateChange({
-        ssr: { ...state.ssr, [ssrKey]: value }
-      });
-    } else if (key === 'setpoint') {
-      onStateChange({ setpoint: value });
+    // Limpiar timer anterior si existe
+    if (debounceTimers[key]) {
+      clearTimeout(debounceTimers[key]);
     }
-  };
+    
+    // Crear nuevo timer con debounce de 50ms
+    const timer = setTimeout(() => {
+      if (key.startsWith('pid.')) {
+        const pidKey = key.split('.')[1] as keyof typeof state.pid;
+        onStateChange({
+          pid: { ...state.pid, [pidKey]: value }
+        });
+      } else if (key.startsWith('plant.')) {
+        const plantKey = key.split('.')[1] as keyof typeof state.plant;
+        onStateChange({
+          plant: { ...state.plant, [plantKey]: value }
+        });
+      } else if (key.startsWith('noise.')) {
+        const noiseKey = key.split('.')[1] as keyof typeof state.noise;
+        onStateChange({
+          noise: { ...state.noise, [noiseKey]: value }
+        });
+      } else if (key.startsWith('ssr.')) {
+        const ssrKey = key.split('.')[1] as keyof typeof state.ssr;
+        onStateChange({
+          ssr: { ...state.ssr, [ssrKey]: value }
+        });
+      } else if (key === 'setpoint') {
+        onStateChange({ setpoint: value });
+      }
+    }, 50); // 50ms debounce para reducir mensajes al Worker
+    
+    setDebounceTimers(prev => ({ ...prev, [key]: timer }));
+  }, [state, onStateChange, debounceTimers]);
+
+  // Cleanup timers al desmontar
+  useEffect(() => {
+    return () => {
+      Object.values(debounceTimers).forEach(timer => clearTimeout(timer));
+    };
+  }, [debounceTimers]);
 
   const applyPreset = () => {
     const preset = presets.find(p => p.key === selectedPreset);
@@ -75,6 +95,7 @@ export const ControlsPanel = ({ state, onStateChange }: ControlsPanelProps) => {
     });
   };
 
+  // Componente mejorado con sincronización bidireccional
   const SliderWithInput = ({ 
     label, 
     value, 
@@ -93,43 +114,131 @@ export const ControlsPanel = ({ state, onStateChange }: ControlsPanelProps) => {
     unit: string;
     tooltip: string;
     sliderKey: string;
-  }) => (
-    <div className="space-y-2">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Label className="text-sm">{label}</Label>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button
-                  type="button"
-                  aria-label={`Información: ${label}`}
-                  className="inline-flex h-5 w-5 items-center justify-center rounded text-muted-foreground hover:text-foreground"
-                >
-                  <Info className="h-4 w-4" />
-                </button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>{tooltip}</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+  }) => {
+    const [inputValue, setInputValue] = useState(value.toString());
+    const [isValid, setIsValid] = useState(true);
+
+    // Sincronizar input cuando cambia el valor externo
+    useEffect(() => {
+      setInputValue(value.toString());
+      setIsValid(true);
+    }, [value]);
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const newValue = e.target.value;
+      setInputValue(newValue);
+      
+      const numValue = parseFloat(newValue);
+      const isValidNumber = !isNaN(numValue) && isFinite(numValue);
+      setIsValid(isValidNumber);
+      
+      if (isValidNumber) {
+        // Clampear al rango válido
+        const clampedValue = Math.max(min, Math.min(max, numValue));
+        
+        // Aplicar debounce igual que el slider
+        if (debounceTimers[sliderKey]) {
+          clearTimeout(debounceTimers[sliderKey]);
+        }
+        
+        const timer = setTimeout(() => {
+          if (sliderKey.startsWith('pid.')) {
+            const pidKey = sliderKey.split('.')[1] as keyof typeof state.pid;
+            onStateChange({
+              pid: { ...state.pid, [pidKey]: clampedValue }
+            });
+          } else if (sliderKey.startsWith('plant.')) {
+            const plantKey = sliderKey.split('.')[1] as keyof typeof state.plant;
+            onStateChange({
+              plant: { ...state.plant, [plantKey]: clampedValue }
+            });
+          } else if (sliderKey.startsWith('noise.')) {
+            const noiseKey = sliderKey.split('.')[1] as keyof typeof state.noise;
+            onStateChange({
+              noise: { ...state.noise, [noiseKey]: clampedValue }
+            });
+          } else if (sliderKey.startsWith('ssr.')) {
+            const ssrKey = sliderKey.split('.')[1] as keyof typeof state.ssr;
+            onStateChange({
+              ssr: { ...state.ssr, [ssrKey]: clampedValue }
+            });
+          } else if (sliderKey === 'setpoint') {
+            onStateChange({ setpoint: clampedValue });
+          }
+        }, 50);
+        
+        setDebounceTimers(prev => ({ ...prev, [sliderKey]: timer }));
+      }
+    };
+
+    const handleInputBlur = () => {
+      const numValue = parseFloat(inputValue);
+      if (isNaN(numValue) || !isFinite(numValue)) {
+        // Reset al valor válido si el input es inválido
+        setInputValue(value.toString());
+        setIsValid(true);
+      }
+    };
+
+    // Formatear valor para display
+    const formatDisplayValue = (val: number) => {
+      if (step < 0.01) return val.toFixed(3);
+      if (step < 0.1) return val.toFixed(2);
+      if (step < 1) return val.toFixed(1);
+      return val.toFixed(0);
+    };
+
+    return (
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Label className="text-sm">{label}</Label>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    type="button"
+                    aria-label={`Información: ${label}`}
+                    className="inline-flex h-5 w-5 items-center justify-center rounded text-muted-foreground hover:text-foreground"
+                  >
+                    <Info className="h-4 w-4" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>{tooltip}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+          <div className="flex items-center gap-2">
+            <Input
+              type="number"
+              value={inputValue}
+              onChange={handleInputChange}
+              onBlur={handleInputBlur}
+              min={min}
+              max={max}
+              step={step}
+              className={`w-20 h-8 text-xs ${!isValid ? 'border-red-500' : ''}`}
+              aria-label={`Input numérico para ${label}`}
+            />
+            <Badge variant="outline" className="control-value">
+              {formatDisplayValue(value)}{unit}
+            </Badge>
+          </div>
         </div>
-        <Badge variant="outline" className="control-value">
-          {value.toFixed(step < 1 ? (step < 0.1 ? 3 : 2) : 0)}{unit}
-        </Badge>
+        <Slider
+          value={[value]}
+          onValueChange={(values) => handleSliderChange(sliderKey, values)}
+          min={min}
+          max={max}
+          step={step}
+          aria-label={label}
+          className="w-full"
+        />
       </div>
-      <Slider
-        value={[value]}
-        onValueChange={(values) => handleSliderChange(sliderKey, values)}
-        min={min}
-        max={max}
-        step={step}
-        aria-label={label}
-        className="w-full"
-      />
-    </div>
-  );
+    );
+  };
 
   return (
     <div className="space-y-4 industrial-scroll" style={{ maxHeight: 'calc(100vh - 8rem)', overflowY: 'auto' }}>

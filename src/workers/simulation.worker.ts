@@ -14,6 +14,7 @@
 
 import { FOPDTPlant, PLANT_PRESETS } from '../lib/simulation/plant-model'
 import { PIDController, PID_PRESETS } from '../lib/simulation/pid-controller'
+import { MetricsCalculator } from '../lib/simulation/metrics-calculator'
 import type {
   SimulationCommand,
   SimulationEvent,
@@ -29,7 +30,8 @@ import type {
   TickEvent,
   StateEvent,
   ReadyEvent,
-  ErrorEvent
+  ErrorEvent,
+  MetricsEvent
 } from '../lib/simulation/types'
 
 // ============================================================================
@@ -66,7 +68,8 @@ interface WorkerState {
 let workerState: WorkerState
 let plant: FOPDTPlant
 let pidController: PIDController
-let simulationTimer: number | null = null
+let metricsCalculator: MetricsCalculator
+let simulationTimer: ReturnType<typeof setInterval> | null = null
 let noiseGenerator: { enabled: boolean; sigma: number; seed: number } = {
   enabled: false,
   sigma: 0,
@@ -179,7 +182,7 @@ function initializeWorker(config: InitCommand['payload']): void {
         pid_error_prev: 0,
         config: {
           timestep: config.timestep || DEFAULT_TIMESTEP,
-          pid: { ...PID_PRESETS.conservador },
+          pid: PID_PRESETS.conservador,
           plant: { ...PLANT_PRESETS.horno_medio },
           noise: { enabled: false, sigma: 0, seed: Math.random() }
         }
@@ -193,9 +196,15 @@ function initializeWorker(config: InitCommand['payload']): void {
       }
     }
 
-    // Inicializar planta y controlador
+    // Inicializar planta, controlador y calculador de métricas
     plant = new FOPDTPlant(workerState.simulation.config.plant, workerState.config.timestep)
-    pidController = new PIDController(workerState.simulation.config.pid, workerState.config.timestep)
+    // Asegurar que todos los campos PID estén presentes
+    const pidConfig = {
+      ...PID_PRESETS.conservador,
+      ...workerState.simulation.config.pid
+    }
+    pidController = new PIDController(pidConfig, workerState.config.timestep)
+    metricsCalculator = new MetricsCalculator()
 
     workerState.status = 'ready'
 
@@ -254,6 +263,24 @@ function executSimulationCycle(): void {
     workerState.simulation.u = pidOutput.u
     const plantState = plant.getState()
     workerState.simulation.plant_state = plantState.x
+
+    // Calcular métricas de control
+    const metrics = metricsCalculator.processSample(
+      workerState.simulation.t,
+      workerState.simulation.SP,
+      workerState.simulation.PV
+    )
+
+    // Enviar evento de métricas si hay cambios
+    if (metrics.is_calculating || metrics.overshoot > 0) {
+      const metricsEvent: MetricsEvent = {
+        id: generateId(),
+        type: 'METRICS',
+        timestamp: performance.now(),
+        payload: metrics
+      }
+      postEvent(metricsEvent)
+    }
 
     // Calcular error
     const error = workerState.simulation.SP - workerState.simulation.PV
@@ -465,8 +492,16 @@ function handleCommand(command: SimulationCommand): void {
 
       case 'SET_PID':
         const pidCmd = command as SetPIDCommand
-        pidController.updateParameters(pidCmd.payload)
-        workerState.simulation.config.pid = { ...workerState.simulation.config.pid, ...pidCmd.payload }
+        // Asegurar que todos los campos requeridos estén presentes
+        const pidParams = {
+          ...workerState.simulation.config.pid,
+          ...pidCmd.payload,
+          N: pidCmd.payload.N ?? workerState.simulation.config.pid.N,
+          Tt: pidCmd.payload.Tt ?? workerState.simulation.config.pid.Tt,
+          enabled: pidCmd.payload.enabled ?? workerState.simulation.config.pid.enabled
+        }
+        pidController.updateParameters(pidParams)
+        workerState.simulation.config.pid = pidParams
         break
 
       case 'SET_PLANT':
@@ -492,7 +527,8 @@ function handleCommand(command: SimulationCommand): void {
         break
 
       default:
-        postError('warning', 'COM_003', `Tipo de comando no reconocido: ${command.type}`)
+        const unknownCommand = command as { type: string }
+        postError('warning', 'COM_003', `Tipo de comando no reconocido: ${unknownCommand.type}`)
     }
 
   } catch (error) {
@@ -546,4 +582,9 @@ self.addEventListener('DOMContentLoaded', () => {
 export {}
 
 // Indicar que estamos en un Worker context
-declare const self: DedicatedWorkerGlobalScope
+declare const self: typeof globalThis & {
+  setInterval: typeof setInterval
+  clearInterval: typeof clearInterval
+  addEventListener: typeof addEventListener
+  postMessage: typeof postMessage
+}

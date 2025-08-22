@@ -6,6 +6,7 @@ import { MetricCard } from "@/components/MetricCard";
 import { TimeWindowSelect } from "@/components/TimeWindowSelect";
 import { ChartPVSP } from "@/components/ChartPVSP";
 import { ChartOutput } from "@/components/ChartOutput";
+import { SimulationStatus } from "@/components/SimulationStatus";
 import { SimulatorState, ChartDataPoint, MetricData } from "@/lib/types";
 
 const initialState: SimulatorState = {
@@ -125,7 +126,8 @@ export const Dashboard = () => {
       
       <main className="grid grid-cols-1 lg:grid-cols-[400px_1fr] gap-6 p-6">
         {/* Left Panel - Controls */}
-        <div className="lg:sticky lg:top-24 lg:h-fit">
+        <div className="lg:sticky lg:top-24 lg:h-fit space-y-6">
+          <SimulationStatus />
           <ControlsPanel state={state} onStateChange={handleStateChange} />
         </div>
         

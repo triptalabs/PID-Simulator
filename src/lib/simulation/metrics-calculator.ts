@@ -83,13 +83,14 @@ export class MetricsCalculator {
     this.state.samples_count++
 
     // Detectar cambio significativo de SP
-    const sp_change = Math.abs(sp - this.state.sp_previous)
-    const sp_change_percent = this.state.sp_previous !== 0 
-      ? (sp_change / Math.abs(this.state.sp_previous)) * 100 
-      : 0
+    const sp_change_abs = Math.abs(sp - this.state.sp_previous)
+    const sp_ref = Math.max(1e-9, Math.abs(this.state.sp_previous))
+    const sp_change_percent = (sp_change_abs / sp_ref) * 100
 
     if (sp_change_percent > this.config.sp_change_threshold) {
       this.startNewCalculation(t, sp, pv)
+      // actualizar referencia de SP inmediatamente
+      this.state.sp_previous = sp
       return this.state
     }
 
@@ -119,6 +120,8 @@ export class MetricsCalculator {
       this.finishCalculation()
     }
 
+    // Actualizar SP previo para la siguiente detección
+    this.state.sp_previous = sp
     return this.state
   }
 

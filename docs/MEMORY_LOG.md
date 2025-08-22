@@ -45,6 +45,13 @@
 - 🎯 CRITERIOS SPRINT 2 CUMPLIDOS: PID funcional, métricas automáticas, comunicación robusta
 - 📋 LISTO PARA: Sprint 3 - Precisión y Robustez
 
+### 📅 2025-08-22 14:27 - Sprint 3 En marcha: Validación y Robustez
+- ✅ Configurado Vitest y scripts de prueba en package.json
+- ✅ Test de validación numérica FOPDT vs analítico (L=0) con RMSE < 0.5%
+- ✅ Mejora MetricsCalculator: detección robusta de cambio de SP y settling time
+- ✅ Test anti-windup: reducción del error de saturación por back-calculation
+- 📌 Pendiente: Integración de reporting de precisión en Worker/UI
+
 ### 📅 Próximas memorias...
 - Sprint 1 objetivo: Worker + FOPDT + UI básica funcionando
 - Criterio éxito Sprint 1: 10 Hz estables por 30+ minutos

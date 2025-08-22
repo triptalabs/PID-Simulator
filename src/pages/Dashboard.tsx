@@ -1,13 +1,14 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Header } from "@/components/Header";
 import { ControlsPanel } from "@/components/ControlsPanel";
-import { MetricCard } from "@/components/MetricCard";
+import { MetricsPanel } from "@/components/MetricsPanel";
 import { TimeWindowSelect } from "@/components/TimeWindowSelect";
 import { ChartPVSP } from "@/components/ChartPVSP";
 import { ChartOutput } from "@/components/ChartOutput";
 import { SimulationStatus } from "@/components/SimulationStatus";
 import { SimulatorState, ChartDataPoint, MetricData } from "@/lib/types";
+import { WorkerManager } from "@/lib/simulation/worker-manager";
 
 const initialState: SimulatorState = {
   mode: 'horno',
@@ -85,10 +86,65 @@ export const Dashboard = () => {
   const [state, setState] = useState<SimulatorState>(initialState);
   const [chartData, setChartData] = useState<ChartDataPoint[]>([]);
   const [metrics, setMetrics] = useState<MetricData>({ overshoot: null, settlingTime: null });
+  
+  // Estado para métricas en tiempo real del Worker
+  const [realTimeMetrics, setRealTimeMetrics] = useState({
+    overshoot: 0,
+    t_peak: 0,
+    settling_time: 0,
+    is_calculating: false,
+    sp_previous: 0,
+    pv_max: -Infinity,
+    pv_min: Infinity,
+    t_start: 0,
+    t_current: 0,
+    samples_count: 0
+  });
+
+  // Referencia al worker manager
+  const workerManagerRef = useRef<WorkerManager | null>(null);
 
   const handleStateChange = (updates: Partial<SimulatorState>) => {
     setState(prev => ({ ...prev, ...updates }));
   };
+
+  // Inicializar worker manager
+  useEffect(() => {
+    if (!workerManagerRef.current) {
+      workerManagerRef.current = new WorkerManager({
+        timestep: 0.1,
+        bufferSize: 10000,
+        debugMode: true
+      });
+
+      // Configurar callbacks
+      workerManagerRef.current.setCallbacks({
+        onTick: (data) => {
+          // Actualizar datos del gráfico
+          const newDataPoint: ChartDataPoint = {
+            time: data.t,
+            pv: data.PV,
+            sp: data.SP,
+            output: data.u * 100 // Convertir a porcentaje
+          };
+          setChartData(prev => [...prev, newDataPoint].slice(-1000)); // Mantener últimos 1000 puntos
+        },
+        onMetrics: (data) => {
+          setRealTimeMetrics(data);
+        },
+        onError: (error) => {
+          console.error('Error del Worker:', error);
+        }
+      });
+
+      // Inicializar worker
+      workerManagerRef.current.initialize();
+    }
+
+    return () => {
+      workerManagerRef.current?.disconnect();
+    };
+  }, []);
 
   // Generate new data when key parameters change
   useEffect(() => {
@@ -133,23 +189,12 @@ export const Dashboard = () => {
         
         {/* Right Panel - Charts and Metrics */}
         <div className="space-y-6">
-          {/* Metrics Row */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <MetricCard
-              title="Overshoot"
-              value={metrics.overshoot}
-              unit="%"
-              subtitle="Máximo sobrepaso"
-              tooltip="Porcentaje de sobrepaso respecto al setpoint"
-            />
-            <MetricCard
-              title="tₛ (±2%)"
-              value={metrics.settlingTime}
-              unit="s"
-              subtitle="Tiempo de establecimiento"
-              tooltip="Tiempo para establecerse dentro del ±2% del setpoint"
-            />
-          </div>
+          {/* Metrics Panel */}
+          <MetricsPanel 
+            metrics={realTimeMetrics}
+            currentSP={state.setpoint}
+            currentPV={chartData.length > 0 ? chartData[chartData.length - 1]?.pv || 0 : 0}
+          />
           
           {/* Time Window Control */}
           <div className="flex justify-end">

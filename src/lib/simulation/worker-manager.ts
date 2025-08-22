@@ -21,7 +21,8 @@ import type {
   TickEvent,
   StateEvent,
   ReadyEvent,
-  ErrorEvent
+  ErrorEvent,
+  MetricsEvent
 } from './types'
 
 // ============================================================================
@@ -40,6 +41,7 @@ export interface WorkerManagerCallbacks {
   onState?: (data: StateEvent['payload']) => void
   onReady?: (data: ReadyEvent['payload']) => void
   onError?: (data: ErrorEvent['payload']) => void
+  onMetrics?: (data: MetricsEvent['payload']) => void
   onConnectionLost?: () => void
 }
 
@@ -228,6 +230,10 @@ export class WorkerManager {
           this.handleErrorEvent(event as ErrorEvent)
           break
 
+        case 'METRICS':
+          this.handleMetricsEvent(event as MetricsEvent)
+          break
+
         default:
           console.warn('Tipo de evento no reconocido:', event.type)
       }
@@ -309,6 +315,17 @@ export class WorkerManager {
     }
     
     this.callbacks.onError?.(event.payload)
+  }
+
+  /**
+   * Maneja evento METRICS del Worker
+   */
+  private handleMetricsEvent(event: MetricsEvent): void {
+    if (this.config.debugMode) {
+      console.log('Métricas recibidas:', event.payload)
+    }
+    
+    this.callbacks.onMetrics?.(event.payload)
   }
 
   /**

@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Header } from "@/components/Header";
 import { ControlsPanel } from "@/components/ControlsPanel";
 import { MetricsPanel } from "@/components/MetricsPanel";
@@ -57,10 +57,74 @@ export const Dashboard = () => {
     setChartData(mapped);
   }, [buffer]);
 
-  const handleStateChange = (updates: Partial<SimulatorState>) => {
-    setState(prev => ({ ...prev, ...updates }));
-    // TODO: Enlazar cambios con actions.* para enviar al Worker (SET_PID/SET_PLANT/SET_SP/SET_NOISE)
-  };
+  const handleStateChange = useCallback((updates: Partial<SimulatorState>) => {
+    setState(prev => {
+      const next = { ...prev, ...updates };
+
+      // Mapear cambios a acciones del Worker
+      // 1) Setpoint
+      if (typeof updates.setpoint === 'number') {
+        actions.setSetpoint(updates.setpoint).catch(console.error);
+      }
+
+      // 2) PID (enviar payload completo tras merge)
+      if (updates.pid) {
+        const pid = { ...prev.pid, ...updates.pid };
+        actions.setPID({ kp: pid.kp, ki: pid.ki, kd: pid.kd }).catch(console.error);
+      }
+
+      // 3) Planta y modo (mapear k->K, l->L, t_amb->T_amb)
+      if (updates.plant || typeof updates.mode === 'string') {
+        const plant = { ...prev.plant, ...(updates.plant || {}) };
+        const mode = (typeof updates.mode === 'string' ? updates.mode : prev.mode) as 'horno' | 'chiller';
+        actions.setPlant({
+          K: plant.k,
+          tau: plant.tau,
+          L: plant.l,
+          T_amb: plant.t_amb,
+          mode
+        }).catch(console.error);
+      }
+
+      // 4) Ruido (intensity -> sigma)
+      if (updates.noise) {
+        const noise = { ...prev.noise, ...updates.noise };
+        actions.setNoise(Boolean(noise.enabled), Number(noise.intensity || 0)).catch(console.error);
+      }
+
+      // 5) SSR: no soportado en Worker aún → sin comando (UI local)
+
+      // 6) Start/Pause según toggle de UI y estado real del Worker
+      if (typeof updates.isRunning === 'boolean') {
+        if (updates.isRunning && !controls.isRunning) {
+          actions.start().catch(console.error);
+        } else if (!updates.isRunning && controls.isRunning) {
+          actions.pause().catch(console.error);
+        }
+      }
+
+      return next;
+    });
+  }, [actions, controls.isRunning]);
+
+  // Atajos de teclado: S (start/pause), R (reset)
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.target && (e.target as HTMLElement).tagName === 'INPUT') return;
+      if (e.key === 's' || e.key === 'S') {
+        if (controls.isRunning) {
+          actions.pause().catch(console.error);
+        } else {
+          actions.start().catch(console.error);
+        }
+      }
+      if (e.key === 'r' || e.key === 'R') {
+        actions.reset(true).catch(console.error);
+      }
+    };
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, [actions, controls.isRunning]);
 
   return (
     <div className="dark min-h-screen bg-background text-foreground">
@@ -68,7 +132,21 @@ export const Dashboard = () => {
       <main className="grid grid-cols-1 lg:grid-cols-[400px_1fr] gap-6 p-6">
         <div className="lg:sticky lg:top-24 lg:h-fit space-y-6">
           <SimulationStatus />
-          <ControlsPanel state={state} onStateChange={handleStateChange} />
+          <ControlsPanel 
+            state={state} 
+            onStateChange={handleStateChange}
+            onReset={() => actions.reset(true)}
+            onApplyPreset={(values) => {
+              // Mantener modo actual del estado local
+              actions.setPlant({
+                K: values.k,
+                tau: values.tau,
+                L: values.l,
+                T_amb: values.t_amb,
+                mode: state.mode
+              }).catch(console.error);
+            }}
+          />
           <div className="grid grid-cols-2 gap-2">
             <Button variant="outline" onClick={() => actions.exportCSV({ type: 'window', seconds: state.timeWindow })}>
               Exportar ventana

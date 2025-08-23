@@ -12,16 +12,18 @@ import { Separator } from "@/components/ui/separator";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { PlayCircle, PauseCircle, RotateCw, Download, Zap, Info } from "lucide-react";
-import { Mode, SimulatorState } from "@/lib/types";
+import { Mode, SimulatorState, Preset as PresetType } from "@/lib/types";
 import { presets } from "@/lib/presets";
 import { toast } from "@/hooks/use-toast";
 
 interface ControlsPanelProps {
   state: SimulatorState;
   onStateChange: (updates: Partial<SimulatorState>) => void;
+  onReset?: () => void;
+  onApplyPreset?: (values: PresetType['values']) => void;
 }
 
-export const ControlsPanel = ({ state, onStateChange }: ControlsPanelProps) => {
+export const ControlsPanel = ({ state, onStateChange, onReset, onApplyPreset }: ControlsPanelProps) => {
   const [selectedPreset, setSelectedPreset] = useState<string>("");
 
   // Debouncing para evitar spam de mensajes al Worker
@@ -75,12 +77,10 @@ export const ControlsPanel = ({ state, onStateChange }: ControlsPanelProps) => {
   const applyPreset = () => {
     const preset = presets.find(p => p.key === selectedPreset);
     if (preset) {
-      onStateChange({
-        plant: {
-          ...state.plant,
-          ...preset.values
-        }
-      });
+      onStateChange({ plant: { ...state.plant, ...preset.values } });
+      if (onApplyPreset) {
+        onApplyPreset(preset.values);
+      }
       toast({
         title: "Preset aplicado",
         description: `Configuración "${preset.name}" aplicada correctamente.`,
@@ -500,7 +500,7 @@ export const ControlsPanel = ({ state, onStateChange }: ControlsPanelProps) => {
                 </>
               )}
             </Button>
-            <Button variant="outline" className="gap-2">
+            <Button variant="outline" className="gap-2" onClick={() => onReset?.()}>
               <RotateCw size={16} />
               Reset
             </Button>

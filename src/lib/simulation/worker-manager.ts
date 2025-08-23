@@ -21,7 +21,7 @@ import type {
   TickEvent,
   StateEvent,
   ReadyEvent,
-  ErrorEvent,
+  ErrorEvent as SimulationErrorEvent,
   MetricsEvent
 } from './types'
 
@@ -40,7 +40,7 @@ export interface WorkerManagerCallbacks {
   onTick?: (data: TickEvent['payload']) => void
   onState?: (data: StateEvent['payload']) => void
   onReady?: (data: ReadyEvent['payload']) => void
-  onError?: (data: ErrorEvent['payload']) => void
+  onError?: (data: SimulationErrorEvent['payload']) => void
   onMetrics?: (data: MetricsEvent['payload']) => void
   onConnectionLost?: () => void
 }
@@ -71,7 +71,9 @@ export class WorkerManager {
       timestep: config.timestep || 0.1,
       bufferSize: config.bufferSize || 10000,
       debugMode: config.debugMode || false,
-      workerPath: config.workerPath || '/src/workers/simulation.worker.ts?worker'
+      // Recomendado: ruta relativa estática para que Vite reescriba en build
+      // Si se provee workerPath, se intentará usar; de lo contrario, usar default bundle-safe
+      workerPath: config.workerPath || '../../workers/simulation.worker.ts'
     }
 
     this.status = {
@@ -107,7 +109,24 @@ export class WorkerManager {
 
     try {
       // Crear Worker apuntando al worker de simulación real (bundle-safe URL)
-      this.worker = new Worker(new URL('../../workers/simulation.worker.ts', import.meta.url), { type: 'module' })
+      // Preferir la forma estática para que Vite reescriba correctamente en dev y prod
+      // Si se proporcionó workerPath, intentar respetarlo; si falla o no es válido para bundle, usar default
+      let createdWorker: Worker | null = null
+      try {
+        const path = this.config.workerPath
+        if (path) {
+          if (path.startsWith('.') || path.startsWith('..')) {
+            createdWorker = new Worker(new URL(path, import.meta.url), { type: 'module' })
+          } else {
+            // Ruta absoluta/URL servida; útil en dev. En prod podría no existir si no fue bundleada.
+            createdWorker = new Worker(path as string, { type: 'module' })
+          }
+        }
+      } catch (_) {
+        createdWorker = null
+      }
+
+      this.worker = createdWorker || new Worker(new URL('../../workers/simulation.worker.ts', import.meta.url), { type: 'module' })
       
       // Configurar event listeners
       this.setupEventListeners()
@@ -150,8 +169,8 @@ export class WorkerManager {
       this.handleWorkerMessage(event.data as SimulationEvent)
     })
 
-    this.worker.addEventListener('error', (event) => {
-      this.handleWorkerError(event)
+    this.worker.addEventListener('error', (event: ErrorEvent) => {
+      this.handleWorkerDomError(event)
     })
 
     this.worker.addEventListener('messageerror', (event) => {
@@ -233,7 +252,7 @@ export class WorkerManager {
           break
 
         case 'ERROR':
-          this.handleErrorEvent(event as ErrorEvent)
+          this.handleErrorEvent(event as SimulationErrorEvent)
           break
 
         case 'METRICS':
@@ -241,7 +260,7 @@ export class WorkerManager {
           break
 
         default:
-          console.warn('Tipo de evento no reconocido:', event.type)
+          console.warn('Tipo de evento no reconocido')
       }
 
     } catch (error) {
@@ -306,7 +325,11 @@ export class WorkerManager {
    */
   private handleStateEvent(event: StateEvent): void {
     this.status.workerState = event.payload.state
-    this.status.performance = event.payload.performance
+    this.status.performance = {
+      ...event.payload.performance,
+      uptime: event.payload.uptime,
+      samples_processed: event.payload.samples_processed
+    }
     
     this.callbacks.onState?.(event.payload)
   }
@@ -314,7 +337,7 @@ export class WorkerManager {
   /**
    * Maneja evento ERROR del Worker
    */
-  private handleErrorEvent(event: ErrorEvent): void {
+  private handleErrorEvent(event: SimulationErrorEvent): void {
     if (event.payload.severity === 'critical') {
       this.status.connected = false
       this.status.workerState = 'error'
@@ -337,7 +360,7 @@ export class WorkerManager {
   /**
    * Maneja errores del Worker
    */
-  private handleWorkerError(event: ErrorEvent): void {
+  private handleWorkerDomError(event: ErrorEvent): void {
     console.error('Error en Worker:', event)
     
     this.status.connected = false

@@ -142,7 +142,7 @@ function postError(
   severity: 'warning' | 'error' | 'critical',
   code: string,
   message: string,
-  details?: any,
+  details?: unknown,
   recoverable: boolean = true
 ): void {
   const errorEvent: ErrorEvent = {
@@ -227,7 +227,7 @@ function initializeWorker(config: InitCommand['payload']): void {
       ...workerState.simulation.config.pid
     }
     pidController = new PIDController(pidConfig, workerState.config.timestep)
-    metricsCalculator = new MetricsCalculator()
+    metricsCalculator = new MetricsCalculator({ debug: workerState.config.debugMode })
     // Inicializar PRNG de ruido con semilla inicial
     setNoiseSeed(workerState.simulation.config.noise.seed)
 
@@ -256,7 +256,8 @@ function initializeWorker(config: InitCommand['payload']): void {
     }
 
   } catch (error) {
-    postError('critical', 'INIT_001', `Error inicializando worker: ${error.message}`, error, false)
+    const err = error as Error
+    postError('critical', 'INIT_001', `Error inicializando worker: ${err.message}`, err, false)
   }
 }
 
@@ -364,7 +365,8 @@ function executSimulationCycle(): void {
     }
 
   } catch (error) {
-    postError('error', 'SIM_001', `Error en ciclo de simulación: ${error.message}`, error)
+    const err = error as Error
+    postError('error', 'SIM_001', `Error en ciclo de simulación: ${err.message}`, err)
   }
 }
 
@@ -518,12 +520,13 @@ function handleCommand(command: SimulationCommand): void {
         pauseSimulation()
         break
 
-      case 'RESET':
+      case 'RESET': {
         const resetCmd = command as ResetCommand
         resetSimulation(resetCmd.payload.preserveParams)
         break
+      }
 
-      case 'SET_PID':
+      case 'SET_PID': {
         const pidCmd = command as SetPIDCommand
         // Asegurar que todos los campos requeridos estén presentes
         const pidParams = {
@@ -536,20 +539,23 @@ function handleCommand(command: SimulationCommand): void {
         pidController.updateParameters(pidParams)
         workerState.simulation.config.pid = pidParams
         break
+      }
 
-      case 'SET_PLANT':
+      case 'SET_PLANT': {
         const plantCmd = command as SetPlantCommand
         plant.updateParameters(plantCmd.payload)
         workerState.simulation.config.plant = { ...workerState.simulation.config.plant, ...plantCmd.payload }
         break
+      }
 
-      case 'SET_SP':
+      case 'SET_SP': {
         const spCmd = command as SetSPCommand
         workerState.simulation.SP = spCmd.payload.value
         // TODO: Implementar rampa si rampRate está especificado
         break
+      }
 
-      case 'SET_NOISE':
+      case 'SET_NOISE': {
         const noiseCmd = command as SetNoiseCommand
         noiseGenerator = {
           enabled: noiseCmd.payload.enabled,
@@ -562,6 +568,7 @@ function handleCommand(command: SimulationCommand): void {
         setNoiseSeed(noiseGenerator.seed)
         workerState.simulation.config.noise = { ...noiseCmd.payload, seed: noiseGenerator.seed }
         break
+      }
 
       default:
         const unknownCommand = command as { type: string }
@@ -591,7 +598,8 @@ self.addEventListener('message', (event) => {
     handleCommand(command)
     
   } catch (error) {
-    postError('error', 'COM_002', `Error procesando mensaje: ${error.message}`, error)
+    const err = error as Error
+    postError('error', 'COM_002', `Error procesando mensaje: ${err.message}`, err)
   }
 })
 

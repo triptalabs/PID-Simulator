@@ -12,7 +12,7 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <SimulationProvider config={{ debugMode: true }}>
+      <SimulationProvider config={{ debugMode: import.meta.env.DEV }}>
         <Toaster />
         <Sonner />
         <BrowserRouter>

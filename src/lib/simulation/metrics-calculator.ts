@@ -28,6 +28,7 @@ export interface MetricsConfig {
   settling_threshold: number   // Umbral para tiempo de establecimiento (%)
   settling_window: number      // Ventana de estabilidad [s]
   max_calculation_time: number // Tiempo máximo de cálculo [s]
+  debug?: boolean              // Habilitar logs en consola
 }
 
 export class MetricsCalculator {
@@ -40,6 +41,7 @@ export class MetricsCalculator {
       settling_threshold: 2.0,     // 2% del SP final
       settling_window: 2.0,        // 2 segundos de estabilidad
       max_calculation_time: 60.0,  // 60 segundos máximo
+      debug: false,
       ...config
     }
     
@@ -139,7 +141,9 @@ export class MetricsCalculator {
     this.state.settling_time = 0
     this.state.samples_count = 0
 
-    console.log(`Métricas: Iniciando cálculo - SP: ${sp}°C, t: ${t}s`)
+    if (this.config.debug) {
+      console.log(`Métricas: Iniciando cálculo - SP: ${sp}°C, t: ${t}s`)
+    }
   }
 
   /**
@@ -226,14 +230,16 @@ export class MetricsCalculator {
   private finishCalculation(): void {
     this.state.is_calculating = false
     
-    console.log(`Métricas: Cálculo completado`, {
-      overshoot: this.state.overshoot.toFixed(2) + '%',
-      t_peak: this.state.t_peak.toFixed(1) + 's',
-      settling_time: this.state.settling_time > 0 
-        ? (this.state.settling_time + this.config.settling_window).toFixed(1) + 's'
-        : 'N/A',
-      samples: this.state.samples_count
-    })
+    if (this.config.debug) {
+      console.log(`Métricas: Cálculo completado`, {
+        overshoot: this.state.overshoot.toFixed(2) + '%',
+        t_peak: this.state.t_peak.toFixed(1) + 's',
+        settling_time: this.state.settling_time > 0 
+          ? (this.state.settling_time + this.config.settling_window).toFixed(1) + 's'
+          : 'N/A',
+        samples: this.state.samples_count
+      })
+    }
   }
 
   /**
@@ -255,17 +261,23 @@ export class MetricsCalculator {
    */
   validateMetrics(): boolean {
     if (this.state.overshoot < 0 || this.state.overshoot > 1000) {
-      console.warn('Métricas: Overshoot fuera de rango razonable', this.state.overshoot)
+      if (this.config.debug) {
+        console.warn('Métricas: Overshoot fuera de rango razonable', this.state.overshoot)
+      }
       return false
     }
 
     if (this.state.t_peak < 0 || this.state.t_peak > 1000) {
-      console.warn('Métricas: Tiempo de pico fuera de rango razonable', this.state.t_peak)
+      if (this.config.debug) {
+        console.warn('Métricas: Tiempo de pico fuera de rango razonable', this.state.t_peak)
+      }
       return false
     }
 
     if (this.state.settling_time < 0 || this.state.settling_time > 1000) {
-      console.warn('Métricas: Tiempo de establecimiento fuera de rango razonable', this.state.settling_time)
+      if (this.config.debug) {
+        console.warn('Métricas: Tiempo de establecimiento fuera de rango razonable', this.state.settling_time)
+      }
       return false
     }
 

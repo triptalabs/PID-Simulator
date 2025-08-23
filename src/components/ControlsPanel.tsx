@@ -476,53 +476,7 @@ export const ControlsPanel = ({ state, onStateChange, onReset, onApplyPreset }: 
         </CardContent>
       </Card>
 
-      {/* Acciones */}
-      <Card className="industrial-control">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-sm">Acciones</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <div className="grid grid-cols-2 gap-2">
-            <Button
-              variant={state.isRunning ? "secondary" : "default"}
-              onClick={() => onStateChange({ isRunning: !state.isRunning })}
-              className="gap-2"
-            >
-              {state.isRunning ? (
-                <>
-                  <PauseCircle size={16} />
-                  Pausar
-                </>
-              ) : (
-                <>
-                  <PlayCircle size={16} />
-                  Iniciar
-                </>
-              )}
-            </Button>
-            <Button variant="outline" className="gap-2" onClick={() => onReset?.()}>
-              <RotateCw size={16} />
-              Reset
-            </Button>
-          </div>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="outline" disabled className="w-full gap-2">
-                  <Download size={16} />
-                  Exportar CSV
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Disponible en la versión con lógica</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-          <div className="text-xs text-muted-foreground text-center">
-            <strong>S</strong> = Iniciar/Pausar • <strong>R</strong> = Reset
-          </div>
-        </CardContent>
-      </Card>
+      {/* Acciones: eliminado. Los controles viven en SimulationStatus. */}
     </div>
   );
 };

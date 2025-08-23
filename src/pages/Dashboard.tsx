@@ -180,10 +180,10 @@ export const Dashboard = () => {
             />
           </div>
           <div className="min-h-0 grid grid-cols-1 lg:grid-cols-2 gap-4 overflow-hidden">
-            <div className="min-h-0 h-full">
+            <div className="min-h-[260px] h-full">
               <ChartPVSP data={chartData} />
             </div>
-            <div className="min-h-0 h-full">
+            <div className="min-h-[260px] h-full">
               <ChartOutput data={chartData} />
             </div>
           </div>

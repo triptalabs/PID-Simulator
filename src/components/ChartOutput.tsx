@@ -8,12 +8,13 @@ interface ChartOutputProps {
 
 export const ChartOutput = ({ data }: ChartOutputProps) => {
   return (
-    <div className="industrial-control p-4 h-full min-h-0">
+    <div className="industrial-control p-4 h-full min-h-0 flex flex-col">
       <h3 className="text-sm font-medium text-muted-foreground mb-4">
         Salida del PID (%)
       </h3>
-      <ResponsiveContainer width="100%" height="80%">
-        <LineChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+      <div className="flex-1 min-h-[200px]">
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis 
             dataKey="time" 
@@ -38,8 +39,9 @@ export const ChartOutput = ({ data }: ChartOutputProps) => {
             name="Salida (%)"
             dot={false}
           />
-        </LineChart>
-      </ResponsiveContainer>
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
     </div>
   );
 };

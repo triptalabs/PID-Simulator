@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Play, Pause, RotateCcw, AlertCircle, CheckCircle, Clock } from 'lucide-react'
+import { Play, Pause, RotateCcw, AlertCircle, CheckCircle, Clock, AlertTriangle } from 'lucide-react'
 import { useSimulation, useSimulationData, useSimulationControls } from './SimulationProvider'
 
 export function SimulationStatus() {
@@ -98,6 +98,17 @@ export function SimulationStatus() {
   }
 
   const simulationStatus = getSimulationStatus()
+
+  // ============================================================================
+  // WARNINGS DE TELEMETRÍA (thresholds simples)
+  // ============================================================================
+
+  const PERF_WARN_MS = 15
+  const CPU_WARN_PERCENT = 80
+
+  const avgCycleWarn = state.performance.avg_cycle_time > PERF_WARN_MS
+  const cpuWarn = state.performance.cpu_usage_estimate > CPU_WARN_PERCENT
+
 
   // ============================================================================
   // RENDER
@@ -199,6 +210,22 @@ export function SimulationStatus() {
                   CPU: {state.performance.cpu_usage_estimate.toFixed(1)}%
                 </div>
               </div>
+
+              {(avgCycleWarn || cpuWarn) && (
+                <div className="mt-2">
+                  <Alert variant="default">
+                    <AlertTriangle className="h-4 w-4" />
+                    <AlertDescription className="text-xs">
+                      {avgCycleWarn && (
+                        <div>Advertencia: tiempo de ciclo promedio alto (&gt; {PERF_WARN_MS} ms).</div>
+                      )}
+                      {cpuWarn && (
+                        <div>Advertencia: uso de CPU elevado (&gt; {CPU_WARN_PERCENT}%).</div>
+                      )}
+                    </AlertDescription>
+                  </Alert>
+                </div>
+              )}
             </div>
           )}
         </CardContent>

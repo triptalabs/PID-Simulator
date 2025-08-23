@@ -73,8 +73,9 @@ let simulationTimer: ReturnType<typeof setInterval> | null = null
 let noiseGenerator: { enabled: boolean; sigma: number; seed: number } = {
   enabled: false,
   sigma: 0,
-  seed: Math.random()
+  seed: Math.floor(Math.random() * 0xffffffff)
 }
+let noisePRNG: (() => number) | null = null
 
 // ============================================================================
 // UTILIDADES
@@ -88,16 +89,38 @@ function generateId(): string {
 }
 
 /**
- * Genera ruido gaussiano usando Box-Muller
+ * PRNG determinista (mulberry32) para reproducibilidad
+ */
+function createMulberry32(seed: number): () => number {
+  let a = (seed >>> 0) || 1
+  return function() {
+    a = (a + 0x6D2B79F5) >>> 0
+    let t = Math.imul(a ^ (a >>> 15), 1 | a)
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296
+  }
+}
+
+function setNoiseSeed(seed: number): void {
+  const s = (Math.floor(seed) >>> 0) || 1
+  noiseGenerator.seed = s
+  noisePRNG = createMulberry32(s)
+}
+
+/**
+ * Genera ruido gaussiano usando Box-Muller con PRNG determinista
  */
 function generateGaussianNoise(sigma: number): number {
   if (!noiseGenerator.enabled || sigma <= 0) return 0
+  if (!noisePRNG) setNoiseSeed(noiseGenerator.seed)
   
-  // Box-Muller transform
-  const u1 = Math.random()
-  const u2 = Math.random()
+  // Box-Muller transform con fuente determinista
+  let u1 = 0
+  let u2 = 0
+  // Evitar 0 exacto para log
+  do { u1 = noisePRNG!() } while (u1 <= Number.EPSILON)
+  u2 = noisePRNG!()
   const z0 = Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2)
-  
   return sigma * z0
 }
 
@@ -205,6 +228,8 @@ function initializeWorker(config: InitCommand['payload']): void {
     }
     pidController = new PIDController(pidConfig, workerState.config.timestep)
     metricsCalculator = new MetricsCalculator()
+    // Inicializar PRNG de ruido con semilla inicial
+    setNoiseSeed(workerState.simulation.config.noise.seed)
 
     workerState.status = 'ready'
 
@@ -521,9 +546,13 @@ function handleCommand(command: SimulationCommand): void {
         noiseGenerator = {
           enabled: noiseCmd.payload.enabled,
           sigma: noiseCmd.payload.sigma,
-          seed: noiseCmd.payload.seed || Math.random()
+          seed: (noiseCmd.payload.seed !== undefined)
+            ? Math.floor(noiseCmd.payload.seed)
+            : noiseGenerator.seed
         }
-        workerState.simulation.config.noise = { ...noiseCmd.payload }
+        // Re-inicializar PRNG cuando cambie la semilla
+        setNoiseSeed(noiseGenerator.seed)
+        workerState.simulation.config.noise = { ...noiseCmd.payload, seed: noiseGenerator.seed }
         break
 
       default:

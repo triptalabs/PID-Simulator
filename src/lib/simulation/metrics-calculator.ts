@@ -153,14 +153,37 @@ export class MetricsCalculator {
         this.state.overshoot = pv
         this.state.t_peak = t
       }
-    } else {
-      // Caso normal: overshoot porcentual
-      const overshoot_percent = ((pv - sp) / Math.abs(sp)) * 100
-      
-      if (overshoot_percent > this.state.overshoot) {
-        this.state.overshoot = overshoot_percent
+      return
+    }
+
+    // Overshoot coherente para pasos ascendentes y descendentes
+    // Definir referencia de signo respecto al SP final
+    const direction = Math.sign(sp - this.state.sp_previous || 1)
+    const error = pv - sp
+    const signedOvershoot = (error / Math.abs(sp)) * 100
+
+    // Para paso descendente (direction < 0), medimos undershoot (mínimo)
+    if (direction < 0) {
+      // Registrar mínimos
+      if (pv < this.state.pv_min) {
+        this.state.pv_min = pv
+      }
+      const undershootPercent = -signedOvershoot // valor positivo cuando pv < sp
+      if (undershootPercent > this.state.overshoot) {
+        this.state.overshoot = undershootPercent
         this.state.t_peak = t
       }
+      return
+    }
+
+    // Paso ascendente (direction >= 0): mantener lógica clásica
+    if (pv > this.state.pv_max) {
+      this.state.pv_max = pv
+    }
+    const overshootPercent = signedOvershoot
+    if (overshootPercent > this.state.overshoot) {
+      this.state.overshoot = overshootPercent
+      this.state.t_peak = t
     }
   }
 
@@ -171,7 +194,7 @@ export class MetricsCalculator {
     if (sp === 0) return // No calcular settling time para SP = 0
 
     const error_percent = Math.abs(pv - sp) / Math.abs(sp) * 100
-    
+
     if (error_percent <= this.config.settling_threshold) {
       if (this.state.settling_time === 0) {
         // Primer momento dentro del umbral
@@ -192,8 +215,8 @@ export class MetricsCalculator {
       return t - this.state.t_peak > this.config.settling_window
     }
 
-    // Para SP ≠ 0, terminar cuando se alcance settling time
-    return this.state.settling_time > 0 && 
+    // Para SP ≠ 0, terminar cuando se mantenga en banda por ventana definida
+    return this.state.settling_time > 0 &&
            t - this.state.settling_time > this.config.settling_window
   }
 

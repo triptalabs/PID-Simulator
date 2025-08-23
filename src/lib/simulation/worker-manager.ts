@@ -106,8 +106,8 @@ export class WorkerManager {
     }
 
     try {
-      // Crear Worker usando sintaxis estándar que funciona con Vite
-      this.worker = new Worker('/src/workers/test.worker.ts', { type: 'module' })
+      // Crear Worker apuntando al worker de simulación real (bundle-safe URL)
+      this.worker = new Worker(new URL('../../workers/simulation.worker.ts', import.meta.url), { type: 'module' })
       
       // Configurar event listeners
       this.setupEventListeners()
@@ -117,13 +117,19 @@ export class WorkerManager {
         this.handleConnectionTimeout()
       }, 5000) // 5 segundos
 
-      // Enviar mensaje de prueba simple
-      const testMessage = {
+      // Enviar INIT real según contrato
+      const initCommand: InitCommand = {
+        id: this.generateId(),
         type: 'INIT',
-        payload: { test: 'hello from manager' }
+        timestamp: performance.now(),
+        payload: {
+          timestep: this.config.timestep,
+          bufferSize: this.config.bufferSize,
+          debugMode: this.config.debugMode
+        }
       }
 
-      this.worker.postMessage(testMessage)
+      this.worker.postMessage(initCommand)
       
       if (this.config.debugMode) {
         console.log('WorkerManager inicializando...')
@@ -360,6 +366,7 @@ export class WorkerManager {
       t: data.t,
       SP: data.SP,
       PV: data.PV,
+      PV_clean: data.PV_clean,
       u: data.u,
       error: data.error,
       P_term: data.P_term,

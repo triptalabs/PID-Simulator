@@ -6,6 +6,7 @@ import { MetricsPanel } from "@/components/MetricsPanel";
 import { TimeWindowSelect } from "@/components/TimeWindowSelect";
 import { ChartPVSP } from "@/components/ChartPVSP";
 import { ChartOutput } from "@/components/ChartOutput";
+import { ChartsPanel } from "@/components/ChartsPanel";
 import { SimulationStatus } from "@/components/SimulationStatus";
 import { SimulatorState, ChartDataPoint } from "@/lib/types";
 import { useSimulation, useSimulationData, useSimulationControls } from "@/components/SimulationProvider";
@@ -179,14 +180,7 @@ export const Dashboard = () => {
               onValueChange={(timeWindow) => handleStateChange({ timeWindow })}
             />
           </div>
-          <div className="min-h-0 grid grid-cols-1 lg:grid-cols-2 gap-4 overflow-hidden">
-            <div className="min-h-[260px] h-full">
-              <ChartPVSP data={chartData} />
-            </div>
-            <div className="min-h-[260px] h-full">
-              <ChartOutput data={chartData} />
-            </div>
-          </div>
+          <ChartsPanel data={chartData} />
         </section>
       </main>
     </div>

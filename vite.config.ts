@@ -19,5 +19,13 @@ export default defineConfig({
   },
   optimizeDeps: {
     exclude: ['src/workers/simulation.worker.ts']
+  },
+  test: {
+    environment: 'jsdom',
+    setupFiles: ['tests/setup.ts'],
+    testTimeout: 20000,
+    hookTimeout: 20000,
+    include: ['tests/**/*.{test,spec}.ts'],
+    reporters: 'default'
   }
 });

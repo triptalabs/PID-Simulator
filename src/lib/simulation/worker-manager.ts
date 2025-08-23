@@ -34,6 +34,7 @@ export interface WorkerManagerConfig {
   bufferSize?: number    // Tamaño del buffer de datos
   debugMode?: boolean    // Habilitar logs detallados
   workerPath?: string    // Ruta al archivo del worker
+  createWorker?: () => Worker // Factoría opcional (tests)
 }
 
 export interface WorkerManagerCallbacks {
@@ -59,7 +60,7 @@ export interface WorkerManagerStatus {
 export class WorkerManager {
   private worker: Worker | null = null
   private callbacks: WorkerManagerCallbacks = {}
-  private config: Required<WorkerManagerConfig>
+  private config: Omit<Required<WorkerManagerConfig>, 'createWorker'> & { createWorker?: () => Worker }
   private status: WorkerManagerStatus
   private buffer: SimulationBuffer
   private messageQueue: SimulationCommand[] = []
@@ -73,7 +74,8 @@ export class WorkerManager {
       debugMode: config.debugMode || false,
       // Recomendado: ruta relativa estática para que Vite reescriba en build
       // Si se provee workerPath, se intentará usar; de lo contrario, usar default bundle-safe
-      workerPath: config.workerPath || '../../workers/simulation.worker.ts'
+      workerPath: config.workerPath || '../../workers/simulation.worker.ts',
+      createWorker: config.createWorker
     }
 
     this.status = {
@@ -108,22 +110,24 @@ export class WorkerManager {
     }
 
     try {
-      // Crear Worker apuntando al worker de simulación real (bundle-safe URL)
-      // Preferir la forma estática para que Vite reescriba correctamente en dev y prod
-      // Si se proporcionó workerPath, intentar respetarlo; si falla o no es válido para bundle, usar default
+      // Crear Worker: preferir factoría inyectada (tests), luego workerPath, luego default
       let createdWorker: Worker | null = null
-      try {
-        const path = this.config.workerPath
-        if (path) {
-          if (path.startsWith('.') || path.startsWith('..')) {
-            createdWorker = new Worker(new URL(path, import.meta.url), { type: 'module' })
-          } else {
-            // Ruta absoluta/URL servida; útil en dev. En prod podría no existir si no fue bundleada.
-            createdWorker = new Worker(path as string, { type: 'module' })
+      if (this.config.createWorker) {
+        createdWorker = this.config.createWorker()
+      } else {
+        try {
+          const path = this.config.workerPath
+          if (path) {
+            if (path.startsWith('.') || path.startsWith('..')) {
+              createdWorker = new Worker(new URL(path, import.meta.url), { type: 'module' })
+            } else {
+              // Ruta absoluta/URL servida; útil en dev. En prod podría no existir si no fue bundleada.
+              createdWorker = new Worker(path as string, { type: 'module' })
+            }
           }
+        } catch (_) {
+          createdWorker = null
         }
-      } catch (_) {
-        createdWorker = null
       }
 
       this.worker = createdWorker || new Worker(new URL('../../workers/simulation.worker.ts', import.meta.url), { type: 'module' })

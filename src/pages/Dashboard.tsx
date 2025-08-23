@@ -127,10 +127,10 @@ export const Dashboard = () => {
   }, [actions, controls.isRunning]);
 
   return (
-    <div className="dark min-h-screen bg-background text-foreground">
+    <div className="dark h-screen overflow-hidden bg-background text-foreground flex flex-col">
       <Header />
-      <main className="grid grid-cols-1 lg:grid-cols-[400px_1fr] gap-6 p-6">
-        <div className="lg:sticky lg:top-24 lg:h-fit space-y-6">
+      <main className="grid flex-1 min-h-0 grid-cols-1 lg:grid-cols-[400px_1fr] gap-4 p-4">
+        <div className="min-h-0 overflow-auto space-y-4">
           <SimulationStatus />
           <ControlsPanel 
             state={state} 
@@ -156,7 +156,7 @@ export const Dashboard = () => {
             </Button>
           </div>
         </div>
-        <div className="space-y-6">
+        <section className="min-h-0 grid grid-rows-[auto_auto_1fr] gap-4">
           <MetricsPanel 
             metrics={simState.metrics || {
               overshoot: 0,
@@ -179,11 +179,15 @@ export const Dashboard = () => {
               onValueChange={(timeWindow) => handleStateChange({ timeWindow })}
             />
           </div>
-          <div className="space-y-6">
-            <ChartPVSP data={chartData} />
-            <ChartOutput data={chartData} />
+          <div className="min-h-0 grid grid-cols-1 lg:grid-cols-2 gap-4 overflow-hidden">
+            <div className="min-h-0 h-full">
+              <ChartPVSP data={chartData} />
+            </div>
+            <div className="min-h-0 h-full">
+              <ChartOutput data={chartData} />
+            </div>
           </div>
-        </div>
+        </section>
       </main>
     </div>
   );

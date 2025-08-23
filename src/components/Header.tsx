@@ -9,16 +9,15 @@ export const Header = () => {
   const [helpOpen, setHelpOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 industrial-panel border-b px-6 py-4">
+    <header className="sticky top-0 z-50 border-b px-4 py-3 bg-background/80 backdrop-blur">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <h1 className="text-2xl font-bold text-foreground">
+        <div className="flex items-center gap-2">
+          <h1 className="text-xl font-semibold text-foreground">
             Simulador PID — Horno / Chiller
           </h1>
+          {/* Etiqueta de entorno opcional */}
           {import.meta.env.DEV && (
-            <Badge variant="secondary" className="text-xs font-mono">
-              UI Mock
-            </Badge>
+            <Badge variant="secondary" className="text-[10px] font-mono">DEV</Badge>
           )}
         </div>
         

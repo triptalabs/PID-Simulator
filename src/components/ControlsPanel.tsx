@@ -241,7 +241,7 @@ export const ControlsPanel = ({ state, onStateChange, onReset, onApplyPreset }: 
   };
 
   return (
-    <div className="space-y-4 industrial-scroll" style={{ maxHeight: 'calc(100vh - 8rem)', overflowY: 'auto' }}>
+    <div className="space-y-4">
       {/* Modo */}
       <Card className="industrial-control">
         <CardHeader className="pb-3">

@@ -259,7 +259,7 @@ export class WorkerManager {
   /**
    * Maneja evento READY del Worker
    */
-  private handleReadyEvent(event: any): void {
+  private handleReadyEvent(event: ReadyEvent): void {
     this.status.connected = true
     this.status.workerState = 'ready'
     this.isInitialized = true

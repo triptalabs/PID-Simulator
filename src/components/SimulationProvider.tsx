@@ -398,7 +398,7 @@ export function SimulationProvider({ children, config = {} }: SimulationProvider
         d.SP.toFixed(3),
         d.PV.toFixed(3),
         d.u.toFixed(6),
-        (d as any).PV_clean !== undefined ? (d as any).PV_clean.toFixed(3) : ''
+        d.PV_clean.toFixed(3)
       ].join(','))
 
       const csv = [...metaLines, header.join(','), ...rows].join('\n')

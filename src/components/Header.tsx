@@ -15,9 +15,11 @@ export const Header = () => {
           <h1 className="text-2xl font-bold text-foreground">
             Simulador PID — Horno / Chiller
           </h1>
-          <Badge variant="secondary" className="text-xs font-mono">
-            UI Mock
-          </Badge>
+          {import.meta.env.DEV && (
+            <Badge variant="secondary" className="text-xs font-mono">
+              UI Mock
+            </Badge>
+          )}
         </div>
         
         <div className="flex items-center gap-2">

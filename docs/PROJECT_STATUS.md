@@ -3,9 +3,9 @@
 ## 📊 Resumen Ejecutivo
 
 **Proyecto:** Simulador PID Horno/Chiller - Aplicación web educativa  
-**Estado Actual:** FASE 1 COMPLETADA - Listo para implementación  
-**Última Actualización:** 2024-01-XX  
-**Próximo Hito:** Sprint 1 - Fundación Técnica  
+**Estado Actual:** Sprint 4 EN PROGRESO - Features completas y polish  
+**Última Actualización:** 2025-08-23  
+**Próximo Hito:** Release 1.0.0 - Production  
 
 ## 🎯 ¿Qué es este proyecto?
 
@@ -78,14 +78,17 @@ src/
 - [x] **H6.1 - Sincronización Controles** - UI bidireccional con debouncing (3 pts)
 - [x] **Total Sprint 2: 16/16 pts (100%)** - PID funcional + métricas + comunicación robusta
 
+### ✅ COMPLETADO (Sprint 3)
+- [x] Precisión numérica <0.5% vs analítico, derivada filtrada, anti-windup, ts automático
+
 ### 🔄 EN PROGRESO
-**Sprint 3 - Precisión y Robustez** - Listo para iniciar
+**Sprint 4 - Features Completas y Polish** - Activo
 
 ### ⏳ PRÓXIMOS PASOS
 1. ~~**Sprint 1 (Semanas 1-2):** Worker + modelo FOPDT + UI básica~~ ✅ COMPLETADO
 2. ~~**Sprint 2 (Semanas 3-4):** PID completo + métricas + controles~~ ✅ COMPLETADO
-3. **Sprint 3 (Semanas 5-6):** Precisión numérica + robustez
-4. **Sprint 4 (Semanas 7-8):** Features completas + polish
+3. ~~**Sprint 3 (Semanas 5-6):** Precisión numérica + robustez~~ ✅ COMPLETADO
+4. **Sprint 4 (Semanas 7-8):** Features completas + polish (EN PROGRESO)
 
 ## 🎯 Objetivos por Sprint
 
@@ -105,7 +108,7 @@ src/
 - ✅ Controles UI totalmente funcionales
 - ✅ Comunicación tipada UI ↔ Worker
 
-### Sprint 3: "Precisión y Robustez" (18 pts)
+### Sprint 3: "Precisión y Robustez" (18 pts) ✅ COMPLETADO
 **Objetivo:** Precisión numérica y control robusto
 **Entregables:**  
 - Discretización exacta validada vs analítica
@@ -222,13 +225,13 @@ pnpm lint             # Linting y formatting
 4. **Seguir** roadmap de sprint activo en `docs/03-scrum-roadmap.md`
 
 ### Estado Esperado Próxima Sesión
-- **Sprint activo:** Sprint 3 - Precisión y Robustez (semanas 5-6)
-- **Foco:** Validación numérica + anti-windup + estabilidad  
-- **Prioridad:** Precisión vs analítico < 0.5% y control robusto
+- **Sprint activo:** Sprint 4 - Features Completas y Polish (semanas 7-8)
+- **Foco:** Anti-windup back-calculation, modo chiller, exportación CSV, suite de tests  
+- **Prioridad:** Preparar Release 1.0.0 (producto completo y pulido)
 
 ---
 
 **Este documento debe actualizarse al final de cada sprint y antes de cambios significativos de scope o arquitectura.**
 
-**Última modificación:** 2024-01-XX por AI Assistant  
-**Próxima revisión:** Al completar Sprint 1
+**Última modificación:** 2025-08-23 por AI Assistant  
+**Próxima revisión:** Al completar Sprint 4

@@ -18,7 +18,8 @@ Una aplicación web que simula en tiempo real la respuesta térmica de un horno 
 
 ### Prerequisitos
 
-- Node.js 18+ y npm
+- Node.js 18+
+- pnpm (gestor preferido del proyecto)
 
 ### Instalación
 
@@ -29,19 +30,21 @@ git clone <YOUR_GIT_URL>
 # Navegar al directorio del proyecto
 cd PID-Simulator
 
-# Instalar dependencias
-npm install
+# Instalar dependencias (pnpm)
+pnpm install
 
 # Iniciar servidor de desarrollo
-npm run dev
+pnpm dev
 ```
 
 ### Scripts disponibles
 
-- `npm run dev` - Inicia el servidor de desarrollo
-- `npm run build` - Construye la aplicación para producción
-- `npm run preview` - Previsualiza la build de producción
-- `npm run lint` - Ejecuta el linter
+- `pnpm dev` - Inicia el servidor de desarrollo
+- `pnpm build` - Construye la aplicación para producción
+- `pnpm preview` - Previsualiza la build de producción
+- `pnpm lint` - Ejecuta el linter
+- `pnpm test` - Ejecuta la suite de tests
+- `pnpm test:coverage` - Ejecuta tests con cobertura
 
 ## Stack Tecnológico
 

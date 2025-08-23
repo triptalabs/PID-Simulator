@@ -38,6 +38,20 @@ export interface SimulationContextState {
   
   // Errores
   lastError: ErrorEvent['payload'] | null
+
+  // Métricas de control
+  metrics: {
+    overshoot: number
+    t_peak: number
+    settling_time: number
+    is_calculating: boolean
+    sp_previous: number
+    pv_max: number
+    pv_min: number
+    t_start: number
+    t_current: number
+    samples_count: number
+  } | null
   
   // Configuración actual
   config: {
@@ -66,6 +80,9 @@ export interface SimulationContextActions {
   
   // Estado del Worker
   getWorkerStatus: () => import('../lib/simulation/worker-manager').WorkerManagerStatus
+
+  // Exportación CSV
+  exportCSV: (range: { type: 'window'; seconds: number } | { type: 'all' }) => void
 }
 
 export interface SimulationContextValue {
@@ -114,6 +131,7 @@ export function SimulationProvider({ children, config = {} }: SimulationProvider
       samples_processed: 0
     },
     lastError: null,
+    metrics: null,
     config: {
       timestep: config.timestep || 0.1,
       bufferSize: config.bufferSize || 10000,
@@ -154,6 +172,13 @@ export function SimulationProvider({ children, config = {} }: SimulationProvider
         workerState: data.state,
         isRunning: data.state === 'running',
         performance: data.performance
+      }))
+    }, []),
+
+    onMetrics: useCallback((data) => {
+      setState(prev => ({
+        ...prev,
+        metrics: data
       }))
     }, []),
 
@@ -341,7 +366,52 @@ export function SimulationProvider({ children, config = {} }: SimulationProvider
         }
       }
       return workerManagerRef.current.getStatus()
-    }, [])
+    }, []),
+
+    exportCSV: useCallback((range) => {
+      // Recolectar datos
+      const data = range.type === 'all'
+        ? (workerManagerRef.current?.getBufferData() || [])
+        : (workerManagerRef.current?.getWindowData(range.seconds) || [])
+
+      if (!data.length) {
+        console.warn('Export CSV: no hay datos para exportar')
+        return
+      }
+
+      // Metadatos
+      const nowIso = new Date().toISOString()
+      const metaLines = [
+        '# PID-Simulator CSV Export',
+        `# timestamp: ${nowIso}`,
+        `# timestep: ${state.config.timestep}s`,
+        `# bufferSize: ${state.config.bufferSize}`,
+        `# window: ${range.type === 'all' ? 'all' : `${range.seconds}s`}`
+      ]
+
+      // Encabezados
+      const header = ['t','SP','PV','u','PV_clean']
+
+      // Filas de datos
+      const rows = data.map(d => [
+        d.t.toFixed(3),
+        d.SP.toFixed(3),
+        d.PV.toFixed(3),
+        d.u.toFixed(6),
+        (d as any).PV_clean !== undefined ? (d as any).PV_clean.toFixed(3) : ''
+      ].join(','))
+
+      const csv = [...metaLines, header.join(','), ...rows].join('\n')
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `pid-simulator_${range.type}_${nowIso.replace(/[:.]/g,'-')}.csv`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+    }, [state.config.bufferSize, state.config.timestep])
   }
 
   // ============================================================================

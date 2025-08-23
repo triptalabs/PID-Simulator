@@ -253,6 +253,7 @@ export interface SimulationBuffer {
     t: number
     SP: number
     PV: number
+    PV_clean: number
     u: number
     error: number
     P_term: number

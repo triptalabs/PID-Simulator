@@ -493,13 +493,21 @@ function postStateEvent(): void {
  */
 function handleCommand(command: SimulationCommand): void {
   try {
-    if (workerState.config.debugMode) {
+    if (workerState && workerState.config && workerState.config.debugMode) {
       console.log('Comando recibido:', command.type, command.payload)
     }
 
     switch (command.type) {
       case 'INIT':
-        initializeWorker((command as InitCommand).payload)
+        // Compatibilidad: aceptar payload directo o payload.config
+        {
+          const raw = (command as any).payload
+          const initPayload = (raw && (raw as any).config) ? (raw as any).config : raw
+          const safePayload = initPayload && typeof initPayload.timestep === 'number'
+            ? initPayload as InitCommand['payload']
+            : { timestep: DEFAULT_TIMESTEP, bufferSize: DEFAULT_BUFFER_SIZE, debugMode: false }
+          initializeWorker(safePayload)
+        }
         break
 
       case 'START':

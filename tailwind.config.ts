@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -52,15 +53,12 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
-				sidebar: {
-					DEFAULT: 'hsl(var(--sidebar-background))',
-					foreground: 'hsl(var(--sidebar-foreground))',
-					primary: 'hsl(var(--sidebar-primary))',
-					'primary-foreground': 'hsl(var(--sidebar-primary-foreground))',
-					accent: 'hsl(var(--sidebar-accent))',
-					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
-					border: 'hsl(var(--sidebar-border))',
-					ring: 'hsl(var(--sidebar-ring))'
+				industrial: {
+					'blue': 'hsl(var(--industrial-blue))',
+					'orange': 'hsl(var(--industrial-orange))',
+					'green': 'hsl(var(--industrial-green))',
+					'panel': 'hsl(var(--industrial-panel))',
+					'glass': 'hsl(var(--industrial-glass))'
 				}
 			},
 			borderRadius: {
@@ -84,11 +82,32 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'pulse-glow': {
+					'0%, 100%': {
+						boxShadow: '0 0 5px hsl(var(--industrial-blue)), 0 0 10px hsl(var(--industrial-blue))'
+					},
+					'50%': {
+						boxShadow: '0 0 10px hsl(var(--industrial-blue)), 0 0 20px hsl(var(--industrial-blue))'
+					}
+				},
+				'data-flow': {
+					'0%': { transform: 'translateX(-100%)' },
+					'100%': { transform: 'translateX(100%)' }
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'pulse-glow': 'pulse-glow 2s ease-in-out infinite',
+				'data-flow': 'data-flow 3s linear infinite'
+			},
+			fontFamily: {
+				'mono': ['JetBrains Mono', 'Consolas', 'monospace'],
+				'industrial': ['Inter', 'system-ui', 'sans-serif']
+			},
+			backdropBlur: {
+				'xs': '2px'
 			}
 		}
 	},

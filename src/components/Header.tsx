@@ -6,6 +6,7 @@ import { HelpDialog } from "./HelpDialog";
 import { useState } from "react";
 import CardNav from "./customUI/CardNav/CardNav";
 import { SimulatorState } from "@/lib/types";
+import { PRESETS } from "@/lib/presets";
 
 interface HeaderProps {
   state?: SimulatorState;
@@ -20,25 +21,35 @@ export const Header = ({ state, onStateChange }: HeaderProps) => {
   };
 
   const handleDocsClick = () => {
-    // Aquí puedes agregar la lógica para abrir la documentación
     console.log("Abrir documentación");
   };
 
-  // Configurar las cards para el CardNav con controles reales del simulador
+  // Configurar las cards para el CardNav con TODAS las configuraciones del simulador
   const cardNavItems = [
     {
-      label: "Modo",
+      label: "Modo de Operación",
       bgColor: "#0f172a", // slate-900
       textColor: "#f1f5f9", // slate-100
       selects: [
         {
-          label: "Operación",
+          label: "Tipo de Sistema",
           value: state?.mode || 'horno',
           options: [
-            { value: 'horno', label: 'Horno' },
-            { value: 'chiller', label: 'Chiller' }
+            { value: 'horno', label: 'Horno Industrial' },
+            { value: 'chiller', label: 'Sistema de Enfriamiento' }
           ],
           onChange: (value) => onStateChange?.({ mode: value as 'horno' | 'chiller' })
+        }
+      ],
+      controls: [
+        {
+          label: "Setpoint",
+          value: state?.setpoint || 60,
+          min: state?.mode === 'chiller' ? -50 : 0,
+          max: state?.mode === 'chiller' ? 50 : 200,
+          step: 1,
+          unit: "°C",
+          onChange: (value) => onStateChange?.({ setpoint: value })
         }
       ]
     },
@@ -48,16 +59,7 @@ export const Header = ({ state, onStateChange }: HeaderProps) => {
       textColor: "#f8fafc", // slate-50
       controls: [
         {
-          label: "Setpoint",
-          value: state?.setpoint || 60,
-          min: 0,
-          max: 200,
-          step: 1,
-          unit: "°C",
-          onChange: (value) => onStateChange?.({ setpoint: value })
-        },
-        {
-          label: "Kp",
+          label: "Kp (Proporcional)",
           value: state?.pid?.kp || 2.0,
           min: 0,
           max: 10,
@@ -66,7 +68,7 @@ export const Header = ({ state, onStateChange }: HeaderProps) => {
           onChange: (value) => onStateChange?.({ pid: { ...state?.pid, kp: value } })
         },
         {
-          label: "Ki",
+          label: "Ki (Integral)",
           value: state?.pid?.ki || 0.1,
           min: 0,
           max: 1,
@@ -75,7 +77,7 @@ export const Header = ({ state, onStateChange }: HeaderProps) => {
           onChange: (value) => onStateChange?.({ pid: { ...state?.pid, ki: value } })
         },
         {
-          label: "Kd",
+          label: "Kd (Derivativo)",
           value: state?.pid?.kd || 10,
           min: 0,
           max: 200,
@@ -86,12 +88,40 @@ export const Header = ({ state, onStateChange }: HeaderProps) => {
       ]
     },
     {
-      label: "Planta",
+      label: "Parámetros de Planta",
       bgColor: "#374151", // gray-700
       textColor: "#f9fafb", // gray-50
+      selects: [
+        {
+          label: "Presets de Planta",
+          value: "custom",
+          options: [
+            { value: "custom", label: "Personalizado" },
+            ...PRESETS.map(preset => ({
+              value: preset.key,
+              label: preset.name
+            }))
+          ],
+          onChange: (value) => {
+            if (value !== "custom") {
+              const preset = PRESETS.find(p => p.key === value);
+              if (preset) {
+                onStateChange?.({
+                  plant: {
+                    k: preset.values.k,
+                    tau: preset.values.tau,
+                    l: preset.values.l,
+                    t_amb: preset.values.t_amb
+                  }
+                });
+              }
+            }
+          }
+        }
+      ],
       controls: [
         {
-          label: "K",
+          label: "K (Ganancia Estática)",
           value: state?.plant?.k || 0.03,
           min: 0,
           max: 0.1,
@@ -100,7 +130,7 @@ export const Header = ({ state, onStateChange }: HeaderProps) => {
           onChange: (value) => onStateChange?.({ plant: { ...state?.plant, k: value } })
         },
         {
-          label: "τ",
+          label: "τ (Constante de Tiempo)",
           value: state?.plant?.tau || 90,
           min: 1,
           max: 600,
@@ -109,7 +139,7 @@ export const Header = ({ state, onStateChange }: HeaderProps) => {
           onChange: (value) => onStateChange?.({ plant: { ...state?.plant, tau: value } })
         },
         {
-          label: "L",
+          label: "L (Tiempo Muerto)",
           value: state?.plant?.l || 3,
           min: 0,
           max: 15,
@@ -118,7 +148,7 @@ export const Header = ({ state, onStateChange }: HeaderProps) => {
           onChange: (value) => onStateChange?.({ plant: { ...state?.plant, l: value } })
         },
         {
-          label: "T_amb",
+          label: "T_amb (Temperatura Ambiente)",
           value: state?.plant?.t_amb || 25,
           min: 10,
           max: 35,
@@ -129,24 +159,24 @@ export const Header = ({ state, onStateChange }: HeaderProps) => {
       ]
     },
     {
-      label: "Configuración",
+      label: "Perturbaciones y Efectos",
       bgColor: "#475569", // slate-600
       textColor: "#f1f5f9", // slate-100
       switches: [
         {
-          label: "Ruido",
+          label: "Ruido en Medición",
           checked: state?.noise?.enabled || false,
           onChange: (checked) => onStateChange?.({ noise: { ...state?.noise, enabled: checked } })
         },
         {
-          label: "SSR",
+          label: "Control SSR",
           checked: state?.ssr?.enabled || false,
           onChange: (checked) => onStateChange?.({ ssr: { ...state?.ssr, enabled: checked } })
         }
       ],
       controls: [
         {
-          label: "Ruido Int.",
+          label: "Intensidad de Ruido",
           value: state?.noise?.intensity || 0.2,
           min: 0,
           max: 2,
@@ -155,7 +185,7 @@ export const Header = ({ state, onStateChange }: HeaderProps) => {
           onChange: (value) => onStateChange?.({ noise: { ...state?.noise, intensity: value } })
         },
         {
-          label: "SSR Period",
+          label: "Periodo SSR",
           value: state?.ssr?.period || 2,
           min: 0.5,
           max: 10,
@@ -164,19 +194,43 @@ export const Header = ({ state, onStateChange }: HeaderProps) => {
           onChange: (value) => onStateChange?.({ ssr: { ...state?.ssr, period: value } })
         }
       ]
+    },
+    {
+      label: "Visualización y Análisis",
+      bgColor: "#581c87", // purple-800
+      textColor: "#f3e8ff", // purple-50
+      selects: [
+        {
+          label: "Ventana de Tiempo",
+          value: String(state?.timeWindow || 60),
+          options: [
+            { value: "30", label: "30 segundos" },
+            { value: "60", label: "1 minuto" },
+            { value: "300", label: "5 minutos" }
+          ],
+          onChange: (value) => onStateChange?.({ timeWindow: parseInt(value) as 30 | 60 | 300 })
+        }
+      ],
+      switches: [
+        {
+          label: "Simulación Activa",
+          checked: state?.isRunning || false,
+          onChange: (checked) => onStateChange?.({ isRunning: checked })
+        }
+      ]
     }
   ];
 
   return (
     <div className="relative">
-      {/* CardNav como header principal */}
+      {/* CardNav como header principal con todas las configuraciones */}
       <CardNav
         logo="/placeholder.svg"
-        logoAlt="PID Simulator"
+        logoAlt="PID Simulator Pro"
         items={cardNavItems}
         className=""
         ease="power3.out"
-        baseColor="rgba(30, 41, 59, 0.95)"
+        baseColor="rgba(15, 23, 42, 0.98)"
         menuColor="#f8fafc"
         buttonBgColor="#3b82f6"
         buttonTextColor="#ffffff"

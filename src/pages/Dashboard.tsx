@@ -1,16 +1,12 @@
-
 import { useState, useEffect, useCallback } from "react";
 import { Header } from "@/components/Header";
-import { ControlsPanel } from "@/components/ControlsPanel";
+import { QuickActions } from "@/components/QuickActions";
 import { MetricsPanel } from "@/components/MetricsPanel";
 import { TimeWindowSelect } from "@/components/TimeWindowSelect";
-import { ChartPVSP } from "@/components/ChartPVSP";
-import { ChartOutput } from "@/components/ChartOutput";
 import { ChartsPanel } from "@/components/ChartsPanel";
 import { SimulationStatus } from "@/components/SimulationStatus";
 import { SimulatorState, ChartDataPoint, TimeWindow } from "@/lib/types";
 import { useSimulation, useSimulationData, useSimulationControls } from "@/components/SimulationProvider";
-import { Button } from "@/components/ui/button";
 
 const initialState: SimulatorState = {
   mode: 'horno',
@@ -54,7 +50,6 @@ export const Dashboard = () => {
     const windowData = actions.getWindowData(state.timeWindow);
     
     // Transformar datos: tiempo absoluto -> tiempo relativo al momento actual
-    // CORRECCIÓN: Eje X con tiempo relativo (0s = actual, -60s = hace 60s)
     const mapped: ChartDataPoint[] = windowData.map(d => {
       // Calcular tiempo relativo al momento actual: 0s = actual, valores negativos = pasado
       const timeFromCurrent = d.t - (windowData[windowData.length - 1]?.t || 0);
@@ -65,7 +60,7 @@ export const Dashboard = () => {
         sp: d.SP,
         output: d.u * 100
       };
-    }); // ← SIN REVERSE: mantener orden cronológico
+    });
     
     setChartData(mapped);
   }, [buffer, state.timeWindow, actions]);
@@ -141,10 +136,10 @@ export const Dashboard = () => {
       
       // Modificar setpoint con flechas arriba/abajo
       if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
-        e.preventDefault(); // Prevenir scroll de la página
+        e.preventDefault();
         
         const currentSP = state.setpoint;
-        const step = e.shiftKey ? 10 : 1; // Shift + flecha = paso de 10, solo flecha = paso de 1
+        const step = e.shiftKey ? 10 : 1;
         
         let newSP: number;
         if (e.key === 'ArrowUp') {
@@ -153,37 +148,32 @@ export const Dashboard = () => {
           newSP = currentSP - step;
         }
         
-        // Limitar el setpoint a rangos razonables según el modo
         if (state.mode === 'horno') {
-          newSP = Math.max(0, Math.min(200, newSP)); // Horno: 0-200°C
+          newSP = Math.max(0, Math.min(200, newSP));
         } else {
-          newSP = Math.max(-50, Math.min(50, newSP)); // Chiller: -50-50°C
+          newSP = Math.max(-50, Math.min(50, newSP));
         }
         
-        // Aplicar el cambio
         handleStateChange({ setpoint: newSP });
       }
       
       // Modificar ventana de tiempo con flechas izquierda/derecha
       if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
-        e.preventDefault(); // Prevenir scroll de la página
+        e.preventDefault();
         
         const currentWindow = state.timeWindow;
-        const availableWindows: TimeWindow[] = [30, 60, 300]; // Ventanas disponibles según tipo TimeWindow
+        const availableWindows: TimeWindow[] = [30, 60, 300];
         const currentIndex = availableWindows.indexOf(currentWindow);
         
         let newIndex: number;
         if (e.key === 'ArrowRight') {
-          // Flecha derecha: ventana más grande
           newIndex = Math.min(availableWindows.length - 1, currentIndex + 1);
         } else {
-          // Flecha izquierda: ventana más pequeña
           newIndex = Math.max(0, currentIndex - 1);
         }
         
         const newWindow = availableWindows[newIndex];
         
-        // Aplicar el cambio solo si es diferente
         if (newWindow !== currentWindow) {
           handleStateChange({ timeWindow: newWindow });
         }
@@ -196,38 +186,18 @@ export const Dashboard = () => {
   return (
     <div className="dark h-screen overflow-hidden bg-background text-foreground flex flex-col">
       <Header state={state} onStateChange={handleStateChange} />
-      <main className="grid flex-1 min-h-0 grid-cols-1 lg:grid-cols-[320px_1fr] gap-4 p-4 pt-36">
-        <div className="min-h-0 flex flex-col">
-          <div className="flex-none">
-            <SimulationStatus />
-          </div>
-          <div className="flex-1 overflow-y-auto mt-2 pr-1 scrollbar-thin">
-            <ControlsPanel 
-              state={state} 
-              onStateChange={handleStateChange}
-              onReset={() => actions.reset(true)}
-              onApplyPreset={(values) => {
-                // Mantener modo actual del estado local
-                actions.setPlant({
-                  K: values.k,
-                  tau: values.tau,
-                  L: values.l,
-                  T_amb: values.t_amb,
-                  mode: state.mode
-                }).catch(console.error);
-              }}
-            />
-          </div>
-          <div className="flex-none mt-2 grid grid-cols-2 gap-2">
-            <Button variant="outline" size="sm" className="h-7 text-xs" onClick={() => actions.exportCSV({ type: 'window', seconds: state.timeWindow })}>
-              Exportar ventana
-            </Button>
-            <Button variant="outline" size="sm" className="h-7 text-xs" onClick={() => actions.exportCSV({ type: 'all' })}>
-              Exportar historial
-            </Button>
-          </div>
+      <main className="grid flex-1 min-h-0 grid-cols-1 lg:grid-cols-[280px_1fr] gap-4 p-4 pt-36">
+        <div className="min-h-0 flex flex-col space-y-4">
+          <SimulationStatus />
+          <QuickActions 
+            state={state} 
+            onStateChange={handleStateChange}
+            onReset={() => actions.reset(true)}
+            onExportWindow={() => actions.exportCSV({ type: 'window', seconds: state.timeWindow })}
+            onExportAll={() => actions.exportCSV({ type: 'all' })}
+          />
         </div>
-        <section className="min-h-0 grid grid-rows-[auto_auto_1fr] gap-4">
+        <section className="min-h-0 grid grid-rows-[auto_1fr] gap-4">
           <MetricsPanel 
             metrics={simState.metrics || {
               overshoot: 0,
@@ -244,12 +214,6 @@ export const Dashboard = () => {
             currentSP={state.setpoint}
             currentPV={chartData.length > 0 ? chartData[chartData.length - 1]?.pv || 0 : 0}
           />
-          <div className="flex justify-end">
-            <TimeWindowSelect
-              value={state.timeWindow}
-              onValueChange={(timeWindow) => handleStateChange({ timeWindow })}
-            />
-          </div>
           <ChartsPanel data={chartData} timeWindow={state.timeWindow} />
         </section>
       </main>

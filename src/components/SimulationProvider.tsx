@@ -173,7 +173,13 @@ export function SimulationProvider({ children, config = {} }: SimulationProvider
         ...prev,
         workerState: data.state,
         isRunning: data.state === 'running',
-        performance: data.performance
+        performance: {
+          avg_cycle_time: data.performance.avg_cycle_time,
+          max_cycle_time: data.performance.max_cycle_time,
+          cpu_usage_estimate: data.performance.cpu_usage_estimate,
+          uptime: data.performance.uptime,
+          samples_processed: data.performance.samples_processed
+        }
       }))
     }, []),
 
@@ -245,7 +251,7 @@ export function SimulationProvider({ children, config = {} }: SimulationProvider
           lastError: {
             severity: 'critical',
             code: 'INIT_002',
-            message: `Error inicializando simulación: ${error.message}`,
+            message: `Error inicializando simulación: ${error instanceof Error ? error.message : 'Error desconocido'}`,
             timestamp: performance.now(),
             recoverable: false
           }

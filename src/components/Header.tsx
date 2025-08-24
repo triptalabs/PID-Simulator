@@ -27,6 +27,22 @@ export const Header = ({ state, onStateChange }: HeaderProps) => {
   // Configurar las cards para el CardNav con controles reales del simulador
   const cardNavItems = [
     {
+      label: "Modo",
+      bgColor: "#0f172a", // slate-900
+      textColor: "#f1f5f9", // slate-100
+      selects: [
+        {
+          label: "Operación",
+          value: state?.mode || 'horno',
+          options: [
+            { value: 'horno', label: 'Horno' },
+            { value: 'chiller', label: 'Chiller' }
+          ],
+          onChange: (value) => onStateChange?.({ mode: value as 'horno' | 'chiller' })
+        }
+      ]
+    },
+    {
       label: "Control PID",
       bgColor: "#1e293b", // slate-800
       textColor: "#f8fafc", // slate-50
@@ -116,9 +132,21 @@ export const Header = ({ state, onStateChange }: HeaderProps) => {
       label: "Configuración",
       bgColor: "#475569", // slate-600
       textColor: "#f1f5f9", // slate-100
-      controls: [
+      switches: [
         {
           label: "Ruido",
+          checked: state?.noise?.enabled || false,
+          onChange: (checked) => onStateChange?.({ noise: { ...state?.noise, enabled: checked } })
+        },
+        {
+          label: "SSR",
+          checked: state?.ssr?.enabled || false,
+          onChange: (checked) => onStateChange?.({ ssr: { ...state?.ssr, enabled: checked } })
+        }
+      ],
+      controls: [
+        {
+          label: "Ruido Int.",
           value: state?.noise?.intensity || 0.2,
           min: 0,
           max: 2,

@@ -2,6 +2,8 @@ import React, { useLayoutEffect, useRef, useState, useEffect } from "react";
 import { gsap } from "gsap";
 // use your own icon import if react-icons is not available
 import { GoArrowUpRight } from "react-icons/go";
+import { Switch } from "@/components/ui/switch";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 type CardNavControl = {
   label: string;
@@ -13,11 +15,26 @@ type CardNavControl = {
   onChange: (value: number) => void;
 };
 
+type CardNavSwitch = {
+  label: string;
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+};
+
+type CardNavSelect = {
+  label: string;
+  value: string;
+  options: { value: string; label: string }[];
+  onChange: (value: string) => void;
+};
+
 export type CardNavItem = {
   label: string;
   bgColor: string;
   textColor: string;
   controls?: CardNavControl[];
+  switches?: CardNavSwitch[];
+  selects?: CardNavSelect[];
   links?: CardNavLink[];
 };
 
@@ -340,6 +357,47 @@ const CardNav: React.FC<CardNavProps> = ({
                           background: `linear-gradient(to right, ${item.textColor} 0%, ${item.textColor} ${((control.value - control.min) / (control.max - control.min)) * 100}%, rgba(255,255,255,0.2) ${((control.value - control.min) / (control.max - control.min)) * 100}%, rgba(255,255,255,0.2) 100%)`
                         }}
                       />
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {item.switches && (
+                <div className="nav-card-switches flex flex-col gap-2">
+                  {item.switches.map((switchItem, i) => (
+                    <div key={`${switchItem.label}-${i}`} className="switch-item">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-medium opacity-90">{switchItem.label}</span>
+                        <Switch
+                          checked={switchItem.checked}
+                          onCheckedChange={switchItem.onChange}
+                          className="scale-75"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {item.selects && (
+                <div className="nav-card-selects flex flex-col gap-2">
+                  {item.selects.map((selectItem, i) => (
+                    <div key={`${selectItem.label}-${i}`} className="select-item">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-xs font-medium opacity-90">{selectItem.label}</span>
+                      </div>
+                      <Select value={selectItem.value} onValueChange={selectItem.onChange}>
+                        <SelectTrigger className="h-6 text-xs bg-white/10 border-white/20 text-current">
+                          <SelectValue placeholder={selectItem.label} />
+                        </SelectTrigger>
+                        <SelectContent className="bg-slate-800/95 border-slate-600">
+                          {selectItem.options.map((option) => (
+                            <SelectItem key={option.value} value={option.value} className="text-xs text-slate-100 hover:bg-slate-700">
+                              {option.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
                   ))}
                 </div>

@@ -111,7 +111,7 @@
   .card-nav.open {
     @apply shadow-2xl;
     box-shadow: 0 20px 40px -8px rgba(0, 0, 0, 0.5), 0 8px 24px -4px rgba(0, 0, 0, 0.4);
-    min-height: 280px;
+    min-height: 320px;
   }
 
   .nav-card {
@@ -171,6 +171,46 @@
 
   .slider:focus::-webkit-slider-thumb {
     box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5);
+  }
+
+  /* CardNav Switch and Select styles */
+  .nav-card-switches .switch-item {
+    @apply transition-all duration-200;
+  }
+
+  .nav-card-selects .select-item {
+    @apply transition-all duration-200;
+  }
+
+  .nav-card-selects .select-trigger {
+    @apply transition-all duration-200;
+  }
+
+  .nav-card-selects .select-trigger:hover {
+    @apply opacity-80;
+  }
+
+  /* Improved Select styles for CardNav */
+  .nav-card .select-trigger {
+    @apply bg-white/10 border-white/20 text-current;
+    backdrop-filter: blur(8px);
+  }
+
+  .nav-card .select-content {
+    @apply bg-slate-800/95 border-slate-600 backdrop-blur-lg;
+  }
+
+  .nav-card .select-item {
+    @apply text-slate-100 hover:bg-slate-700;
+  }
+
+  /* Improved Switch styles for CardNav */
+  .nav-card .switch {
+    @apply bg-white/20;
+  }
+
+  .nav-card .switch[data-state="checked"] {
+    @apply bg-current;
   }
 
   /* Chart styling */

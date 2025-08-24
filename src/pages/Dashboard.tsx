@@ -196,7 +196,7 @@ export const Dashboard = () => {
   return (
     <div className="dark h-screen overflow-hidden bg-background text-foreground flex flex-col">
       <Header state={state} onStateChange={handleStateChange} />
-      <main className="grid flex-1 min-h-0 grid-cols-1 lg:grid-cols-[320px_1fr] gap-4 p-4 pt-32">
+      <main className="grid flex-1 min-h-0 grid-cols-1 lg:grid-cols-[320px_1fr] gap-4 p-4 pt-36">
         <div className="min-h-0 flex flex-col">
           <div className="flex-none">
             <SimulationStatus />

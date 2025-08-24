@@ -1,10 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
 import { Header } from "@/components/Header";
-import { QuickActions } from "@/components/QuickActions";
-import { MetricsPanel } from "@/components/MetricsPanel";
+import { UnifiedControlPanel } from "@/components/UnifiedControlPanel";
 import { TimeWindowSelect } from "@/components/TimeWindowSelect";
 import { ChartsPanel } from "@/components/ChartsPanel";
-import { SimulationStatus } from "@/components/SimulationStatus";
 import { SimulatorState, ChartDataPoint, TimeWindow } from "@/lib/types";
 import { useSimulation, useSimulationData, useSimulationControls } from "@/components/SimulationProvider";
 
@@ -186,19 +184,14 @@ export const Dashboard = () => {
   return (
     <div className="dark h-screen overflow-hidden bg-background text-foreground flex flex-col">
       <Header state={state} onStateChange={handleStateChange} />
-      <main className="grid flex-1 min-h-0 grid-cols-1 lg:grid-cols-[280px_1fr] gap-4 p-4 pt-36">
+      <main className="grid flex-1 min-h-0 grid-cols-1 lg:grid-cols-[320px_1fr] gap-4 p-4 pt-36">
         <div className="min-h-0 flex flex-col space-y-4">
-          <SimulationStatus />
-          <QuickActions 
+          <UnifiedControlPanel 
             state={state} 
             onStateChange={handleStateChange}
             onReset={() => actions.reset(true)}
             onExportWindow={() => actions.exportCSV({ type: 'window', seconds: state.timeWindow })}
             onExportAll={() => actions.exportCSV({ type: 'all' })}
-          />
-        </div>
-        <section className="min-h-0 grid grid-rows-[auto_1fr] gap-4">
-          <MetricsPanel 
             metrics={simState.metrics || {
               overshoot: 0,
               t_peak: 0,
@@ -211,9 +204,10 @@ export const Dashboard = () => {
               t_current: 0,
               samples_count: 0
             }}
-            currentSP={state.setpoint}
             currentPV={chartData.length > 0 ? chartData[chartData.length - 1]?.pv || 0 : 0}
           />
+        </div>
+        <section className="min-h-0 grid grid-rows-[1fr] gap-4">
           <ChartsPanel data={chartData} timeWindow={state.timeWindow} />
         </section>
       </main>

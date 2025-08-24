@@ -8,7 +8,7 @@ import { ChartPVSP } from "@/components/ChartPVSP";
 import { ChartOutput } from "@/components/ChartOutput";
 import { ChartsPanel } from "@/components/ChartsPanel";
 import { SimulationStatus } from "@/components/SimulationStatus";
-import { SimulatorState, ChartDataPoint } from "@/lib/types";
+import { SimulatorState, ChartDataPoint, TimeWindow } from "@/lib/types";
 import { useSimulation, useSimulationData, useSimulationControls } from "@/components/SimulationProvider";
 import { Button } from "@/components/ui/button";
 
@@ -120,10 +120,12 @@ export const Dashboard = () => {
     });
   }, [actions, controls.isRunning]);
 
-  // Atajos de teclado: S (start/pause), R (reset)
+  // Atajos de teclado: S (start/pause), R (reset), ↑↓ (setpoint), ←→ (ventana)
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       if (e.target && (e.target as HTMLElement).tagName === 'INPUT') return;
+      
+      // Start/Pause con S
       if (e.key === 's' || e.key === 'S') {
         if (controls.isRunning) {
           actions.pause().catch(console.error);
@@ -131,13 +133,65 @@ export const Dashboard = () => {
           actions.start().catch(console.error);
         }
       }
+      
+      // Reset con R
       if (e.key === 'r' || e.key === 'R') {
         actions.reset(true).catch(console.error);
+      }
+      
+      // Modificar setpoint con flechas arriba/abajo
+      if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+        e.preventDefault(); // Prevenir scroll de la página
+        
+        const currentSP = state.setpoint;
+        const step = e.shiftKey ? 10 : 1; // Shift + flecha = paso de 10, solo flecha = paso de 1
+        
+        let newSP: number;
+        if (e.key === 'ArrowUp') {
+          newSP = currentSP + step;
+        } else {
+          newSP = currentSP - step;
+        }
+        
+        // Limitar el setpoint a rangos razonables según el modo
+        if (state.mode === 'horno') {
+          newSP = Math.max(0, Math.min(200, newSP)); // Horno: 0-200°C
+        } else {
+          newSP = Math.max(-50, Math.min(50, newSP)); // Chiller: -50-50°C
+        }
+        
+        // Aplicar el cambio
+        handleStateChange({ setpoint: newSP });
+      }
+      
+      // Modificar ventana de tiempo con flechas izquierda/derecha
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+        e.preventDefault(); // Prevenir scroll de la página
+        
+        const currentWindow = state.timeWindow;
+        const availableWindows: TimeWindow[] = [30, 60, 300]; // Ventanas disponibles según tipo TimeWindow
+        const currentIndex = availableWindows.indexOf(currentWindow);
+        
+        let newIndex: number;
+        if (e.key === 'ArrowRight') {
+          // Flecha derecha: ventana más grande
+          newIndex = Math.min(availableWindows.length - 1, currentIndex + 1);
+        } else {
+          // Flecha izquierda: ventana más pequeña
+          newIndex = Math.max(0, currentIndex - 1);
+        }
+        
+        const newWindow = availableWindows[newIndex];
+        
+        // Aplicar el cambio solo si es diferente
+        if (newWindow !== currentWindow) {
+          handleStateChange({ timeWindow: newWindow });
+        }
       }
     };
     window.addEventListener('keydown', handleKey);
     return () => window.removeEventListener('keydown', handleKey);
-  }, [actions, controls.isRunning]);
+  }, [actions, controls.isRunning, state.setpoint, state.mode, state.timeWindow, handleStateChange]);
 
   return (
     <div className="dark h-screen overflow-hidden bg-background text-foreground flex flex-col">

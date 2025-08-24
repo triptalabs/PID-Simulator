@@ -47,7 +47,7 @@ export const ChartOutput = ({ data, embedded = false, timeWindow }: ChartOutputP
               tickFormatter={(value) => `${value}%`}
             />
             <Tooltip
-              formatter={(value: number) => [`${value.toFixed(1)}%`, 'Salida']}
+              formatter={(value: number) => [<span className="font-mono">{value.toFixed(1)}%</span>, 'Salida']}
               labelFormatter={(value) => `Tiempo: ${value}s`}
             />
             <Line
@@ -87,7 +87,7 @@ export const ChartOutput = ({ data, embedded = false, timeWindow }: ChartOutputP
               tickFormatter={(value) => `${value}%`}
             />
             <Tooltip
-              formatter={(value: number) => [`${value.toFixed(1)}%`, 'Salida']}
+              formatter={(value: number) => [<span className="font-mono">{value.toFixed(1)}%</span>, 'Salida']}
               labelFormatter={(value) => `Tiempo: ${value}s`}
             />
             <Line

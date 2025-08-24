@@ -12,6 +12,38 @@ export const ChartPVSP = ({ data, embedded = false, timeWindow }: ChartPVSPProps
   // Dominio fijo del eje X basado en la ventana de tiempo
   const xAxisDomain = timeWindow ? [-timeWindow, 0] : ['dataMin', 'dataMax'];
   
+  // Dominio fijo del eje Y para temperaturas coherentes (horno: 0-200°C, chiller: -50-50°C)
+  const getYAxisDomain = () => {
+    if (!data || data.length === 0) return [0, 100];
+    
+    // Calcular rangos de datos reales
+    const pvValues = data.map(d => d.pv).filter(v => !isNaN(v) && isFinite(v));
+    const spValues = data.map(d => d.sp).filter(v => !isNaN(v) && isFinite(v));
+    const allValues = [...pvValues, ...spValues];
+    
+    if (allValues.length === 0) return [0, 100];
+    
+    const minVal = Math.min(...allValues);
+    const maxVal = Math.max(...allValues);
+    
+    // Detectar si es horno (temperaturas altas) o chiller (temperaturas bajas)
+    const isHeating = maxVal > 50; // Si hay valores > 50°C, probablemente es horno
+    
+    if (isHeating) {
+      // Horno: dominio 0-200°C con margen
+      const yMin = Math.max(0, Math.floor(minVal / 10) * 10 - 10);
+      const yMax = Math.min(200, Math.ceil(maxVal / 10) * 10 + 10);
+      return [yMin, yMax];
+    } else {
+      // Chiller: dominio -50-50°C con margen
+      const yMin = Math.max(-50, Math.floor(minVal / 10) * 10 - 10);
+      const yMax = Math.min(50, Math.ceil(maxVal / 10) * 10 + 10);
+      return [yMin, yMax];
+    }
+  };
+  
+  const yAxisDomain = getYAxisDomain();
+  
   // Generar ticks personalizados para el eje X
   const generateXTicks = (timeWindow: number) => {
     if (!timeWindow) return [];
@@ -43,12 +75,12 @@ export const ChartPVSP = ({ data, embedded = false, timeWindow }: ChartPVSPProps
               minTickGap={20}
             />
             <YAxis
-              domain={['dataMin - 5', 'dataMax + 5']}
+              domain={yAxisDomain}
               tickFormatter={(value) => `${value}°C`}
             />
             <Tooltip
               formatter={(value: number, name: string) => [
-                `${value.toFixed(1)}°C`,
+                <span className="font-mono">{value.toFixed(1)}°C</span>,
                 name === 'pv' ? 'Proceso' : 'Setpoint'
               ]}
               labelFormatter={(value) => `Tiempo: ${value}s`}
@@ -96,12 +128,12 @@ export const ChartPVSP = ({ data, embedded = false, timeWindow }: ChartPVSPProps
               minTickGap={20}
             />
             <YAxis
-              domain={['dataMin - 5', 'dataMax + 5']}
+              domain={yAxisDomain}
               tickFormatter={(value) => `${value}°C`}
             />
             <Tooltip
               formatter={(value: number, name: string) => [
-                `${value.toFixed(1)}°C`,
+                <span className="font-mono">{value.toFixed(1)}°C</span>,
                 name === 'pv' ? 'Proceso' : 'Setpoint'
               ]}
               labelFormatter={(value) => `Tiempo: ${value}s`}

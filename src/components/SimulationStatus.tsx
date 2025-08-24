@@ -192,21 +192,44 @@ export function SimulationStatus() {
             </div>
           )}
 
+          {/* Atajos de teclado */}
+          <div className="text-[10px] text-muted-foreground pt-1 border-t">
+            <div className="grid grid-cols-4 gap-1">
+              <div>
+                <span className="text-muted-foreground">S:</span> Start/Pause
+              </div>
+              <div>
+                <span className="text-muted-foreground">R:</span> Reset
+              </div>
+              <div>
+                <span className="text-muted-foreground">↑/↓:</span> SP ±1°C
+              </div>
+              <div>
+                <span className="text-muted-foreground">Shift+↑/↓:</span> SP ±10°C
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-1 mt-1">
+              <div>
+                <span className="text-muted-foreground">←/→:</span> Ventana tiempo
+              </div>
+            </div>
+          </div>
+
           {/* Métricas de rendimiento */}
           {state.performance.samples_processed > 0 && (
             <div className="text-[10px] text-muted-foreground pt-1 border-t">
               <div className="grid grid-cols-4 gap-1">
                 <div>
-                  M: {state.performance.samples_processed.toLocaleString()}
+                  M: <span className="font-mono">{state.performance.samples_processed.toLocaleString()}</span>
                 </div>
                 <div>
-                  T: {Math.floor(state.performance.uptime / 60)}m {Math.floor(state.performance.uptime % 60)}s
+                  T: <span className="font-mono">{Math.floor(state.performance.uptime / 60)}m {Math.floor(state.performance.uptime % 60)}s</span>
                 </div>
                 <div>
-                  Ciclo: {state.performance.avg_cycle_time.toFixed(1)}ms
+                  Ciclo: <span className="font-mono">{state.performance.avg_cycle_time.toFixed(1)}ms</span>
                 </div>
                 <div>
-                  CPU: {state.performance.cpu_usage_estimate.toFixed(1)}%
+                  CPU: <span className="font-mono">{state.performance.cpu_usage_estimate.toFixed(1)}%</span>
                 </div>
               </div>
 

@@ -77,7 +77,7 @@ export const MetricsPanel = ({ metrics, currentSP, currentPV }: MetricsPanelProp
           </div>
           {metrics.is_calculating && (
             <div className="mt-1 text-[11px] text-muted-foreground">
-              Muestras: {metrics.samples_count} · Tiempo: {formatTime(metrics.t_current - metrics.t_start)}
+              Muestras: <span className="font-mono">{metrics.samples_count}</span> · Tiempo: <span className="font-mono">{formatTime(metrics.t_current - metrics.t_start)}</span>
             </div>
           )}
         </CardContent>
@@ -116,11 +116,11 @@ export const MetricsPanel = ({ metrics, currentSP, currentPV }: MetricsPanelProp
           <div className="grid grid-cols-2 gap-2 text-[11px]">
             <div>
               <span className="text-muted-foreground">Tiempo pico:</span>
-              <div className="font-medium">{formatTime(metrics.t_peak)}</div>
+              <div className="font-medium font-mono">{formatTime(metrics.t_peak)}</div>
             </div>
             <div>
               <span className="text-muted-foreground">PV máximo:</span>
-              <div className="font-medium">{formatTemperature(metrics.pv_max)}</div>
+              <div className="font-medium font-mono">{formatTemperature(metrics.pv_max)}</div>
             </div>
           </div>
         </CardContent>
@@ -143,7 +143,7 @@ export const MetricsPanel = ({ metrics, currentSP, currentPV }: MetricsPanelProp
           </div>
           {metrics.settling_time > 0 && (
             <div className="mt-1 text-[11px] text-muted-foreground">
-              Inicio: {formatTime(metrics.settling_time)}
+              Inicio: <span className="font-mono">{formatTime(metrics.settling_time)}</span>
             </div>
           )}
         </CardContent>
@@ -160,15 +160,15 @@ export const MetricsPanel = ({ metrics, currentSP, currentPV }: MetricsPanelProp
         <CardContent className="py-2 space-y-1 text-[11px]">
           <div className="flex justify-between">
             <span className="text-muted-foreground">SP anterior:</span>
-            <span>{formatTemperature(metrics.sp_previous)}</span>
+            <span className="font-mono">{formatTemperature(metrics.sp_previous)}</span>
           </div>
           <div className="flex justify-between">
             <span className="text-muted-foreground">PV mínimo:</span>
-            <span>{formatTemperature(metrics.pv_min)}</span>
+            <span className="font-mono">{formatTemperature(metrics.pv_min)}</span>
           </div>
           <div className="flex justify-between">
             <span className="text-muted-foreground">Tiempo inicio:</span>
-            <span>{formatTime(metrics.t_start)}</span>
+            <span className="font-mono">{formatTime(metrics.t_start)}</span>
           </div>
         </CardContent>
       </Card>

@@ -175,10 +175,10 @@ const ElasticSliderWithInput = memo(({
             min={min}
             max={max}
             step={step}
-            className={`w-16 h-6 text-xs px-1 py-0 ${!isValid ? 'border-red-500' : ''}`}
+            className={`w-16 h-6 text-xs px-1 py-0 font-mono ${!isValid ? 'border-red-500' : ''}`}
             aria-label={`Input numérico para ${label}`}
           />
-          <Badge variant="outline" className="h-5 px-1 text-xs">
+          <Badge variant="outline" className="h-5 px-1 text-xs font-mono">
             {displayValue}{unit}
           </Badge>
         </div>

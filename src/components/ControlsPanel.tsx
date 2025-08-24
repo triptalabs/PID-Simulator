@@ -1,5 +1,5 @@
-import { useState, useCallback, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useState, useCallback, useEffect, useRef, memo } from "react";
+import { Card } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Slider } from "@/components/ui/slider";
 import { Input } from "@/components/ui/input";
@@ -22,64 +22,201 @@ interface ControlsPanelProps {
   onApplyPreset?: (values: PresetType['values']) => void;
 }
 
-export const ControlsPanel = ({ state, onStateChange, onReset, onApplyPreset }: ControlsPanelProps) => {
-  const [selectedPreset, setSelectedPreset] = useState<string>("");
+interface SliderWithInputProps {
+  label: string;
+  value: number;
+  min: number;
+  max: number;
+  step: number;
+  unit: string;
+  tooltip: string;
+  sliderKey: string;
+  icon?: React.ReactNode;
+  onValueChange: (key: string, value: number) => void;
+  onImmediateValueChange: (key: string, value: number) => void;
+}
 
-  // Debouncing para evitar spam de mensajes al Worker
-  const [debounceTimers, setDebounceTimers] = useState<Record<string, NodeJS.Timeout>>({});
+const SliderWithInput = memo(({ 
+  label, 
+  value, 
+  min, 
+  max, 
+  step, 
+  unit, 
+  tooltip, 
+  sliderKey,
+  icon,
+  onValueChange,
+  onImmediateValueChange
+}: SliderWithInputProps) => {
+  const [inputValue, setInputValue] = useState(value.toString());
+  const [isValid, setIsValid] = useState(true);
 
-  const handleSliderChange = useCallback((key: string, values: number[]) => {
-    const value = values[0];
-    
-    // Limpiar timer anterior si existe
-    if (debounceTimers[key]) {
-      clearTimeout(debounceTimers[key]);
-    }
-    
-    // Crear nuevo timer con debounce de 50ms
-    const timer = setTimeout(() => {
-      if (key.startsWith('pid.')) {
-        const pidKey = key.split('.')[1] as keyof typeof state.pid;
-        onStateChange({
-          pid: { ...state.pid, [pidKey]: value }
-        });
-      } else if (key.startsWith('plant.')) {
-        const plantKey = key.split('.')[1] as keyof typeof state.plant;
-        onStateChange({
-          plant: { ...state.plant, [plantKey]: value }
-        });
-      } else if (key.startsWith('noise.')) {
-        const noiseKey = key.split('.')[1] as keyof typeof state.noise;
-        onStateChange({
-          noise: { ...state.noise, [noiseKey]: value }
-        });
-      } else if (key.startsWith('ssr.')) {
-        const ssrKey = key.split('.')[1] as keyof typeof state.ssr;
-        onStateChange({
-          ssr: { ...state.ssr, [ssrKey]: value }
-        });
-      } else if (key === 'setpoint') {
-        onStateChange({ setpoint: value });
-      }
-    }, 50); // 50ms debounce para reducir mensajes al Worker
-    
-    setDebounceTimers(prev => ({ ...prev, [key]: timer }));
-  }, [state, onStateChange, debounceTimers]);
-
-  // Cleanup timers al desmontar
   useEffect(() => {
+    setInputValue(value.toString());
+    setIsValid(true);
+  }, [value]);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newStringValue = e.target.value;
+    setInputValue(newStringValue);
+    
+    const numValue = parseFloat(newStringValue);
+    const isValidNumber = !isNaN(numValue) && isFinite(numValue);
+    setIsValid(isValidNumber);
+    
+    if (isValidNumber) {
+      const clampedValue = Math.max(min, Math.min(max, numValue));
+      onImmediateValueChange(sliderKey, clampedValue); // Update parent for immediate feedback
+      onValueChange(sliderKey, clampedValue); // Debounced update
+    }
+  };
+
+  const handleInputBlur = () => {
+    const numValue = parseFloat(inputValue);
+    if (isNaN(numValue) || !isFinite(numValue)) {
+      setInputValue(value.toString());
+      setIsValid(true);
+    }
+  };
+
+  const handleSliderChange = (values: number[]) => {
+    const sliderValue = values[0];
+    setInputValue(sliderValue.toString());
+    onImmediateValueChange(sliderKey, sliderValue); // Update parent for immediate feedback
+    onValueChange(sliderKey, sliderValue); // Debounced update
+  };
+
+  const formatDisplayValue = (val: number) => {
+    if (step < 0.01) return val.toFixed(3);
+    if (step < 0.1) return val.toFixed(2);
+    if (step < 1) return val.toFixed(1);
+    return val.toFixed(0);
+  };
+
+  return (
+    <div className="space-y-1">
+      <div className="flex items-center justify-between mb-1">
+        <div className="flex items-center gap-1 text-xs">
+          {icon && <span className="text-muted-foreground">{icon}</span>}
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="flex items-center gap-1 cursor-help">
+                  <span className="font-medium">{label}</span>
+                  <Info className="h-3 w-3 text-muted-foreground" />
+                </div>
+              </TooltipTrigger>
+              <TooltipContent side="right">
+                <p className="text-xs max-w-[200px]">{tooltip}</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
+        <div className="flex items-center gap-1">
+          <Input
+            type="number"
+            value={inputValue}
+            onChange={handleInputChange}
+            onBlur={handleInputBlur}
+            min={min}
+            max={max}
+            step={step}
+            className={`w-16 h-6 text-xs px-1 py-0 ${!isValid ? 'border-red-500' : ''}`}
+            aria-label={`Input numérico para ${label}`}
+          />
+          <Badge variant="outline" className="h-5 px-1 text-xs">
+            {formatDisplayValue(value)}{unit}
+          </Badge>
+        </div>
+      </div>
+      <Slider
+        value={[value]}
+        onValueChange={handleSliderChange}
+        min={min}
+        max={max}
+        step={step}
+        aria-label={label}
+        className="w-full h-2"
+      />
+    </div>
+  );
+});
+
+export const ControlsPanel = ({ state, onStateChange, onApplyPreset }: ControlsPanelProps) => {
+  const [selectedPreset, setSelectedPreset] = useState<string>("");
+  const debounceTimersRef = useRef<Record<string, NodeJS.Timeout>>({});
+  
+  // Local state for immediate UI feedback
+  const [localState, setLocalState] = useState(state);
+
+  useEffect(() => {
+    setLocalState(state);
+  }, [state]);
+
+  const handleValueChange = useCallback((key: string, value: number) => {
+    if (debounceTimersRef.current[key]) {
+      clearTimeout(debounceTimersRef.current[key]);
+    }
+
+    const timer = setTimeout(() => {
+      const keyParts = key.split('.');
+      const topLevelKey = keyParts[0];
+      
+      if (keyParts.length > 1) {
+        const secondLevelKey = keyParts[1];
+        onStateChange({
+          [topLevelKey]: { ...state[topLevelKey as keyof SimulatorState], [secondLevelKey]: value }
+        });
+      } else {
+        onStateChange({ [topLevelKey]: value } as Partial<SimulatorState>);
+      }
+    }, 50);
+
+    debounceTimersRef.current[key] = timer;
+  }, [state, onStateChange]);
+
+  const handleImmediateValueChange = (key: string, value: number) => {
+    const keyParts = key.split('.');
+    const topLevelKey = keyParts[0];
+
+    setLocalState(prevState => {
+      if (keyParts.length > 1) {
+        const secondLevelKey = keyParts[1];
+        const topLevelState = prevState[topLevelKey as keyof SimulatorState];
+        if (typeof topLevelState === 'object' && topLevelState !== null) {
+          return {
+            ...prevState,
+            [topLevelKey]: {
+              ...topLevelState,
+              [secondLevelKey]: value,
+            },
+          };
+        }
+      }
+      return {
+        ...prevState,
+        [topLevelKey]: value,
+      };
+    });
+  };
+
+  useEffect(() => {
+    const timers = debounceTimersRef.current;
     return () => {
-      Object.values(debounceTimers).forEach(timer => clearTimeout(timer));
+      Object.values(timers).forEach(timer => clearTimeout(timer));
     };
-  }, [debounceTimers]);
+  }, []);
 
   const applyPreset = () => {
     const preset = presets.find(p => p.key === selectedPreset);
     if (preset) {
-      onStateChange({ plant: { ...state.plant, ...preset.values } });
+      const newState = { ...localState, plant: { ...localState.plant, ...preset.values } };
+      setLocalState(newState);
       if (onApplyPreset) {
         onApplyPreset(preset.values);
       }
+      onStateChange({ plant: { ...state.plant, ...preset.values } });
       toast({
         title: "Preset aplicado",
         description: `Configuración "${preset.name}" aplicada correctamente.`,
@@ -94,156 +231,10 @@ export const ControlsPanel = ({ state, onStateChange, onReset, onApplyPreset }: 
     });
   };
 
-  // Componente compacto con sincronización bidireccional
-  const SliderWithInput = ({ 
-    label, 
-    value, 
-    min, 
-    max, 
-    step, 
-    unit, 
-    tooltip, 
-    sliderKey,
-    icon
-  }: {
-    label: string;
-    value: number;
-    min: number;
-    max: number;
-    step: number;
-    unit: string;
-    tooltip: string;
-    sliderKey: string;
-    icon?: React.ReactNode;
-  }) => {
-    const [inputValue, setInputValue] = useState(value.toString());
-    const [isValid, setIsValid] = useState(true);
-
-    // Sincronizar input cuando cambia el valor externo
-    useEffect(() => {
-      setInputValue(value.toString());
-      setIsValid(true);
-    }, [value]);
-
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const newValue = e.target.value;
-      setInputValue(newValue);
-      
-      const numValue = parseFloat(newValue);
-      const isValidNumber = !isNaN(numValue) && isFinite(numValue);
-      setIsValid(isValidNumber);
-      
-      if (isValidNumber) {
-        // Clampear al rango válido
-        const clampedValue = Math.max(min, Math.min(max, numValue));
-        
-        // Aplicar debounce igual que el slider
-        if (debounceTimers[sliderKey]) {
-          clearTimeout(debounceTimers[sliderKey]);
-        }
-        
-        const timer = setTimeout(() => {
-          if (sliderKey.startsWith('pid.')) {
-            const pidKey = sliderKey.split('.')[1] as keyof typeof state.pid;
-            onStateChange({
-              pid: { ...state.pid, [pidKey]: clampedValue }
-            });
-          } else if (sliderKey.startsWith('plant.')) {
-            const plantKey = sliderKey.split('.')[1] as keyof typeof state.plant;
-            onStateChange({
-              plant: { ...state.plant, [plantKey]: clampedValue }
-            });
-          } else if (sliderKey.startsWith('noise.')) {
-            const noiseKey = sliderKey.split('.')[1] as keyof typeof state.noise;
-            onStateChange({
-              noise: { ...state.noise, [noiseKey]: clampedValue }
-            });
-          } else if (sliderKey.startsWith('ssr.')) {
-            const ssrKey = sliderKey.split('.')[1] as keyof typeof state.ssr;
-            onStateChange({
-              ssr: { ...state.ssr, [ssrKey]: clampedValue }
-            });
-          } else if (sliderKey === 'setpoint') {
-            onStateChange({ setpoint: clampedValue });
-          }
-        }, 50);
-        
-        setDebounceTimers(prev => ({ ...prev, [sliderKey]: timer }));
-      }
-    };
-
-    const handleInputBlur = () => {
-      const numValue = parseFloat(inputValue);
-      if (isNaN(numValue) || !isFinite(numValue)) {
-        // Reset al valor válido si el input es inválido
-        setInputValue(value.toString());
-        setIsValid(true);
-      }
-    };
-
-    // Formatear valor para display
-    const formatDisplayValue = (val: number) => {
-      if (step < 0.01) return val.toFixed(3);
-      if (step < 0.1) return val.toFixed(2);
-      if (step < 1) return val.toFixed(1);
-      return val.toFixed(0);
-    };
-
-    return (
-      <div className="space-y-1">
-        <div className="flex items-center justify-between mb-1">
-          <div className="flex items-center gap-1 text-xs">
-            {icon && <span className="text-muted-foreground">{icon}</span>}
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div className="flex items-center gap-1 cursor-help">
-                    <span className="font-medium">{label}</span>
-                    <Info className="h-3 w-3 text-muted-foreground" />
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent side="right">
-                  <p className="text-xs max-w-[200px]">{tooltip}</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </div>
-          <div className="flex items-center gap-1">
-            <Input
-              type="number"
-              value={inputValue}
-              onChange={handleInputChange}
-              onBlur={handleInputBlur}
-              min={min}
-              max={max}
-              step={step}
-              className={`w-16 h-6 text-xs px-1 py-0 ${!isValid ? 'border-red-500' : ''}`}
-              aria-label={`Input numérico para ${label}`}
-            />
-            <Badge variant="outline" className="h-5 px-1 text-xs">
-              {formatDisplayValue(value)}{unit}
-            </Badge>
-          </div>
-        </div>
-        <Slider
-          value={[value]}
-          onValueChange={(values) => handleSliderChange(sliderKey, values)}
-          min={min}
-          max={max}
-          step={step}
-          aria-label={label}
-          className="w-full h-2"
-        />
-      </div>
-    );
-  };
-
   return (
     <div className="space-y-2">
-      {/* Panel Principal Compacto */}
       <Card className="industrial-control p-2">
         <div className="grid grid-cols-2 gap-2 mb-2">
-          {/* Modo */}
           <div className="col-span-2">
             <div className="flex items-center mb-1 text-xs">
               <Thermometer className="h-3 w-3 mr-1 text-muted-foreground" />
@@ -253,7 +244,7 @@ export const ControlsPanel = ({ state, onStateChange, onReset, onApplyPreset }: 
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Tabs 
-                    value={state.mode} 
+                    value={localState.mode} 
                     onValueChange={(value) => onStateChange({ mode: value as Mode })}
                     className="w-full"
                   >
@@ -271,11 +262,10 @@ export const ControlsPanel = ({ state, onStateChange, onReset, onApplyPreset }: 
           </div>
         </div>
         
-        {/* Setpoint */}
         <div className="mb-4">
           <SliderWithInput
             label="Setpoint"
-            value={state.setpoint}
+            value={localState.setpoint}
             min={0}
             max={200}
             step={1}
@@ -283,10 +273,11 @@ export const ControlsPanel = ({ state, onStateChange, onReset, onApplyPreset }: 
             tooltip="Temperatura objetivo del proceso"
             sliderKey="setpoint"
             icon={<Thermometer className="h-3 w-3" />}
+            onValueChange={handleValueChange}
+            onImmediateValueChange={handleImmediateValueChange}
           />
         </div>
 
-        {/* PID */}
         <div className="mb-3">
           <div className="flex items-center mb-2 text-xs">
             <Gauge className="h-3 w-3 mr-1 text-muted-foreground" />
@@ -295,41 +286,45 @@ export const ControlsPanel = ({ state, onStateChange, onReset, onApplyPreset }: 
           <div className="space-y-3">
             <SliderWithInput
               label="Kp"
-              value={state.pid.kp}
+              value={localState.pid.kp}
               min={0}
               max={10}
               step={0.01}
               unit=""
               tooltip="Ganancia proporcional"
               sliderKey="pid.kp"
+              onValueChange={handleValueChange}
+              onImmediateValueChange={handleImmediateValueChange}
             />
             <SliderWithInput
               label="Ki"
-              value={state.pid.ki}
+              value={localState.pid.ki}
               min={0}
               max={1}
               step={0.001}
               unit=" s⁻¹"
               tooltip="Ganancia integral"
               sliderKey="pid.ki"
+              onValueChange={handleValueChange}
+              onImmediateValueChange={handleImmediateValueChange}
             />
             <SliderWithInput
               label="Kd"
-              value={state.pid.kd}
+              value={localState.pid.kd}
               min={0}
               max={200}
               step={1}
               unit=" s"
               tooltip="Ganancia derivativa"
               sliderKey="pid.kd"
+              onValueChange={handleValueChange}
+              onImmediateValueChange={handleImmediateValueChange}
             />
           </div>
         </div>
       </Card>
 
-      {/* Controles Avanzados */}
       <Accordion type="multiple" className="space-y-1">
-        {/* Planta */}
         <AccordionItem value="plant" className="industrial-control border-none">
           <AccordionTrigger className="px-2 py-1 text-xs">
             <div className="flex items-center">
@@ -340,48 +335,55 @@ export const ControlsPanel = ({ state, onStateChange, onReset, onApplyPreset }: 
           <AccordionContent className="px-2 pt-1 pb-2 space-y-3">
             <SliderWithInput
               label="K"
-              value={state.plant.k}
+              value={localState.plant.k}
               min={0}
               max={0.1}
               step={0.001}
               unit=""
               tooltip="Ganancia estática del proceso"
               sliderKey="plant.k"
+              onValueChange={handleValueChange}
+              onImmediateValueChange={handleImmediateValueChange}
             />
             <SliderWithInput
               label="τ"
-              value={state.plant.tau}
+              value={localState.plant.tau}
               min={1}
               max={600}
               step={1}
               unit=" s"
               tooltip="Constante de tiempo del proceso"
               sliderKey="plant.tau"
+              onValueChange={handleValueChange}
+              onImmediateValueChange={handleImmediateValueChange}
             />
             <SliderWithInput
               label="L"
-              value={state.plant.l}
+              value={localState.plant.l}
               min={0}
               max={15}
               step={0.1}
               unit=" s"
               tooltip="Tiempo muerto del proceso"
               sliderKey="plant.l"
+              onValueChange={handleValueChange}
+              onImmediateValueChange={handleImmediateValueChange}
             />
             <SliderWithInput
               label="T_amb"
-              value={state.plant.t_amb}
+              value={localState.plant.t_amb}
               min={10}
               max={35}
               step={0.5}
               unit="°C"
               tooltip="Temperatura ambiente"
               sliderKey="plant.t_amb"
+              onValueChange={handleValueChange}
+              onImmediateValueChange={handleImmediateValueChange}
             />
           </AccordionContent>
         </AccordionItem>
 
-        {/* Ruido y Disturbios */}
         <AccordionItem value="noise" className="industrial-control border-none">
           <AccordionTrigger className="px-2 py-1 text-xs">
             <div className="flex items-center">
@@ -393,23 +395,25 @@ export const ControlsPanel = ({ state, onStateChange, onReset, onApplyPreset }: 
             <div className="flex items-center justify-between">
               <Label className="text-xs">Ruido</Label>
               <Switch
-                checked={state.noise.enabled}
+                checked={localState.noise.enabled}
                 onCheckedChange={(enabled) => 
                   onStateChange({ noise: { ...state.noise, enabled } })
                 }
                 className="scale-75"
               />
             </div>
-            {state.noise.enabled && (
+            {localState.noise.enabled && (
               <SliderWithInput
                 label="Intensidad"
-                value={state.noise.intensity}
+                value={localState.noise.intensity}
                 min={0}
                 max={2}
                 step={0.1}
                 unit=""
                 tooltip="Intensidad del ruido en la señal"
                 sliderKey="noise.intensity"
+                onValueChange={handleValueChange}
+                onImmediateValueChange={handleImmediateValueChange}
               />
             )}
             <Button 
@@ -423,7 +427,6 @@ export const ControlsPanel = ({ state, onStateChange, onReset, onApplyPreset }: 
           </AccordionContent>
         </AccordionItem>
         
-        {/* SSR */}
         <AccordionItem value="ssr" className="industrial-control border-none">
           <AccordionTrigger className="px-2 py-1 text-xs">
             <div className="flex items-center">
@@ -435,30 +438,31 @@ export const ControlsPanel = ({ state, onStateChange, onReset, onApplyPreset }: 
             <div className="flex items-center justify-between">
               <Label className="text-xs">SSR por ventana</Label>
               <Switch
-                checked={state.ssr.enabled}
+                checked={localState.ssr.enabled}
                 onCheckedChange={(enabled) => 
                   onStateChange({ ssr: { ...state.ssr, enabled } })
                 }
                 className="scale-75"
               />
             </div>
-            {state.ssr.enabled && (
+            {localState.ssr.enabled && (
               <SliderWithInput
                 label="Periodo"
-                value={state.ssr.period}
+                value={localState.ssr.period}
                 min={0.5}
                 max={10}
                 step={0.5}
                 unit=" s"
                 tooltip="Periodo de la ventana SSR"
                 sliderKey="ssr.period"
+                onValueChange={handleValueChange}
+                onImmediateValueChange={handleImmediateValueChange}
               />
             )}
           </AccordionContent>
         </AccordionItem>
       </Accordion>
 
-      {/* Presets */}
       <Card className="industrial-control p-2">
         <div className="flex items-center mb-1 text-xs">
           <BookOpen className="h-3 w-3 mr-1 text-muted-foreground" />

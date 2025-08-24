@@ -1,6 +1,4 @@
-import React, { useLayoutEffect, useRef, useState, useEffect } from "react";
-import { gsap } from "gsap";
-// use your own icon import if react-icons is not available
+import React, { useState } from "react";
 import { GoArrowUpRight } from "react-icons/go";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -49,7 +47,6 @@ export interface CardNavProps {
   logoAlt?: string;
   items: CardNavItem[];
   className?: string;
-  ease?: string;
   baseColor?: string;
   menuColor?: string;
   buttonBgColor?: string;
@@ -65,7 +62,6 @@ const CardNav: React.FC<CardNavProps> = ({
   logoAlt = "Logo",
   items,
   className = "",
-  ease = "power3.out",
   baseColor = "#fff",
   menuColor,
   buttonBgColor,
@@ -73,191 +69,28 @@ const CardNav: React.FC<CardNavProps> = ({
   onHelpClick,
   onDocsClick,
 }) => {
-  const [isHamburgerOpen, setIsHamburgerOpen] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
-  const navRef = useRef<HTMLDivElement | null>(null);
-  const cardsRef = useRef<HTMLDivElement[]>([]);
-  const tlRef = useRef<gsap.core.Timeline | null>(null);
-
-  const calculateHeight = () => {
-    const navEl = navRef.current;
-    if (!navEl) return 420;
-
-    const isMobile = window.matchMedia("(max-width: 768px)").matches;
-    if (isMobile) {
-      const contentEl = navEl.querySelector(".card-nav-content") as HTMLElement;
-      if (contentEl) {
-        const wasVisible = contentEl.style.visibility;
-        const wasPointerEvents = contentEl.style.pointerEvents;
-        const wasPosition = contentEl.style.position;
-        const wasHeight = contentEl.style.height;
-
-        contentEl.style.visibility = "visible";
-        contentEl.style.pointerEvents = "auto";
-        contentEl.style.position = "static";
-        contentEl.style.height = "auto";
-
-        contentEl.offsetHeight;
-
-        const topBar = 70;
-        const padding = 32;
-        const contentHeight = contentEl.scrollHeight;
-
-        contentEl.style.visibility = wasVisible;
-        contentEl.style.pointerEvents = wasPointerEvents;
-        contentEl.style.position = wasPosition;
-        contentEl.style.height = wasHeight;
-
-        return topBar + contentHeight + padding;
-      }
-    }
-    return 420;
-  };
-
-  const createTimeline = () => {
-    const navEl = navRef.current;
-    if (!navEl) return null;
-
-    const validCards = cardsRef.current.filter(card => card !== null && card !== undefined);
-
-    gsap.set(navEl, { height: 70, overflow: "hidden" });
-    gsap.set(validCards, { y: 60, opacity: 0 });
-
-    const tl = gsap.timeline({ paused: true });
-
-    tl.to(navEl, {
-      height: calculateHeight,
-      duration: 0.5,
-      ease,
-    });
-
-    if (validCards.length > 0) {
-      tl.to(
-        validCards,
-        { y: 0, opacity: 1, duration: 0.5, ease, stagger: 0.1 },
-        "-=0.2",
-      );
-    }
-
-    return tl;
-  };
-
-  useLayoutEffect(() => {
-    const tl = createTimeline();
-    tlRef.current = tl;
-
-    return () => {
-      tl?.kill();
-      tlRef.current = null;
-    };
-  }, [ease]);
-
-  useLayoutEffect(() => {
-    const handleResize = () => {
-      if (!tlRef.current) return;
-
-      if (isExpanded) {
-        const newHeight = calculateHeight();
-        gsap.set(navRef.current, { height: newHeight });
-
-        tlRef.current.kill();
-        const newTl = createTimeline();
-        if (newTl) {
-          newTl.progress(1);
-          tlRef.current = newTl;
-        }
-      } else {
-        tlRef.current.kill();
-        const newTl = createTimeline();
-        if (newTl) {
-          tlRef.current = newTl;
-        }
-      }
-    };
-
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, [isExpanded]);
 
   const toggleMenu = () => {
-    const tl = tlRef.current;
-    if (!tl) return;
-    if (!isExpanded) {
-      setIsHamburgerOpen(true);
-      setIsExpanded(true);
-      tl.play(0);
-    } else {
-      setIsHamburgerOpen(false);
-      tl.eventCallback("onReverseComplete", () => setIsExpanded(false));
-      tl.reverse();
-    }
+    setIsExpanded(!isExpanded);
   };
-
-  const setCardRef = (i: number) => (el: HTMLDivElement | null) => {
-    if (el) {
-      cardsRef.current[i] = el;
-      if (tlRef.current) {
-        if (isExpanded) {
-          gsap.set(el, { y: 0, opacity: 1 });
-        } else {
-          gsap.set(el, { y: 60, opacity: 0 });
-        }
-      }
-    } else {
-      cardsRef.current[i] = null as any;
-    }
-  };
-
-  useEffect(() => {
-    if (isExpanded && tlRef.current) {
-      cardsRef.current.forEach(card => {
-        if (card) {
-          gsap.set(card, { y: 0, opacity: 1 });
-        }
-      });
-    }
-  }, [isExpanded]);
-
-  const forceUpdateCards = () => {
-    if (isExpanded) {
-      setTimeout(() => {
-        cardsRef.current.forEach(card => {
-          if (card) {
-            gsap.set(card, { y: 0, opacity: 1 });
-          }
-        });
-      }, 50);
-    }
-  };
-
-  useEffect(() => {
-    if (isExpanded) {
-      forceUpdateCards();
-    }
-  });
-
-  useEffect(() => {
-    return () => {
-      cardsRef.current = [];
-    };
-  }, []);
 
   return (
-    <div
-      className={`card-nav-container absolute left-1/2 -translate-x-1/2 w-[95%] max-w-[1200px] z-[99] top-[1rem] ${className}`}
-    >
+    <div className={`w-full max-w-[1200px] mx-auto p-2 ${className}`}>
       <nav
-        ref={navRef}
-        className={`card-nav ${isExpanded ? "open" : ""} block h-[70px] p-0 rounded-2xl shadow-2xl relative overflow-hidden will-change-[height] backdrop-blur-xl`}
+        className={`block rounded-2xl shadow-2xl backdrop-blur-xl transition-all duration-500 ease-in-out ${
+          isExpanded ? 'h-auto' : 'h-[70px]'
+        }`}
         style={{ 
           backgroundColor: baseColor,
           border: '1px solid rgba(255, 255, 255, 0.1)',
           boxShadow: '0 20px 40px -12px rgba(0, 0, 0, 0.25), 0 8px 16px -8px rgba(0, 0, 0, 0.3)'
         }}
       >
-        <div className="card-nav-top absolute inset-x-0 top-0 h-[70px] flex items-center justify-between px-6 z-[2]">
+        {/* Top bar - siempre visible */}
+        <div className="h-[70px] flex items-center justify-between px-6 border-b border-white/10">
           <div
-            className={`hamburger-menu ${isHamburgerOpen ? "open" : ""} group h-full flex flex-col items-center justify-center cursor-pointer gap-[7px] order-2 md:order-none transition-all duration-300 hover:scale-110`}
+            className={`hamburger-menu group h-full flex flex-col items-center justify-center cursor-pointer gap-[7px] order-2 md:order-none transition-all duration-300 hover:scale-110`}
             onClick={toggleMenu}
             role="button"
             aria-label={isExpanded ? "Close menu" : "Open menu"}
@@ -266,12 +99,12 @@ const CardNav: React.FC<CardNavProps> = ({
           >
             <div
               className={`hamburger-line w-[32px] h-[3px] bg-current transition-all duration-400 ease-out rounded-full [transform-origin:50%_50%] ${
-                isHamburgerOpen ? "translate-y-[5px] rotate-45" : ""
+                isExpanded ? "translate-y-[5px] rotate-45" : ""
               } group-hover:opacity-80`}
             />
             <div
               className={`hamburger-line w-[32px] h-[3px] bg-current transition-all duration-400 ease-out rounded-full [transform-origin:50%_50%] ${
-                isHamburgerOpen ? "-translate-y-[5px] -rotate-45" : ""
+                isExpanded ? "-translate-y-[5px] -rotate-45" : ""
               } group-hover:opacity-80`}
             />
           </div>
@@ -307,123 +140,117 @@ const CardNav: React.FC<CardNavProps> = ({
           </div>
         </div>
 
-        <div
-          className={`card-nav-content absolute left-0 right-0 top-[70px] bottom-0 p-6 flex flex-col items-stretch gap-6 justify-start z-[1] ${
-            isExpanded
-              ? "visible pointer-events-auto"
-              : "invisible pointer-events-none"
-          } md:flex-row md:items-stretch md:gap-6`}
-          aria-hidden={!isExpanded}
-          style={{
-            opacity: isExpanded ? 1 : 0,
-            transform: isExpanded ? 'translateY(0)' : 'translateY(60px)',
-            transition: 'opacity 0.4s ease, transform 0.4s ease'
-          }}
-        >
-          {(items || []).slice(0, 5).map((item, idx) => (
-            <div
-              key={`${item.label}-${idx}`}
-              className="nav-card select-none relative flex flex-col gap-5 p-6 rounded-2xl min-w-0 flex-[1_1_auto] h-auto min-h-[140px] md:h-full md:min-h-0 md:flex-[1_1_0%] transition-all duration-300 hover:scale-[1.02] hover:shadow-xl"
-              ref={setCardRef(idx)}
-              style={{ 
-                backgroundColor: item.bgColor, 
-                color: item.textColor,
-                border: '1px solid rgba(255, 255, 255, 0.1)',
-                boxShadow: '0 8px 32px -8px rgba(0, 0, 0, 0.2)'
-              }}
-            >
-              <div className="nav-card-label font-bold tracking-tight text-[18px] md:text-[20px] mb-1 leading-tight">
-                {item.label}
-              </div>
-              
-              {item.controls && (
-                <div className="nav-card-controls flex flex-col gap-4">
-                  {item.controls.map((control, i) => (
-                    <div key={`${control.label}-${i}`} className="control-item">
-                      <div className="flex items-center justify-between mb-3">
-                        <span className="text-xs font-semibold opacity-90 tracking-wide uppercase">{control.label}</span>
-                        <span className="text-sm font-bold font-mono opacity-95 bg-white/10 px-3 py-1.5 rounded-lg">
-                          {control.value.toFixed(control.step < 0.01 ? 3 : control.step < 0.1 ? 2 : 1)}{control.unit}
-                        </span>
-                      </div>
-                      <input
-                        type="range"
-                        min={control.min}
-                        max={control.max}
-                        step={control.step}
-                        value={control.value}
-                        onChange={(e) => control.onChange(parseFloat(e.target.value))}
-                        className="w-full h-2 bg-white/20 rounded-full appearance-none cursor-pointer slider transition-all duration-200 hover:bg-white/30"
-                        style={{
-                          background: `linear-gradient(to right, ${item.textColor} 0%, ${item.textColor} ${((control.value - control.min) / (control.max - control.min)) * 100}%, rgba(255,255,255,0.2) ${((control.value - control.min) / (control.max - control.min)) * 100}%, rgba(255,255,255,0.2) 100%)`
-                        }}
-                      />
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {item.switches && (
-                <div className="nav-card-switches flex flex-col gap-3">
-                  {item.switches.map((switchItem, i) => (
-                    <div key={`${switchItem.label}-${i}`} className="switch-item">
-                      <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg hover:bg-white/10 transition-colors">
-                        <span className="text-sm font-semibold opacity-90">{switchItem.label}</span>
-                        <Switch
-                          checked={switchItem.checked}
-                          onCheckedChange={switchItem.onChange}
-                          className="scale-90 data-[state=checked]:bg-current"
+                 {/* Expandable content */}
+         <div
+           className={`overflow-hidden transition-all duration-500 ease-in-out ${
+             isExpanded ? 'max-h-[400px] opacity-100' : 'max-h-0 opacity-0'
+           }`}
+         >
+           <div className="p-4 flex flex-col items-stretch gap-3 justify-start md:flex-row md:items-stretch md:gap-3">
+            {(items || []).slice(0, 5).map((item, idx) => (
+                             <div
+                 key={`${item.label}-${idx}`}
+                                   className="nav-card select-none relative flex flex-col gap-2 p-3 rounded-lg min-w-0 flex-[1_1_auto] h-auto min-h-[100px] md:h-full md:min-h-0 md:flex-[1_1_0%] transition-all duration-300 hover:scale-[1.02] hover:shadow-xl overflow-hidden"
+                style={{ 
+                  backgroundColor: item.bgColor, 
+                  color: item.textColor,
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  boxShadow: '0 8px 32px -8px rgba(0, 0, 0, 0.2)'
+                }}
+              >
+                                 <div className="nav-card-label font-bold tracking-tight text-[12px] md:text-[14px] mb-1 leading-tight">
+                   {item.label}
+                 </div>
+                
+                                 {item.controls && (
+                   <div className="nav-card-controls flex flex-col gap-1">
+                     {item.controls.map((control, i) => (
+                       <div key={`${control.label}-${i}`} className="control-item">
+                         <div className="flex items-center justify-between mb-1">
+                           <span className="text-[10px] font-semibold opacity-90 tracking-wide uppercase">{control.label}</span>
+                           <span className="text-[10px] font-bold font-mono opacity-95 bg-white/10 px-1.5 py-0.5 rounded">
+                            {control.value.toFixed(control.step < 0.01 ? 3 : control.step < 0.1 ? 2 : 1)}{control.unit}
+                          </span>
+                        </div>
+                                                 <input
+                           type="range"
+                           min={control.min}
+                           max={control.max}
+                           step={control.step}
+                           value={control.value}
+                           onChange={(e) => control.onChange(parseFloat(e.target.value))}
+                           className="w-full h-1.5 bg-white/20 rounded-full appearance-none cursor-pointer slider transition-all duration-200 hover:bg-white/30"
+                          style={{
+                            background: `linear-gradient(to right, ${item.textColor} 0%, ${item.textColor} ${((control.value - control.min) / (control.max - control.min)) * 100}%, rgba(255,255,255,0.2) ${((control.value - control.min) / (control.max - control.min)) * 100}%, rgba(255,255,255,0.2) 100%)`
+                          }}
                         />
                       </div>
-                    </div>
-                  ))}
-                </div>
-              )}
+                    ))}
+                  </div>
+                )}
 
-              {item.selects && (
-                <div className="nav-card-selects flex flex-col gap-4">
-                  {item.selects.map((selectItem, i) => (
-                    <div key={`${selectItem.label}-${i}`} className="select-item">
-                      <div className="flex items-center justify-between mb-3">
-                        <span className="text-xs font-semibold opacity-90 tracking-wide uppercase">{selectItem.label}</span>
+                                 {item.switches && (
+                   <div className="nav-card-switches flex flex-col gap-1">
+                     {item.switches.map((switchItem, i) => (
+                       <div key={`${switchItem.label}-${i}`} className="switch-item">
+                         <div className="flex items-center justify-between p-1.5 bg-white/5 rounded hover:bg-white/10 transition-colors">
+                           <span className="text-[10px] font-semibold opacity-90">{switchItem.label}</span>
+                                                     <Switch
+                             checked={switchItem.checked}
+                             onCheckedChange={switchItem.onChange}
+                             className="scale-75 data-[state=checked]:bg-current"
+                           />
+                        </div>
                       </div>
-                      <Select value={selectItem.value} onValueChange={selectItem.onChange}>
-                        <SelectTrigger className="h-10 text-sm bg-white/10 border-white/20 text-current hover:bg-white/20 transition-colors rounded-lg font-medium">
-                          <SelectValue placeholder={selectItem.label} />
-                        </SelectTrigger>
-                        <SelectContent className="bg-slate-900/98 border-slate-600 backdrop-blur-lg rounded-lg z-[999]">
-                          {selectItem.options.map((option) => (
-                            <SelectItem key={option.value} value={option.value} className="text-sm text-slate-100 hover:bg-slate-700 focus:bg-slate-700 rounded-md">
-                              {option.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  ))}
-                </div>
-              )}
-              
-              {item.links && (
-                <div className="nav-card-links mt-auto flex flex-col gap-1">
-                  {item.links.map((lnk, i) => (
-                    <a
-                      key={`${lnk.label}-${i}`}
-                      className="nav-card-link inline-flex items-center gap-2 no-underline cursor-pointer transition-all duration-300 hover:opacity-80 hover:translate-x-1 text-sm font-medium"
-                      href={lnk.href}
-                      aria-label={lnk.ariaLabel}
-                    >
-                      <GoArrowUpRight
-                        className="nav-card-link-icon shrink-0 text-base"
-                        aria-hidden="true"
-                      />
-                      {lnk.label}
-                    </a>
-                  ))}
-                </div>
-              )}
-            </div>
-          ))}
+                    ))}
+                  </div>
+                )}
+
+                                 {item.selects && (
+                   <div className="nav-card-selects flex flex-col gap-1">
+                     {item.selects.map((selectItem, i) => (
+                       <div key={`${selectItem.label}-${i}`} className="select-item">
+                         <div className="flex items-center justify-between mb-1">
+                           <span className="text-[10px] font-semibold opacity-90 tracking-wide uppercase">{selectItem.label}</span>
+                         </div>
+                         <Select value={selectItem.value} onValueChange={selectItem.onChange}>
+                           <SelectTrigger className="h-6 text-[10px] bg-white/10 border-white/20 text-current hover:bg-white/20 transition-colors rounded font-medium">
+                            <SelectValue placeholder={selectItem.label} />
+                          </SelectTrigger>
+                          <SelectContent className="bg-slate-900/98 border-slate-600 backdrop-blur-lg rounded z-[999]">
+                            {selectItem.options.map((option) => (
+                              <SelectItem key={option.value} value={option.value} className="text-[10px] text-slate-100 hover:bg-slate-700 focus:bg-slate-700 rounded">
+                                {option.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                
+                {item.links && (
+                  <div className="nav-card-links mt-auto flex flex-col gap-1">
+                    {item.links.map((lnk, i) => (
+                      <a
+                        key={`${lnk.label}-${i}`}
+                        className="nav-card-link inline-flex items-center gap-2 no-underline cursor-pointer transition-all duration-300 hover:opacity-80 hover:translate-x-1 text-sm font-medium"
+                        href={lnk.href}
+                        aria-label={lnk.ariaLabel}
+                      >
+                        <GoArrowUpRight
+                          className="nav-card-link-icon shrink-0 text-base"
+                          aria-hidden="true"
+                        />
+                        {lnk.label}
+                      </a>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
       </nav>
     </div>

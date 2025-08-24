@@ -182,8 +182,8 @@ export const Dashboard = () => {
 
   return (
     <div className="dark h-screen bg-background text-foreground flex flex-col">
-      {/* Header con altura fija */}
-      <div className="flex-shrink-0 h-16 z-50 border-b border-border">
+      {/* Header con altura dinámica */}
+      <div className="flex-shrink-0 z-50 border-b border-border">
         <Header state={state} onStateChange={handleStateChange} />
       </div>
       

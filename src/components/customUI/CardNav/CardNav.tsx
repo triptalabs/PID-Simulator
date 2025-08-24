@@ -1,19 +1,30 @@
-import React, { useLayoutEffect, useRef, useState } from "react";
+import React, { useLayoutEffect, useRef, useState, useEffect } from "react";
 import { gsap } from "gsap";
 // use your own icon import if react-icons is not available
 import { GoArrowUpRight } from "react-icons/go";
 
-type CardNavLink = {
+type CardNavControl = {
   label: string;
-  href: string;
-  ariaLabel: string;
+  value: number;
+  min: number;
+  max: number;
+  step: number;
+  unit: string;
+  onChange: (value: number) => void;
 };
 
 export type CardNavItem = {
   label: string;
   bgColor: string;
   textColor: string;
-  links: CardNavLink[];
+  controls?: CardNavControl[];
+  links?: CardNavLink[];
+};
+
+type CardNavLink = {
+  label: string;
+  href: string;
+  ariaLabel: string;
 };
 
 export interface CardNavProps {
@@ -26,6 +37,10 @@ export interface CardNavProps {
   menuColor?: string;
   buttonBgColor?: string;
   buttonTextColor?: string;
+  onHelpClick?: () => void;
+  onDocsClick?: () => void;
+  simulatorState?: any;
+  onStateChange?: (updates: any) => void;
 }
 
 const CardNav: React.FC<CardNavProps> = ({
@@ -38,6 +53,8 @@ const CardNav: React.FC<CardNavProps> = ({
   menuColor,
   buttonBgColor,
   buttonTextColor,
+  onHelpClick,
+  onDocsClick,
 }) => {
   const [isHamburgerOpen, setIsHamburgerOpen] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -84,8 +101,11 @@ const CardNav: React.FC<CardNavProps> = ({
     const navEl = navRef.current;
     if (!navEl) return null;
 
+    // Filter out null/undefined card references
+    const validCards = cardsRef.current.filter(card => card !== null && card !== undefined);
+
     gsap.set(navEl, { height: 60, overflow: "hidden" });
-    gsap.set(cardsRef.current, { y: 50, opacity: 0 });
+    gsap.set(validCards, { y: 50, opacity: 0 });
 
     const tl = gsap.timeline({ paused: true });
 
@@ -95,11 +115,13 @@ const CardNav: React.FC<CardNavProps> = ({
       ease,
     });
 
-    tl.to(
-      cardsRef.current,
-      { y: 0, opacity: 1, duration: 0.4, ease, stagger: 0.08 },
-      "-=0.1",
-    );
+    if (validCards.length > 0) {
+      tl.to(
+        validCards,
+        { y: 0, opacity: 1, duration: 0.4, ease, stagger: 0.08 },
+        "-=0.1",
+      );
+    }
 
     return tl;
   };
@@ -112,7 +134,7 @@ const CardNav: React.FC<CardNavProps> = ({
       tl?.kill();
       tlRef.current = null;
     };
-  }, [ease, items]);
+  }, [ease]); // Removed items dependency to prevent re-creation on state changes
 
   useLayoutEffect(() => {
     const handleResize = () => {
@@ -156,12 +178,64 @@ const CardNav: React.FC<CardNavProps> = ({
   };
 
   const setCardRef = (i: number) => (el: HTMLDivElement | null) => {
-    if (el) cardsRef.current[i] = el;
+    if (el) {
+      cardsRef.current[i] = el;
+      // Update GSAP references if timeline exists and component is mounted
+      if (tlRef.current) {
+        if (isExpanded) {
+          gsap.set(el, { y: 0, opacity: 1 });
+        } else {
+          gsap.set(el, { y: 50, opacity: 0 });
+        }
+      }
+    } else {
+      // Clean up reference if element is null
+      cardsRef.current[i] = null as any;
+    }
   };
+
+  // Handle state changes without affecting animations
+  useEffect(() => {
+    if (isExpanded && tlRef.current) {
+      // Ensure cards are visible when expanded and state changes
+      cardsRef.current.forEach(card => {
+        if (card) {
+          gsap.set(card, { y: 0, opacity: 1 });
+        }
+      });
+    }
+  }, [isExpanded]); // Only depend on isExpanded, not on items or state changes
+
+  // Force update cards visibility when expanded
+  const forceUpdateCards = () => {
+    if (isExpanded) {
+      setTimeout(() => {
+        cardsRef.current.forEach(card => {
+          if (card) {
+            gsap.set(card, { y: 0, opacity: 1 });
+          }
+        });
+      }, 50);
+    }
+  };
+
+  // Listen for control changes and force update
+  useEffect(() => {
+    if (isExpanded) {
+      forceUpdateCards();
+    }
+  }); // Run on every render when expanded
+
+  // Clean up card references when component unmounts
+  useEffect(() => {
+    return () => {
+      cardsRef.current = [];
+    };
+  }, []);
 
   return (
     <div
-      className={`card-nav-container absolute left-1/2 -translate-x-1/2 w-[90%] max-w-[800px] z-[99] top-[1.2em] md:top-[2em] ${className}`}
+      className={`card-nav-container absolute left-1/2 -translate-x-1/2 w-[92%] max-w-[850px] z-[99] top-[1.2em] ${className}`}
     >
       <nav
         ref={navRef}
@@ -193,13 +267,31 @@ const CardNav: React.FC<CardNavProps> = ({
             <img src={logo} alt={logoAlt} className="logo h-[28px]" />
           </div>
 
-          <button
-            type="button"
-            className="card-nav-cta-button hidden md:inline-flex border-0 rounded-[calc(0.75rem-0.2rem)] px-4 h-full font-medium cursor-pointer transition-colors duration-300"
-            style={{ backgroundColor: buttonBgColor, color: buttonTextColor }}
-          >
-            Get Started
-          </button>
+          <div className="flex items-center gap-3 order-3 md:order-none">
+            <button
+              type="button"
+              className="card-nav-help-button hidden md:inline-flex border border-current rounded-[calc(0.75rem-0.2rem)] px-4 h-8 font-medium cursor-pointer transition-all duration-300 text-sm hover:bg-white/10"
+              style={{ color: menuColor }}
+              onClick={onHelpClick}
+            >
+              Cómo usar
+            </button>
+            <button
+              type="button"
+              className="card-nav-docs-button hidden md:inline-flex border border-current rounded-[calc(0.75rem-0.2rem)] px-4 h-8 font-medium cursor-pointer transition-all duration-300 text-sm hover:bg-white/10"
+              style={{ color: menuColor }}
+              onClick={onDocsClick}
+            >
+              Docs
+            </button>
+            <button
+              type="button"
+              className="card-nav-cta-button hidden md:inline-flex border-0 rounded-[calc(0.75rem-0.2rem)] px-6 h-8 font-medium cursor-pointer transition-all duration-300 text-sm hover:opacity-90"
+              style={{ backgroundColor: buttonBgColor, color: buttonTextColor }}
+            >
+              Iniciar Simulación
+            </button>
+          </div>
         </div>
 
         <div
@@ -209,33 +301,68 @@ const CardNav: React.FC<CardNavProps> = ({
               : "invisible pointer-events-none"
           } md:flex-row md:items-end md:gap-[12px]`}
           aria-hidden={!isExpanded}
+          style={{
+            opacity: isExpanded ? 1 : 0,
+            transform: isExpanded ? 'translateY(0)' : 'translateY(50px)',
+            transition: 'opacity 0.3s ease, transform 0.3s ease'
+          }}
         >
           {(items || []).slice(0, 3).map((item, idx) => (
             <div
               key={`${item.label}-${idx}`}
-              className="nav-card select-none relative flex flex-col gap-2 p-[12px_16px] rounded-[calc(0.75rem-0.2rem)] min-w-0 flex-[1_1_auto] h-auto min-h-[60px] md:h-full md:min-h-0 md:flex-[1_1_0%]"
+              className="nav-card select-none relative flex flex-col gap-3 p-[16px] rounded-[calc(0.75rem-0.2rem)] min-w-0 flex-[1_1_auto] h-auto min-h-[80px] md:h-full md:min-h-0 md:flex-[1_1_0%]"
               ref={setCardRef(idx)}
               style={{ backgroundColor: item.bgColor, color: item.textColor }}
             >
-              <div className="nav-card-label font-normal tracking-[-0.5px] text-[18px] md:text-[22px]">
+              <div className="nav-card-label font-semibold tracking-[-0.5px] text-[16px] md:text-[18px]">
                 {item.label}
               </div>
-              <div className="nav-card-links mt-auto flex flex-col gap-[2px]">
-                {item.links?.map((lnk, i) => (
-                  <a
-                    key={`${lnk.label}-${i}`}
-                    className="nav-card-link inline-flex items-center gap-[6px] no-underline cursor-pointer transition-opacity duration-300 hover:opacity-75 text-[15px] md:text-[16px]"
-                    href={lnk.href}
-                    aria-label={lnk.ariaLabel}
-                  >
-                    <GoArrowUpRight
-                      className="nav-card-link-icon shrink-0"
-                      aria-hidden="true"
-                    />
-                    {lnk.label}
-                  </a>
-                ))}
-              </div>
+              
+              {item.controls && (
+                <div className="nav-card-controls flex flex-col gap-2">
+                  {item.controls.map((control, i) => (
+                    <div key={`${control.label}-${i}`} className="control-item">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-xs font-medium opacity-90">{control.label}</span>
+                        <span className="text-xs font-mono opacity-75">
+                          {control.value.toFixed(control.step < 0.01 ? 3 : control.step < 0.1 ? 2 : 1)}{control.unit}
+                        </span>
+                      </div>
+                      <input
+                        type="range"
+                        min={control.min}
+                        max={control.max}
+                        step={control.step}
+                        value={control.value}
+                        onChange={(e) => control.onChange(parseFloat(e.target.value))}
+                        className="w-full h-1.5 bg-white/20 rounded-full appearance-none cursor-pointer slider"
+                        style={{
+                          background: `linear-gradient(to right, ${item.textColor} 0%, ${item.textColor} ${((control.value - control.min) / (control.max - control.min)) * 100}%, rgba(255,255,255,0.2) ${((control.value - control.min) / (control.max - control.min)) * 100}%, rgba(255,255,255,0.2) 100%)`
+                        }}
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
+              
+              {item.links && (
+                <div className="nav-card-links mt-auto flex flex-col gap-[2px]">
+                  {item.links.map((lnk, i) => (
+                    <a
+                      key={`${lnk.label}-${i}`}
+                      className="nav-card-link inline-flex items-center gap-[6px] no-underline cursor-pointer transition-opacity duration-300 hover:opacity-75 text-[13px] md:text-[14px]"
+                      href={lnk.href}
+                      aria-label={lnk.ariaLabel}
+                    >
+                      <GoArrowUpRight
+                        className="nav-card-link-icon shrink-0"
+                        aria-hidden="true"
+                      />
+                      {lnk.label}
+                    </a>
+                  ))}
+                </div>
+              )}
             </div>
           ))}
         </div>

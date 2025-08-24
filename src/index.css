@@ -96,6 +96,83 @@
     @apply text-industrial-orange;
   }
 
+  /* CardNav styling for PID Simulator */
+  .card-nav-container {
+    @apply z-[100] fixed top-0 left-0 right-0;
+  }
+
+  .card-nav {
+    @apply shadow-xl backdrop-blur-lg;
+    box-shadow: 0 8px 32px -8px rgba(0, 0, 0, 0.4), 0 4px 16px -4px rgba(0, 0, 0, 0.3);
+    background: linear-gradient(135deg, rgba(30, 41, 59, 0.98) 0%, rgba(30, 41, 59, 0.95) 100%);
+    border: 1px solid rgba(59, 130, 246, 0.15);
+  }
+
+  .card-nav.open {
+    @apply shadow-2xl;
+    box-shadow: 0 20px 40px -8px rgba(0, 0, 0, 0.5), 0 8px 24px -4px rgba(0, 0, 0, 0.4);
+    min-height: 280px;
+  }
+
+  .nav-card {
+    @apply transition-all duration-300 ease-out;
+  }
+
+  .nav-card:hover {
+    @apply transform scale-[1.02];
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .nav-card-link {
+    @apply transition-all duration-200;
+  }
+
+  .nav-card-link:hover {
+    @apply transform translate-x-1;
+  }
+
+  .card-nav-help-button:hover {
+    @apply opacity-90 shadow-sm;
+  }
+
+  .card-nav-docs-button:hover {
+    @apply opacity-90 shadow-sm;
+  }
+
+  .card-nav-cta-button:hover {
+    @apply shadow-md;
+  }
+
+  /* Custom slider styles for CardNav */
+  .slider::-webkit-slider-thumb {
+    appearance: none;
+    height: 12px;
+    width: 12px;
+    border-radius: 50%;
+    background: currentColor;
+    cursor: pointer;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+
+  .slider::-moz-range-thumb {
+    height: 12px;
+    width: 12px;
+    border-radius: 50%;
+    background: currentColor;
+    cursor: pointer;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+
+  .slider:focus {
+    outline: none;
+  }
+
+  .slider:focus::-webkit-slider-thumb {
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5);
+  }
+
   /* Chart styling */
   .recharts-cartesian-grid-horizontal line,
   .recharts-cartesian-grid-vertical line {

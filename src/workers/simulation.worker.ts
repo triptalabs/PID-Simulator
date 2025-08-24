@@ -34,14 +34,16 @@ import type {
   MetricsEvent
 } from '../lib/simulation/types'
 
+import { SIMULATION_CONFIG } from '../config/app.config'
+
 // ============================================================================
 // CONFIGURACIÓN Y CONSTANTES
 // ============================================================================
 
-const WORKER_VERSION = '1.0.0'
-const DEFAULT_TIMESTEP = 0.1  // 100ms = 10 Hz
-const DEFAULT_BUFFER_SIZE = 10000  // ~16 minutos de datos a 10Hz
-const MAX_BUFFER_SIZE = 100000     // ~2.7 horas máximo
+const WORKER_VERSION = SIMULATION_CONFIG.worker.version
+const DEFAULT_TIMESTEP = SIMULATION_CONFIG.worker.defaultTimestep  // 100ms = 10 Hz
+const DEFAULT_BUFFER_SIZE = SIMULATION_CONFIG.worker.defaultBufferSize  // ~16 minutos de datos a 10Hz
+const MAX_BUFFER_SIZE = SIMULATION_CONFIG.worker.maxBufferSize     // ~2.7 horas máximo
 
 // ============================================================================
 // ESTADO DEL WORKER

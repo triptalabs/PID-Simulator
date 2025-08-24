@@ -46,17 +46,29 @@ export const Dashboard = () => {
   const { currentData, buffer } = useSimulationData();
   const controls = useSimulationControls();
 
-  // Mapear buffer del Worker a datos de charts
+  // Mapear buffer del Worker a datos de charts con ventana FIFO
   useEffect(() => {
     if (!buffer || buffer.length === 0) return;
-    const mapped: ChartDataPoint[] = buffer.map(d => ({
-      time: d.t,
-      pv: d.PV,
-      sp: d.SP,
-      output: d.u * 100
-    }));
+    
+    // Obtener datos de la ventana de tiempo seleccionada
+    const windowData = actions.getWindowData(state.timeWindow);
+    
+    // Transformar datos: tiempo absoluto -> tiempo relativo al momento actual
+    // CORRECCIÓN: Eje X con tiempo relativo (0s = actual, -60s = hace 60s)
+    const mapped: ChartDataPoint[] = windowData.map(d => {
+      // Calcular tiempo relativo al momento actual: 0s = actual, valores negativos = pasado
+      const timeFromCurrent = d.t - (windowData[windowData.length - 1]?.t || 0);
+      
+      return {
+        time: timeFromCurrent,
+        pv: d.PV,
+        sp: d.SP,
+        output: d.u * 100
+      };
+    }); // ← SIN REVERSE: mantener orden cronológico
+    
     setChartData(mapped);
-  }, [buffer]);
+  }, [buffer, state.timeWindow, actions]);
 
   const handleStateChange = useCallback((updates: Partial<SimulatorState>) => {
     setState(prev => {
@@ -184,7 +196,7 @@ export const Dashboard = () => {
               onValueChange={(timeWindow) => handleStateChange({ timeWindow })}
             />
           </div>
-          <ChartsPanel data={chartData} />
+          <ChartsPanel data={chartData} timeWindow={state.timeWindow} />
         </section>
       </main>
     </div>

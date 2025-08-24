@@ -5,9 +5,26 @@ import { ChartDataPoint } from '@/lib/types';
 interface ChartPVSPProps {
   data: ChartDataPoint[];
   embedded?: boolean;
+  timeWindow?: number; // Ventana de tiempo para dominio fijo del eje X
 }
 
-export const ChartPVSP = ({ data, embedded = false }: ChartPVSPProps) => {
+export const ChartPVSP = ({ data, embedded = false, timeWindow }: ChartPVSPProps) => {
+  // Dominio fijo del eje X basado en la ventana de tiempo
+  const xAxisDomain = timeWindow ? [-timeWindow, 0] : ['dataMin', 'dataMax'];
+  
+  // Generar ticks personalizados para el eje X
+  const generateXTicks = (timeWindow: number) => {
+    if (!timeWindow) return [];
+    const ticks = [];
+    const step = timeWindow / 4; // 5 ticks (-60, -45, -30, -15, 0 para ventana de 60s)
+    for (let i = 0; i <= 4; i++) {
+      ticks.push(-timeWindow + (i * step));
+    }
+    return ticks;
+  };
+  
+  const xTicks = timeWindow ? generateXTicks(timeWindow) : undefined;
+  
   if (embedded) {
     return (
       <div className="h-full min-h-0">
@@ -18,8 +35,12 @@ export const ChartPVSP = ({ data, embedded = false }: ChartPVSPProps) => {
               dataKey="time"
               type="number"
               scale="linear"
-              domain={['dataMin', 'dataMax']}
+              domain={xAxisDomain}
+              ticks={xTicks}
               tickFormatter={(value) => `${value}s`}
+              allowDataOverflow={false}
+              allowDecimals={false}
+              minTickGap={20}
             />
             <YAxis
               domain={['dataMin - 5', 'dataMax + 5']}
@@ -67,8 +88,12 @@ export const ChartPVSP = ({ data, embedded = false }: ChartPVSPProps) => {
               dataKey="time"
               type="number"
               scale="linear"
-              domain={['dataMin', 'dataMax']}
+              domain={xAxisDomain}
+              ticks={xTicks}
               tickFormatter={(value) => `${value}s`}
+              allowDataOverflow={false}
+              allowDecimals={false}
+              minTickGap={20}
             />
             <YAxis
               domain={['dataMin - 5', 'dataMax + 5']}

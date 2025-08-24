@@ -1,7 +1,7 @@
+
 import { useState, useEffect, useCallback } from "react";
 import { Header } from "@/components/Header";
 import { UnifiedControlPanel } from "@/components/UnifiedControlPanel";
-import { TimeWindowSelect } from "@/components/TimeWindowSelect";
 import { ChartsPanel } from "@/components/ChartsPanel";
 import { SimulatorState, ChartDataPoint, TimeWindow } from "@/lib/types";
 import { useSimulation, useSimulationData, useSimulationControls } from "@/components/SimulationProvider";
@@ -183,34 +183,44 @@ export const Dashboard = () => {
 
   return (
     <div className="dark h-screen overflow-hidden bg-background text-foreground flex flex-col">
-      <Header state={state} onStateChange={handleStateChange} />
-      <main className="grid flex-1 min-h-0 grid-cols-1 lg:grid-cols-[320px_1fr] gap-4 p-4 pt-36">
-        <div className="min-h-0 flex flex-col space-y-4">
-          <UnifiedControlPanel 
-            state={state} 
-            onStateChange={handleStateChange}
-            onReset={() => actions.reset(true)}
-            onExportWindow={() => actions.exportCSV({ type: 'window', seconds: state.timeWindow })}
-            onExportAll={() => actions.exportCSV({ type: 'all' })}
-            metrics={simState.metrics || {
-              overshoot: 0,
-              t_peak: 0,
-              settling_time: 0,
-              is_calculating: false,
-              sp_previous: 0,
-              pv_max: -Infinity,
-              pv_min: Infinity,
-              t_start: 0,
-              t_current: 0,
-              samples_count: 0
-            }}
-            currentPV={chartData.length > 0 ? chartData[chartData.length - 1]?.pv || 0 : 0}
-          />
+      {/* Header fijo en la parte superior */}
+      <div className="flex-shrink-0 z-50">
+        <Header state={state} onStateChange={handleStateChange} />
+      </div>
+      
+      {/* Contenido principal que se ajusta al espacio restante */}
+      <div className="flex-1 min-h-0 flex flex-col lg:flex-row gap-4 p-4">
+        {/* Panel de control - responsivo */}
+        <div className="flex-shrink-0 w-full lg:w-80 xl:w-96">
+          <div className="h-full overflow-y-auto industrial-scroll">
+            <UnifiedControlPanel 
+              state={state} 
+              onStateChange={handleStateChange}
+              onReset={() => actions.reset(true)}
+              onExportWindow={() => actions.exportCSV({ type: 'window', seconds: state.timeWindow })}
+              onExportAll={() => actions.exportCSV({ type: 'all' })}
+              metrics={simState.metrics || {
+                overshoot: 0,
+                t_peak: 0,
+                settling_time: 0,
+                is_calculating: false,
+                sp_previous: 0,
+                pv_max: -Infinity,
+                pv_min: Infinity,
+                t_start: 0,
+                t_current: 0,
+                samples_count: 0
+              }}
+              currentPV={chartData.length > 0 ? chartData[chartData.length - 1]?.pv || 0 : 0}
+            />
+          </div>
         </div>
-        <section className="min-h-0 grid grid-rows-[1fr] gap-4">
+        
+        {/* Panel de gráficas - se expande para llenar el espacio restante */}
+        <div className="flex-1 min-h-0">
           <ChartsPanel data={chartData} timeWindow={state.timeWindow} />
-        </section>
-      </main>
+        </div>
+      </div>
     </div>
   );
 };

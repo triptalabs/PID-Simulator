@@ -222,13 +222,13 @@ export const Header = ({ state, onStateChange }: HeaderProps) => {
   ];
 
   return (
-    <div className="relative">
+    <div className="w-full">
       {/* CardNav como header principal con todas las configuraciones */}
       <CardNav
         logo="/placeholder.svg"
         logoAlt="PID Simulator Pro"
         items={cardNavItems}
-        className=""
+        className="w-full"
         ease="power3.out"
         baseColor="rgba(15, 23, 42, 0.98)"
         menuColor="#f8fafc"

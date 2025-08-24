@@ -1,7 +1,7 @@
 
 import React from 'react'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 import { Separator } from '@/components/ui/separator'
@@ -134,84 +134,85 @@ export const UnifiedControlPanel = ({
   }
 
   return (
-    <Card className="industrial-panel h-fit">
-      <CardContent className="p-4 space-y-4">
-        {/* Header con estado de conexión */}
-        <div className="flex items-center justify-between">
+    <Card className="industrial-panel h-full flex flex-col">
+      <CardHeader className="flex-shrink-0 pb-3">
+        <CardTitle className="flex items-center justify-between text-sm">
           <div className="flex items-center gap-2">
             <Zap className="w-4 h-4 text-industrial-blue" />
-            <span className="text-sm font-semibold">Panel de Control</span>
+            <span className="font-semibold">Panel de Control</span>
           </div>
           <Badge variant={connectionStatus.variant} className="flex items-center gap-1 text-xs h-5 px-2">
             {connectionStatus.icon}
             {connectionStatus.text}
           </Badge>
-        </div>
+        </CardTitle>
+      </CardHeader>
 
+      <CardContent className="flex-1 min-h-0 overflow-y-auto industrial-scroll p-4 pt-0 space-y-4">
         {/* Controles principales */}
-        <div className="space-y-3">
-          <div className="grid grid-cols-3 gap-2">
-            <Button
-              onClick={handleStart}
-              disabled={!isConnected || isRunning}
-              size="sm"
-              className="flex items-center gap-1 h-8 text-xs"
-            >
-              <Play className="h-3 w-3" />
-              Iniciar
-            </Button>
-            
-            <Button
-              onClick={handlePause}
-              disabled={!isConnected || !isRunning}
-              variant="outline"
-              size="sm"
-              className="flex items-center gap-1 h-8 text-xs"
-            >
-              <Pause className="h-3 w-3" />
-              Pausar
-            </Button>
-            
-            <Button
-              onClick={handleReset}
-              disabled={!isConnected}
-              variant="outline"
-              size="sm"
-              className="flex items-center gap-1 h-8 text-xs"
-            >
-              <RotateCcw className="h-3 w-3" />
-              Reset
-            </Button>
-          </div>
+        <div className="grid grid-cols-3 gap-2">
+          <Button
+            onClick={handleStart}
+            disabled={!isConnected || isRunning}
+            size="sm"
+            className="flex items-center gap-1 h-8 text-xs"
+          >
+            <Play className="h-3 w-3" />
+            Iniciar
+          </Button>
+          
+          <Button
+            onClick={handlePause}
+            disabled={!isConnected || !isRunning}
+            variant="outline"
+            size="sm"
+            className="flex items-center gap-1 h-8 text-xs"
+          >
+            <Pause className="h-3 w-3" />
+            Pausar
+          </Button>
+          
+          <Button
+            onClick={handleReset}
+            disabled={!isConnected}
+            variant="outline"
+            size="sm"
+            className="flex items-center gap-1 h-8 text-xs"
+          >
+            <RotateCcw className="h-3 w-3" />
+            Reset
+          </Button>
         </div>
 
         <Separator />
 
         {/* Estado actual compacto */}
-        <div className="space-y-2">
+        <div className="space-y-3">
           <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Estado Actual</h4>
           <div className="grid grid-cols-2 gap-3 text-xs">
-            <div className="space-y-1">
-              <div className="flex justify-between">
+            <div className="space-y-2">
+              <div className="flex justify-between items-center">
                 <span className="text-muted-foreground">Modo:</span>
-                <Badge variant={state.mode === 'horno' ? 'default' : 'secondary'} className="text-xs h-4 px-1">
+                <Badge variant={state.mode === 'horno' ? 'default' : 'secondary'} className="text-xs h-4 px-2">
                   <Thermometer className="w-2 h-2 mr-1" />
                   {state.mode === 'horno' ? 'Horno' : 'Chiller'}
                 </Badge>
               </div>
-              <div className="flex justify-between">
+              <div className="flex justify-between items-center">
                 <span className="text-muted-foreground">SP:</span>
-                <span className="control-value font-mono">{state.setpoint}°C</span>
+                <span className="control-value font-mono font-semibold">{state.setpoint}°C</span>
               </div>
             </div>
-            <div className="space-y-1">
-              <div className="flex justify-between">
+            <div className="space-y-2">
+              <div className="flex justify-between items-center">
                 <span className="text-muted-foreground">PV:</span>
-                <span className="control-value font-mono">{formatTemperature(currentPV)}</span>
+                <span className="control-value font-mono font-semibold">{formatTemperature(currentPV)}</span>
               </div>
-              <div className="flex justify-between">
+              <div className="flex justify-between items-center">
                 <span className="text-muted-foreground">Ventana:</span>
-                <span className="control-value font-mono">{state.timeWindow === 60 ? '1m' : state.timeWindow === 300 ? '5m' : '30m'}</span>
+                <span className="control-value font-mono font-semibold">
+                  {state.timeWindow === 60 ? '1m' : state.timeWindow === 300 ? '5m' : '30m'}
+                </span>
               </div>
             </div>
           </div>
@@ -219,7 +220,7 @@ export const UnifiedControlPanel = ({
 
         <Separator />
 
-        {/* Métricas compactas */}
+        {/* Métricas de control */}
         <div className="space-y-3">
           <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wide flex items-center gap-2">
             <Target className="h-3 w-3" />
@@ -227,7 +228,7 @@ export const UnifiedControlPanel = ({
           </h4>
           
           {/* Estado de cálculo */}
-          <div className="flex items-center justify-between p-2 bg-muted/30 rounded-lg">
+          <div className="flex items-center justify-between p-2 bg-muted/20 rounded-md">
             <span className="text-xs text-muted-foreground">
               {metrics.is_calculating ? "Calculando..." : "En espera"}
             </span>
@@ -239,7 +240,7 @@ export const UnifiedControlPanel = ({
             </Badge>
           </div>
 
-          {/* Overshoot compacto */}
+          {/* Overshoot */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -260,12 +261,12 @@ export const UnifiedControlPanel = ({
           </div>
 
           {/* Tiempo de establecimiento */}
-          <div className="flex items-center justify-between p-2 bg-muted/30 rounded-lg">
+          <div className="flex items-center justify-between p-2 bg-muted/20 rounded-md">
             <div className="flex items-center gap-2">
               <Clock className="h-3 w-3" />
               <span className="text-xs font-medium">Tiempo Est.</span>
             </div>
-            <span className="text-xs font-mono">
+            <span className="text-xs font-mono font-semibold">
               {formatTime(metrics.settling_time > 0 ? metrics.settling_time + 2 : 0)}
             </span>
           </div>
@@ -273,9 +274,9 @@ export const UnifiedControlPanel = ({
 
         <Separator />
 
-        {/* Exportación compacta */}
+        {/* Exportación */}
         <div className="space-y-2">
-          <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Exportar</h4>
+          <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Exportar Datos</h4>
           <div className="grid grid-cols-2 gap-2">
             <Button
               variant="outline"
@@ -298,18 +299,18 @@ export const UnifiedControlPanel = ({
           </div>
         </div>
 
-        {/* Datos en tiempo real si están disponibles */}
+        {/* Datos en tiempo real */}
         {currentData && (
           <>
             <Separator />
             <div className="grid grid-cols-2 gap-2 text-xs">
               <div className="text-center p-2 bg-muted/20 rounded">
-                <div className="text-muted-foreground">Tiempo</div>
-                <div className="font-mono font-medium">{currentData.t.toFixed(1)}s</div>
+                <div className="text-muted-foreground mb-1">Tiempo</div>
+                <div className="font-mono font-semibold">{currentData.t.toFixed(1)}s</div>
               </div>
               <div className="text-center p-2 bg-muted/20 rounded">
-                <div className="text-muted-foreground">Salida</div>
-                <div className="font-mono font-medium">{(currentData.u * 100).toFixed(1)}%</div>
+                <div className="text-muted-foreground mb-1">Salida</div>
+                <div className="font-mono font-semibold">{(currentData.u * 100).toFixed(1)}%</div>
               </div>
             </div>
           </>
@@ -317,12 +318,12 @@ export const UnifiedControlPanel = ({
 
         {/* Atajos de teclado */}
         <div className="pt-2 border-t border-muted/20">
-          <div className="text-[10px] text-muted-foreground space-y-0.5">
-            <div className="grid grid-cols-2 gap-1">
+          <div className="text-[10px] text-muted-foreground space-y-1">
+            <div className="flex justify-between items-center">
               <span><kbd className="text-[9px] bg-muted px-1 rounded">S</kbd> Start/Pause</span>
               <span><kbd className="text-[9px] bg-muted px-1 rounded">R</kbd> Reset</span>
             </div>
-            <div className="grid grid-cols-2 gap-1">
+            <div className="flex justify-between items-center">
               <span><kbd className="text-[9px] bg-muted px-1 rounded">↑/↓</kbd> SP ±1°C</span>
               <span><kbd className="text-[9px] bg-muted px-1 rounded">←/→</kbd> Ventana</span>
             </div>

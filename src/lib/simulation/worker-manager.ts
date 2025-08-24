@@ -418,14 +418,22 @@ export class WorkerManager {
 
   /**
    * Obtiene datos de una ventana de tiempo específica
+   * Implementa un buffer FIFO eficiente que mantiene solo los últimos N puntos
    */
   getWindowData(windowSeconds: number): SimulationBuffer['data'] {
     if (this.buffer.data.length === 0) return []
 
-    const currentTime = this.buffer.data[this.buffer.data.length - 1].t
-    const startTime = currentTime - windowSeconds
-
-    return this.buffer.data.filter(entry => entry.t >= startTime)
+    // Calcular cuántos puntos necesitamos basado en la ventana de tiempo
+    // Usar el timestep configurado en lugar de hardcodear
+    const maxPoints = Math.ceil(windowSeconds / this.config.timestep)
+    
+    // Si tenemos menos puntos que el máximo, devolver todos
+    if (this.buffer.data.length <= maxPoints) {
+      return [...this.buffer.data]
+    }
+    
+    // Si tenemos más puntos, devolver solo los últimos N puntos (FIFO)
+    return this.buffer.data.slice(-maxPoints)
   }
 
   /**

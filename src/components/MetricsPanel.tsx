@@ -54,18 +54,18 @@ export const MetricsPanel = ({ metrics, currentSP, currentPV }: MetricsPanelProp
   };
 
   return (
-    <div className="space-y-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       {/* Estado de Cálculo */}
       <Card className="industrial-control">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-sm flex items-center gap-2">
+        <CardHeader className="py-2">
+          <CardTitle className="text-xs font-medium flex items-center gap-2">
             <Target className="h-4 w-4" />
             Estado de Métricas
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="py-2">
           <div className="flex items-center justify-between">
-            <span className="text-sm text-muted-foreground">
+            <span className="text-xs text-muted-foreground">
               {metrics.is_calculating ? "Calculando..." : "Esperando cambio SP"}
             </span>
             <Badge 
@@ -76,9 +76,8 @@ export const MetricsPanel = ({ metrics, currentSP, currentPV }: MetricsPanelProp
             </Badge>
           </div>
           {metrics.is_calculating && (
-            <div className="mt-2 text-xs text-muted-foreground">
-              Muestras: {metrics.samples_count} | 
-              Tiempo: {formatTime(metrics.t_current - metrics.t_start)}
+            <div className="mt-1 text-[11px] text-muted-foreground">
+              Muestras: <span className="font-mono">{metrics.samples_count}</span> · Tiempo: <span className="font-mono">{formatTime(metrics.t_current - metrics.t_start)}</span>
             </div>
           )}
         </CardContent>
@@ -86,15 +85,15 @@ export const MetricsPanel = ({ metrics, currentSP, currentPV }: MetricsPanelProp
 
       {/* Overshoot */}
       <Card className="industrial-control">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-sm flex items-center gap-2">
+        <CardHeader className="py-2">
+          <CardTitle className="text-xs font-medium flex items-center gap-2">
             <TrendingUp className="h-4 w-4" />
             Overshoot
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-3">
+        <CardContent className="py-2 space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-sm text-muted-foreground">Porcentaje</span>
+            <span className="text-xs text-muted-foreground">Porcentaje</span>
             <Badge 
               variant="outline" 
               className={`${getOvershootColor(metrics.overshoot)} text-white border-0`}
@@ -103,25 +102,25 @@ export const MetricsPanel = ({ metrics, currentSP, currentPV }: MetricsPanelProp
             </Badge>
           </div>
           
-          <div className="space-y-2">
-            <div className="flex justify-between text-xs text-muted-foreground">
+          <div className="space-y-1">
+            <div className="flex justify-between text-[11px] text-muted-foreground">
               <span>0%</span>
               <span>2%</span>
             </div>
             <Progress 
               value={getOvershootProgress(metrics.overshoot)} 
-              className="h-2"
+              className="h-1.5"
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4 text-xs">
+          <div className="grid grid-cols-2 gap-2 text-[11px]">
             <div>
               <span className="text-muted-foreground">Tiempo pico:</span>
-              <div className="font-medium">{formatTime(metrics.t_peak)}</div>
+              <div className="font-medium font-mono">{formatTime(metrics.t_peak)}</div>
             </div>
             <div>
               <span className="text-muted-foreground">PV máximo:</span>
-              <div className="font-medium">{formatTemperature(metrics.pv_max)}</div>
+              <div className="font-medium font-mono">{formatTemperature(metrics.pv_max)}</div>
             </div>
           </div>
         </CardContent>
@@ -129,23 +128,22 @@ export const MetricsPanel = ({ metrics, currentSP, currentPV }: MetricsPanelProp
 
       {/* Tiempo de Establecimiento */}
       <Card className="industrial-control">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-sm flex items-center gap-2">
+        <CardHeader className="py-2">
+          <CardTitle className="text-xs font-medium flex items-center gap-2">
             <Clock className="h-4 w-4" />
             Tiempo de Establecimiento
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-muted-foreground">Tiempo total</span>
-            <Badge variant="outline" className="font-mono">
+        <CardContent className="py-2">
+          <div className="flex items-end justify-between">
+            <span className="text-xs text-muted-foreground">Tiempo total</span>
+            <div className="text-sm font-semibold font-mono">
               {formatTime(metrics.settling_time > 0 ? metrics.settling_time + 2 : 0)}
-            </Badge>
+            </div>
           </div>
-          
           {metrics.settling_time > 0 && (
-            <div className="mt-2 text-xs text-muted-foreground">
-              Inicio estabilidad: {formatTime(metrics.settling_time)}
+            <div className="mt-1 text-[11px] text-muted-foreground">
+              Inicio: <span className="font-mono">{formatTime(metrics.settling_time)}</span>
             </div>
           )}
         </CardContent>
@@ -153,24 +151,24 @@ export const MetricsPanel = ({ metrics, currentSP, currentPV }: MetricsPanelProp
 
       {/* Información Adicional */}
       <Card className="industrial-control">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-sm flex items-center gap-2">
+        <CardHeader className="py-2">
+          <CardTitle className="text-xs font-medium flex items-center gap-2">
             <AlertTriangle className="h-4 w-4" />
             Información
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-2 text-xs">
+        <CardContent className="py-2 space-y-1 text-[11px]">
           <div className="flex justify-between">
             <span className="text-muted-foreground">SP anterior:</span>
-            <span>{formatTemperature(metrics.sp_previous)}</span>
+            <span className="font-mono">{formatTemperature(metrics.sp_previous)}</span>
           </div>
           <div className="flex justify-between">
             <span className="text-muted-foreground">PV mínimo:</span>
-            <span>{formatTemperature(metrics.pv_min)}</span>
+            <span className="font-mono">{formatTemperature(metrics.pv_min)}</span>
           </div>
           <div className="flex justify-between">
             <span className="text-muted-foreground">Tiempo inicio:</span>
-            <span>{formatTime(metrics.t_start)}</span>
+            <span className="font-mono">{formatTime(metrics.t_start)}</span>
           </div>
         </CardContent>
       </Card>

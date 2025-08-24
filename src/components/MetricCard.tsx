@@ -23,7 +23,7 @@ export const MetricCard = ({ title, value, unit, subtitle, tooltip }: MetricCard
             </CardHeader>
             <CardContent>
               <div className="space-y-1">
-                <div className="metric-display">
+                <div className="metric-display font-mono">
                   {value !== null ? `${value.toFixed(1)}${unit}` : '—'}
                 </div>
                 <p className="text-xs text-muted-foreground">{subtitle}</p>

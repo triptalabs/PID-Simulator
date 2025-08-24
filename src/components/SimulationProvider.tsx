@@ -178,8 +178,9 @@ export function SimulationProvider({ children, config = {} }: SimulationProvider
           avg_cycle_time: data.performance.avg_cycle_time,
           max_cycle_time: data.performance.max_cycle_time,
           cpu_usage_estimate: data.performance.cpu_usage_estimate,
-          uptime: data.performance.uptime || 0,
-          samples_processed: data.performance.samples_processed || 0
+          // FIX: uptime y samples_processed están al nivel raíz del payload, no dentro de performance
+          uptime: data.uptime || 0,
+          samples_processed: data.samples_processed || 0
         }
       }))
     }, []),

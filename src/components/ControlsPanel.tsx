@@ -222,13 +222,19 @@ export const ControlsPanel = ({ state, onStateChange, onApplyPreset }: ControlsP
       
       if (keyParts.length > 1) {
         const secondLevelKey = keyParts[1];
-        onStateChange({
-          [topLevelKey]: { ...state[topLevelKey as keyof SimulatorState], [secondLevelKey]: value }
-        });
+        const currentState = state[topLevelKey as keyof SimulatorState];
+        if (typeof currentState === 'object' && currentState !== null) {
+          onStateChange({
+            [topLevelKey]: { 
+              ...(currentState as Record<string, any>), 
+              [secondLevelKey]: value 
+            }
+          });
+        }
       } else {
         onStateChange({ [topLevelKey]: value } as Partial<SimulatorState>);
       }
-    }, 10); // Reducido de 50ms a 10ms para mejor responsividad
+    }, 10);
 
     debounceTimersRef.current[key] = timer;
   }, [state, onStateChange]);
@@ -245,7 +251,7 @@ export const ControlsPanel = ({ state, onStateChange, onApplyPreset }: ControlsP
           return {
             ...prevState,
             [topLevelKey]: {
-              ...topLevelState,
+              ...(topLevelState as Record<string, any>),
               [secondLevelKey]: value,
             },
           };

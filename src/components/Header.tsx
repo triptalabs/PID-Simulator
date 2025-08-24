@@ -6,7 +6,7 @@ import { HelpDialog } from "./HelpDialog";
 import { useState } from "react";
 import CardNav from "./customUI/CardNav/CardNav";
 import { SimulatorState } from "@/lib/types";
-import { PRESETS } from "@/lib/presets";
+import { presets } from "@/lib/presets";
 
 interface HeaderProps {
   state?: SimulatorState;
@@ -97,14 +97,14 @@ export const Header = ({ state, onStateChange }: HeaderProps) => {
           value: "custom",
           options: [
             { value: "custom", label: "Personalizado" },
-            ...PRESETS.map(preset => ({
+            ...presets.map(preset => ({
               value: preset.key,
               label: preset.name
             }))
           ],
           onChange: (value) => {
             if (value !== "custom") {
-              const preset = PRESETS.find(p => p.key === value);
+              const preset = presets.find(p => p.key === value);
               if (preset) {
                 onStateChange?.({
                   plant: {

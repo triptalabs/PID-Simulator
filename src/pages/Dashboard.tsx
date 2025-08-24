@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from "react";
 import { Header } from "@/components/Header";
 import { UnifiedControlPanel } from "@/components/UnifiedControlPanel";
@@ -182,42 +181,40 @@ export const Dashboard = () => {
   }, [actions, controls.isRunning, state.setpoint, state.mode, state.timeWindow, handleStateChange]);
 
   return (
-    <div className="dark h-screen overflow-hidden bg-background text-foreground flex flex-col">
-      {/* Header fijo en la parte superior */}
-      <div className="flex-shrink-0 z-50">
+    <div className="dark h-screen bg-background text-foreground flex flex-col">
+      {/* Header con altura fija */}
+      <div className="flex-shrink-0 h-16 z-50 border-b border-border">
         <Header state={state} onStateChange={handleStateChange} />
       </div>
       
-      {/* Contenido principal que se ajusta al espacio restante */}
-      <div className="flex-1 min-h-0 flex flex-col lg:flex-row gap-4 p-4">
-        {/* Panel de control - responsivo */}
+      {/* Contenido principal que usa el espacio restante */}
+      <div className="flex-1 flex flex-col lg:flex-row gap-4 p-4 min-h-0">
+        {/* Panel de control lateral */}
         <div className="flex-shrink-0 w-full lg:w-80 xl:w-96">
-          <div className="h-full overflow-y-auto industrial-scroll">
-            <UnifiedControlPanel 
-              state={state} 
-              onStateChange={handleStateChange}
-              onReset={() => actions.reset(true)}
-              onExportWindow={() => actions.exportCSV({ type: 'window', seconds: state.timeWindow })}
-              onExportAll={() => actions.exportCSV({ type: 'all' })}
-              metrics={simState.metrics || {
-                overshoot: 0,
-                t_peak: 0,
-                settling_time: 0,
-                is_calculating: false,
-                sp_previous: 0,
-                pv_max: -Infinity,
-                pv_min: Infinity,
-                t_start: 0,
-                t_current: 0,
-                samples_count: 0
-              }}
-              currentPV={chartData.length > 0 ? chartData[chartData.length - 1]?.pv || 0 : 0}
-            />
-          </div>
+          <UnifiedControlPanel 
+            state={state} 
+            onStateChange={handleStateChange}
+            onReset={() => actions.reset(true)}
+            onExportWindow={() => actions.exportCSV({ type: 'window', seconds: state.timeWindow })}
+            onExportAll={() => actions.exportCSV({ type: 'all' })}
+            metrics={simState.metrics || {
+              overshoot: 0,
+              t_peak: 0,
+              settling_time: 0,
+              is_calculating: false,
+              sp_previous: 0,
+              pv_max: -Infinity,
+              pv_min: Infinity,
+              t_start: 0,
+              t_current: 0,
+              samples_count: 0
+            }}
+            currentPV={chartData.length > 0 ? chartData[chartData.length - 1]?.pv || 0 : 0}
+          />
         </div>
         
-        {/* Panel de gráficas - se expande para llenar el espacio restante */}
-        <div className="flex-1 min-h-0">
+        {/* Panel de gráficas que se expande */}
+        <div className="flex-1 min-w-0">
           <ChartsPanel data={chartData} timeWindow={state.timeWindow} />
         </div>
       </div>

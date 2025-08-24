@@ -15,13 +15,13 @@ export const TimeWindowSelect = ({ value, onValueChange }: TimeWindowSelectProps
         value={value.toString()} 
         onValueChange={(val) => onValueChange(parseInt(val) as TimeWindow)}
       >
-        <SelectTrigger className="w-20 h-8 text-xs">
+        <SelectTrigger className="w-24 h-8 text-xs">
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="30">30 s</SelectItem>
-          <SelectItem value="60">60 s</SelectItem>
-          <SelectItem value="300">300 s</SelectItem>
+          <SelectItem value="60">1m</SelectItem>
+          <SelectItem value="300">5m</SelectItem>
+          <SelectItem value="1800">30m</SelectItem>
         </SelectContent>
       </Select>
     </div>

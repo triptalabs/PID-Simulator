@@ -1,4 +1,3 @@
-
 import React, { useLayoutEffect, useRef, useState, useEffect } from "react";
 import { gsap } from "gsap";
 // use your own icon import if react-icons is not available
@@ -82,7 +81,7 @@ const CardNav: React.FC<CardNavProps> = ({
 
   const calculateHeight = () => {
     const navEl = navRef.current;
-    if (!navEl) return 360;
+    if (!navEl) return 420;
 
     const isMobile = window.matchMedia("(max-width: 768px)").matches;
     if (isMobile) {
@@ -101,7 +100,7 @@ const CardNav: React.FC<CardNavProps> = ({
         contentEl.offsetHeight;
 
         const topBar = 70;
-        const padding = 24;
+        const padding = 32;
         const contentHeight = contentEl.scrollHeight;
 
         contentEl.style.visibility = wasVisible;
@@ -112,14 +111,13 @@ const CardNav: React.FC<CardNavProps> = ({
         return topBar + contentHeight + padding;
       }
     }
-    return 360;
+    return 420;
   };
 
   const createTimeline = () => {
     const navEl = navRef.current;
     if (!navEl) return null;
 
-    // Filter out null/undefined card references
     const validCards = cardsRef.current.filter(card => card !== null && card !== undefined);
 
     gsap.set(navEl, { height: 70, overflow: "hidden" });
@@ -152,7 +150,7 @@ const CardNav: React.FC<CardNavProps> = ({
       tl?.kill();
       tlRef.current = null;
     };
-  }, [ease]); // Removed items dependency to prevent re-creation on state changes
+  }, [ease]);
 
   useLayoutEffect(() => {
     const handleResize = () => {
@@ -198,7 +196,6 @@ const CardNav: React.FC<CardNavProps> = ({
   const setCardRef = (i: number) => (el: HTMLDivElement | null) => {
     if (el) {
       cardsRef.current[i] = el;
-      // Update GSAP references if timeline exists and component is mounted
       if (tlRef.current) {
         if (isExpanded) {
           gsap.set(el, { y: 0, opacity: 1 });
@@ -207,24 +204,20 @@ const CardNav: React.FC<CardNavProps> = ({
         }
       }
     } else {
-      // Clean up reference if element is null
       cardsRef.current[i] = null as any;
     }
   };
 
-  // Handle state changes without affecting animations
   useEffect(() => {
     if (isExpanded && tlRef.current) {
-      // Ensure cards are visible when expanded and state changes
       cardsRef.current.forEach(card => {
         if (card) {
           gsap.set(card, { y: 0, opacity: 1 });
         }
       });
     }
-  }, [isExpanded]); // Only depend on isExpanded, not on items or state changes
+  }, [isExpanded]);
 
-  // Force update cards visibility when expanded
   const forceUpdateCards = () => {
     if (isExpanded) {
       setTimeout(() => {
@@ -237,14 +230,12 @@ const CardNav: React.FC<CardNavProps> = ({
     }
   };
 
-  // Listen for control changes and force update
   useEffect(() => {
     if (isExpanded) {
       forceUpdateCards();
     }
-  }); // Run on every render when expanded
+  });
 
-  // Clean up card references when component unmounts
   useEffect(() => {
     return () => {
       cardsRef.current = [];
@@ -317,11 +308,11 @@ const CardNav: React.FC<CardNavProps> = ({
         </div>
 
         <div
-          className={`card-nav-content absolute left-0 right-0 top-[70px] bottom-0 p-6 flex flex-col items-stretch gap-4 justify-start z-[1] ${
+          className={`card-nav-content absolute left-0 right-0 top-[70px] bottom-0 p-6 flex flex-col items-stretch gap-6 justify-start z-[1] ${
             isExpanded
               ? "visible pointer-events-auto"
               : "invisible pointer-events-none"
-          } md:flex-row md:items-stretch md:gap-4`}
+          } md:flex-row md:items-stretch md:gap-6`}
           aria-hidden={!isExpanded}
           style={{
             opacity: isExpanded ? 1 : 0,
@@ -332,7 +323,7 @@ const CardNav: React.FC<CardNavProps> = ({
           {(items || []).slice(0, 5).map((item, idx) => (
             <div
               key={`${item.label}-${idx}`}
-              className="nav-card select-none relative flex flex-col gap-4 p-6 rounded-2xl min-w-0 flex-[1_1_auto] h-auto min-h-[120px] md:h-full md:min-h-0 md:flex-[1_1_0%] transition-all duration-300 hover:scale-[1.02] hover:shadow-xl"
+              className="nav-card select-none relative flex flex-col gap-5 p-6 rounded-2xl min-w-0 flex-[1_1_auto] h-auto min-h-[140px] md:h-full md:min-h-0 md:flex-[1_1_0%] transition-all duration-300 hover:scale-[1.02] hover:shadow-xl"
               ref={setCardRef(idx)}
               style={{ 
                 backgroundColor: item.bgColor, 
@@ -341,17 +332,17 @@ const CardNav: React.FC<CardNavProps> = ({
                 boxShadow: '0 8px 32px -8px rgba(0, 0, 0, 0.2)'
               }}
             >
-              <div className="nav-card-label font-bold tracking-tight text-[17px] md:text-[19px] mb-2 leading-tight">
+              <div className="nav-card-label font-bold tracking-tight text-[18px] md:text-[20px] mb-1 leading-tight">
                 {item.label}
               </div>
               
               {item.controls && (
-                <div className="nav-card-controls flex flex-col gap-3">
+                <div className="nav-card-controls flex flex-col gap-4">
                   {item.controls.map((control, i) => (
                     <div key={`${control.label}-${i}`} className="control-item">
-                      <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center justify-between mb-3">
                         <span className="text-xs font-semibold opacity-90 tracking-wide uppercase">{control.label}</span>
-                        <span className="text-sm font-bold font-mono opacity-95 bg-white/10 px-2 py-1 rounded-md">
+                        <span className="text-sm font-bold font-mono opacity-95 bg-white/10 px-3 py-1.5 rounded-lg">
                           {control.value.toFixed(control.step < 0.01 ? 3 : control.step < 0.1 ? 2 : 1)}{control.unit}
                         </span>
                       </div>
@@ -376,7 +367,7 @@ const CardNav: React.FC<CardNavProps> = ({
                 <div className="nav-card-switches flex flex-col gap-3">
                   {item.switches.map((switchItem, i) => (
                     <div key={`${switchItem.label}-${i}`} className="switch-item">
-                      <div className="flex items-center justify-between p-2 bg-white/5 rounded-lg hover:bg-white/10 transition-colors">
+                      <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg hover:bg-white/10 transition-colors">
                         <span className="text-sm font-semibold opacity-90">{switchItem.label}</span>
                         <Switch
                           checked={switchItem.checked}
@@ -390,17 +381,17 @@ const CardNav: React.FC<CardNavProps> = ({
               )}
 
               {item.selects && (
-                <div className="nav-card-selects flex flex-col gap-3">
+                <div className="nav-card-selects flex flex-col gap-4">
                   {item.selects.map((selectItem, i) => (
                     <div key={`${selectItem.label}-${i}`} className="select-item">
-                      <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center justify-between mb-3">
                         <span className="text-xs font-semibold opacity-90 tracking-wide uppercase">{selectItem.label}</span>
                       </div>
                       <Select value={selectItem.value} onValueChange={selectItem.onChange}>
-                        <SelectTrigger className="h-8 text-sm bg-white/10 border-white/20 text-current hover:bg-white/20 transition-colors rounded-lg font-medium">
+                        <SelectTrigger className="h-10 text-sm bg-white/10 border-white/20 text-current hover:bg-white/20 transition-colors rounded-lg font-medium">
                           <SelectValue placeholder={selectItem.label} />
                         </SelectTrigger>
-                        <SelectContent className="bg-slate-900/98 border-slate-600 backdrop-blur-lg rounded-lg">
+                        <SelectContent className="bg-slate-900/98 border-slate-600 backdrop-blur-lg rounded-lg z-[999]">
                           {selectItem.options.map((option) => (
                             <SelectItem key={option.value} value={option.value} className="text-sm text-slate-100 hover:bg-slate-700 focus:bg-slate-700 rounded-md">
                               {option.label}

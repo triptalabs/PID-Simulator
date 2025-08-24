@@ -120,7 +120,7 @@ export const Dashboard = () => {
     const handleKey = (e: KeyboardEvent) => {
       if (e.target && (e.target as HTMLElement).tagName === 'INPUT') return;
       
-      // Start/Pause con S
+      // Start/Pause with S
       if (e.key === 's' || e.key === 'S') {
         if (controls.isRunning) {
           actions.pause().catch(console.error);
@@ -129,12 +129,12 @@ export const Dashboard = () => {
         }
       }
       
-      // Reset con R
+      // Reset with R
       if (e.key === 'r' || e.key === 'R') {
         actions.reset(true).catch(console.error);
       }
       
-      // Modificar setpoint con flechas arriba/abajo
+      // Modify setpoint with up/down arrows
       if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
         e.preventDefault();
         
@@ -157,12 +157,12 @@ export const Dashboard = () => {
         handleStateChange({ setpoint: newSP });
       }
       
-      // Modificar ventana de tiempo con flechas izquierda/derecha
+      // Modify time window with left/right arrows
       if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
         e.preventDefault();
         
         const currentWindow = state.timeWindow;
-        const availableWindows: TimeWindow[] = [30, 60, 300];
+        const availableWindows: TimeWindow[] = [60, 300, 1800];
         const currentIndex = availableWindows.indexOf(currentWindow);
         
         let newIndex: number;

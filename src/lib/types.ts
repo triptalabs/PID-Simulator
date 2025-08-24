@@ -1,6 +1,6 @@
 
 export type Mode = 'horno' | 'chiller';
-export type TimeWindow = 30 | 60 | 300;
+export type TimeWindow = 60 | 300 | 1800;
 
 export interface PIDGains {
   kp: number;

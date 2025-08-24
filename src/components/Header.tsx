@@ -38,7 +38,7 @@ export const Header = ({ state, onStateChange }: HeaderProps) => {
             { value: 'horno', label: 'Horno Industrial' },
             { value: 'chiller', label: 'Sistema de Enfriamiento' }
           ],
-          onChange: (value) => onStateChange?.({ mode: value as 'horno' | 'chiller' })
+          onChange: (value: string) => onStateChange?.({ mode: value as 'horno' | 'chiller' })
         }
       ],
       controls: [
@@ -49,7 +49,7 @@ export const Header = ({ state, onStateChange }: HeaderProps) => {
           max: state?.mode === 'chiller' ? 50 : 200,
           step: 1,
           unit: "°C",
-          onChange: (value) => onStateChange?.({ setpoint: value })
+          onChange: (value: number) => onStateChange?.({ setpoint: value })
         }
       ]
     },
@@ -65,7 +65,7 @@ export const Header = ({ state, onStateChange }: HeaderProps) => {
           max: 10,
           step: 0.01,
           unit: "",
-          onChange: (value) => onStateChange?.({ pid: { ...state?.pid, kp: value } })
+          onChange: (value: number) => onStateChange?.({ pid: { ...state?.pid, kp: value } })
         },
         {
           label: "Ki (Integral)",
@@ -74,7 +74,7 @@ export const Header = ({ state, onStateChange }: HeaderProps) => {
           max: 1,
           step: 0.001,
           unit: " s⁻¹",
-          onChange: (value) => onStateChange?.({ pid: { ...state?.pid, ki: value } })
+          onChange: (value: number) => onStateChange?.({ pid: { ...state?.pid, ki: value } })
         },
         {
           label: "Kd (Derivativo)",
@@ -83,7 +83,7 @@ export const Header = ({ state, onStateChange }: HeaderProps) => {
           max: 200,
           step: 1,
           unit: " s",
-          onChange: (value) => onStateChange?.({ pid: { ...state?.pid, kd: value } })
+          onChange: (value: number) => onStateChange?.({ pid: { ...state?.pid, kd: value } })
         }
       ]
     },
@@ -102,7 +102,7 @@ export const Header = ({ state, onStateChange }: HeaderProps) => {
               label: preset.name
             }))
           ],
-          onChange: (value) => {
+          onChange: (value: string) => {
             if (value !== "custom") {
               const preset = presets.find(p => p.key === value);
               if (preset) {
@@ -127,7 +127,7 @@ export const Header = ({ state, onStateChange }: HeaderProps) => {
           max: 0.1,
           step: 0.001,
           unit: "",
-          onChange: (value) => onStateChange?.({ plant: { ...state?.plant, k: value } })
+          onChange: (value: number) => onStateChange?.({ plant: { ...state?.plant, k: value } })
         },
         {
           label: "τ (Constante de Tiempo)",
@@ -136,7 +136,7 @@ export const Header = ({ state, onStateChange }: HeaderProps) => {
           max: 600,
           step: 1,
           unit: " s",
-          onChange: (value) => onStateChange?.({ plant: { ...state?.plant, tau: value } })
+          onChange: (value: number) => onStateChange?.({ plant: { ...state?.plant, tau: value } })
         },
         {
           label: "L (Tiempo Muerto)",
@@ -145,7 +145,7 @@ export const Header = ({ state, onStateChange }: HeaderProps) => {
           max: 15,
           step: 0.1,
           unit: " s",
-          onChange: (value) => onStateChange?.({ plant: { ...state?.plant, l: value } })
+          onChange: (value: number) => onStateChange?.({ plant: { ...state?.plant, l: value } })
         },
         {
           label: "T_amb (Temperatura Ambiente)",
@@ -154,7 +154,7 @@ export const Header = ({ state, onStateChange }: HeaderProps) => {
           max: 35,
           step: 0.5,
           unit: "°C",
-          onChange: (value) => onStateChange?.({ plant: { ...state?.plant, t_amb: value } })
+          onChange: (value: number) => onStateChange?.({ plant: { ...state?.plant, t_amb: value } })
         }
       ]
     },
@@ -166,12 +166,12 @@ export const Header = ({ state, onStateChange }: HeaderProps) => {
         {
           label: "Ruido en Medición",
           checked: state?.noise?.enabled || false,
-          onChange: (checked) => onStateChange?.({ noise: { ...state?.noise, enabled: checked } })
+          onChange: (checked: boolean) => onStateChange?.({ noise: { ...state?.noise, enabled: checked } })
         },
         {
           label: "Control SSR",
           checked: state?.ssr?.enabled || false,
-          onChange: (checked) => onStateChange?.({ ssr: { ...state?.ssr, enabled: checked } })
+          onChange: (checked: boolean) => onStateChange?.({ ssr: { ...state?.ssr, enabled: checked } })
         }
       ],
       controls: [
@@ -182,7 +182,7 @@ export const Header = ({ state, onStateChange }: HeaderProps) => {
           max: 2,
           step: 0.1,
           unit: "",
-          onChange: (value) => onStateChange?.({ noise: { ...state?.noise, intensity: value } })
+          onChange: (value: number) => onStateChange?.({ noise: { ...state?.noise, intensity: value } })
         },
         {
           label: "Periodo SSR",
@@ -191,7 +191,7 @@ export const Header = ({ state, onStateChange }: HeaderProps) => {
           max: 10,
           step: 0.5,
           unit: " s",
-          onChange: (value) => onStateChange?.({ ssr: { ...state?.ssr, period: value } })
+          onChange: (value: number) => onStateChange?.({ ssr: { ...state?.ssr, period: value } })
         }
       ]
     },
@@ -204,18 +204,18 @@ export const Header = ({ state, onStateChange }: HeaderProps) => {
           label: "Ventana de Tiempo",
           value: String(state?.timeWindow || 60),
           options: [
-            { value: "30", label: "30 segundos" },
             { value: "60", label: "1 minuto" },
-            { value: "300", label: "5 minutos" }
+            { value: "300", label: "5 minutos" },
+            { value: "1800", label: "30 minutos" }
           ],
-          onChange: (value) => onStateChange?.({ timeWindow: parseInt(value) as 30 | 60 | 300 })
+          onChange: (value: string) => onStateChange?.({ timeWindow: parseInt(value) as 60 | 300 | 1800 })
         }
       ],
       switches: [
         {
           label: "Simulación Activa",
           checked: state?.isRunning || false,
-          onChange: (checked) => onStateChange?.({ isRunning: checked })
+          onChange: (checked: boolean) => onStateChange?.({ isRunning: checked })
         }
       ]
     }

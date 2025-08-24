@@ -289,34 +289,13 @@ export class PIDController {
   }
 }
 
+import { PRESETS } from '../../config/app.config'
+
 /**
  * Presets de PID típicos para diferentes aplicaciones
  */
 export const PID_PRESETS = {
-  conservador: {
-    kp: 1.0,
-    ki: 0.1,
-    kd: 0.0,
-    N: 10,
-    Tt: 2.5,  // Calculado automáticamente
-    enabled: true
-  },
-
-  balanceado: {
-    kp: 2.0,
-    ki: 0.2,
-    kd: 5.0,
-    N: 10,
-    Tt: 2.5,
-    enabled: true
-  },
-
-  agresivo: {
-    kp: 5.0,
-    ki: 0.5,
-    kd: 10.0,
-    N: 10,
-    Tt: 2.0,
-    enabled: true
-  }
+  conservador: PRESETS.pid.conservador,
+  balanceado: PRESETS.pid.balanceado,
+  agresivo: PRESETS.pid.agresivo
 } as const

@@ -1,12 +1,13 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
+import { DEV_CONFIG } from "./src/config/app.config";
 
 // https://vitejs.dev/config/
 export default defineConfig({
   server: {
-    host: "::",
-    port: 8080,
+    host: DEV_CONFIG.server.host,
+    port: DEV_CONFIG.server.port,
   },
   plugins: [react()],
   resolve: {
@@ -15,17 +16,17 @@ export default defineConfig({
     },
   },
   worker: {
-    format: 'es',
+    format: DEV_CONFIG.test.environment === 'jsdom' ? 'es' : 'es',
   },
   optimizeDeps: {
     exclude: ['src/workers/simulation.worker.ts']
   },
   test: {
-    environment: 'jsdom',
-    setupFiles: ['tests/setup.ts'],
-    testTimeout: 20000,
-    hookTimeout: 20000,
-    include: ['tests/**/*.{test,spec}.ts'],
-    reporters: 'default'
+    environment: DEV_CONFIG.test.environment,
+    setupFiles: DEV_CONFIG.test.setupFiles,
+    testTimeout: DEV_CONFIG.test.testTimeout,
+    hookTimeout: DEV_CONFIG.test.hookTimeout,
+    include: DEV_CONFIG.test.include,
+    reporters: DEV_CONFIG.test.reporters
   }
 });

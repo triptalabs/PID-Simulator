@@ -1,35 +1,37 @@
 
 import { Preset } from './types';
+import { PRESETS } from '../config/app.config';
 
+// Convertir presets de configuración centralizada al formato esperado
 export const presets: Preset[] = [
   {
     key: 'horno-lento',
-    name: 'Horno lento',
+    name: PRESETS.plant.horno_lento.name,
     values: {
-      k: 0.015,
-      tau: 180,
-      l: 5,
-      t_amb: 25
+      k: PRESETS.plant.horno_lento.K,
+      tau: PRESETS.plant.horno_lento.tau,
+      l: PRESETS.plant.horno_lento.L,
+      t_amb: PRESETS.plant.horno_lento.T_amb
     }
   },
   {
     key: 'horno-medio',
-    name: 'Horno medio',
+    name: PRESETS.plant.horno_medio.name,
     values: {
-      k: 0.03,
-      tau: 90,
-      l: 3,
-      t_amb: 25
+      k: PRESETS.plant.horno_medio.K,
+      tau: PRESETS.plant.horno_medio.tau,
+      l: PRESETS.plant.horno_medio.L,
+      t_amb: PRESETS.plant.horno_medio.T_amb
     }
   },
   {
     key: 'chiller-compacto',
-    name: 'Chiller compacto',
+    name: PRESETS.plant.chiller_compacto.name,
     values: {
-      k: 0.04,
-      tau: 60,
-      l: 2,
-      t_amb: 25
+      k: PRESETS.plant.chiller_compacto.K,
+      tau: PRESETS.plant.chiller_compacto.tau,
+      l: PRESETS.plant.chiller_compacto.L,
+      t_amb: PRESETS.plant.chiller_compacto.T_amb
     }
   }
 ];

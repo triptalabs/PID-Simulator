@@ -1,7 +1,6 @@
-import { useState, useCallback, useEffect, useRef, memo } from "react";
+import { useState, useCallback, useEffect, useRef, memo, useMemo } from "react";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Slider } from "@/components/ui/slider";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -10,10 +9,11 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Zap, Info, Thermometer, Gauge, Settings, BookOpen } from "lucide-react";
+import { Zap, Info, Thermometer, Gauge, Settings, BookOpen, Minus, Plus } from "lucide-react";
 import { Mode, SimulatorState, Preset as PresetType } from "@/lib/types";
 import { presets } from "@/lib/presets";
 import { toast } from "@/hooks/use-toast";
+import ElasticSlider from "./customUI/ElasticSlider/ElasticSlider";
 
 interface ControlsPanelProps {
   state: SimulatorState;
@@ -22,7 +22,7 @@ interface ControlsPanelProps {
   onApplyPreset?: (values: PresetType['values']) => void;
 }
 
-interface SliderWithInputProps {
+interface ElasticSliderWithInputProps {
   label: string;
   value: number;
   min: number;
@@ -36,7 +36,7 @@ interface SliderWithInputProps {
   onImmediateValueChange: (key: string, value: number) => void;
 }
 
-const SliderWithInput = memo(({ 
+const ElasticSliderWithInput = memo(({ 
   label, 
   value, 
   min, 
@@ -48,16 +48,40 @@ const SliderWithInput = memo(({
   icon,
   onValueChange,
   onImmediateValueChange
-}: SliderWithInputProps) => {
+}: ElasticSliderWithInputProps) => {
   const [inputValue, setInputValue] = useState(value.toString());
   const [isValid, setIsValid] = useState(true);
+  const [sliderValue, setSliderValue] = useState(value);
+  const throttleTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     setInputValue(value.toString());
+    setSliderValue(value);
     setIsValid(true);
   }, [value]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Throttled update function
+  const throttledUpdate = useCallback((newValue: number) => {
+    if (throttleTimeoutRef.current) {
+      clearTimeout(throttleTimeoutRef.current);
+    }
+    
+    throttleTimeoutRef.current = setTimeout(() => {
+      onImmediateValueChange(sliderKey, newValue);
+      onValueChange(sliderKey, newValue);
+    }, 32); // 30fps throttling for smooth performance
+  }, [sliderKey, onImmediateValueChange, onValueChange]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (throttleTimeoutRef.current) {
+        clearTimeout(throttleTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const newStringValue = e.target.value;
     setInputValue(newStringValue);
     
@@ -67,36 +91,65 @@ const SliderWithInput = memo(({
     
     if (isValidNumber) {
       const clampedValue = Math.max(min, Math.min(max, numValue));
-      onImmediateValueChange(sliderKey, clampedValue); // Update parent for immediate feedback
-      onValueChange(sliderKey, clampedValue); // Debounced update
+      setSliderValue(clampedValue);
+      throttledUpdate(clampedValue);
     }
-  };
+  }, [min, max, throttledUpdate]);
 
-  const handleInputBlur = () => {
+  const handleInputBlur = useCallback(() => {
     const numValue = parseFloat(inputValue);
     if (isNaN(numValue) || !isFinite(numValue)) {
       setInputValue(value.toString());
       setIsValid(true);
     }
-  };
+  }, [inputValue, value]);
 
-  const handleSliderChange = (values: number[]) => {
-    const sliderValue = values[0];
-    setInputValue(sliderValue.toString());
-    onImmediateValueChange(sliderKey, sliderValue); // Update parent for immediate feedback
-    onValueChange(sliderKey, sliderValue); // Debounced update
-  };
+  // Use MutationObserver to detect slider changes
+  useEffect(() => {
+    const sliderContainer = document.querySelector(`[data-slider-key="${sliderKey}"]`);
+    if (!sliderContainer) return;
 
-  const formatDisplayValue = (val: number) => {
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+          const target = mutation.target as HTMLElement;
+          if (target.classList.contains('absolute')) {
+            const width = target.getBoundingClientRect().width;
+            const parentWidth = target.parentElement?.getBoundingClientRect().width || 1;
+            const percentage = (width / parentWidth) * 100;
+            const calculatedValue = min + (percentage / 100) * (max - min);
+            
+            if (Math.abs(calculatedValue - sliderValue) > 0.5) {
+              setSliderValue(calculatedValue);
+              setInputValue(calculatedValue.toString());
+              throttledUpdate(calculatedValue);
+            }
+          }
+        }
+      });
+    });
+
+    observer.observe(sliderContainer, {
+      attributes: true,
+      subtree: true,
+      attributeFilter: ['style']
+    });
+
+    return () => observer.disconnect();
+  }, [sliderKey, sliderValue, min, max, throttledUpdate]);
+
+  const formatDisplayValue = useCallback((val: number) => {
     if (step < 0.01) return val.toFixed(3);
     if (step < 0.1) return val.toFixed(2);
     if (step < 1) return val.toFixed(1);
     return val.toFixed(0);
-  };
+  }, [step]);
+
+  const displayValue = useMemo(() => formatDisplayValue(value), [value, formatDisplayValue]);
 
   return (
-    <div className="space-y-1">
-      <div className="flex items-center justify-between mb-1">
+    <div className="space-y-3">
+      <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-1 text-xs">
           {icon && <span className="text-muted-foreground">{icon}</span>}
           <TooltipProvider>
@@ -126,19 +179,23 @@ const SliderWithInput = memo(({
             aria-label={`Input numérico para ${label}`}
           />
           <Badge variant="outline" className="h-5 px-1 text-xs">
-            {formatDisplayValue(value)}{unit}
+            {displayValue}{unit}
           </Badge>
         </div>
       </div>
-      <Slider
-        value={[value]}
-        onValueChange={handleSliderChange}
-        min={min}
-        max={max}
-        step={step}
-        aria-label={label}
-        className="w-full h-2"
-      />
+      
+      <div className="flex justify-center px-2" data-slider-key={sliderKey}>
+        <ElasticSlider
+          defaultValue={sliderValue}
+          startingValue={min}
+          maxValue={max}
+          isStepped={step > 0}
+          stepSize={step}
+          leftIcon={<Minus className="h-3 w-3 text-muted-foreground" />}
+          rightIcon={<Plus className="h-3 w-3 text-muted-foreground" />}
+          className="w-full max-w-none"
+        />
+      </div>
     </div>
   );
 });
@@ -171,7 +228,7 @@ export const ControlsPanel = ({ state, onStateChange, onApplyPreset }: ControlsP
       } else {
         onStateChange({ [topLevelKey]: value } as Partial<SimulatorState>);
       }
-    }, 50);
+    }, 10); // Reducido de 50ms a 10ms para mejor responsividad
 
     debounceTimersRef.current[key] = timer;
   }, [state, onStateChange]);
@@ -263,7 +320,7 @@ export const ControlsPanel = ({ state, onStateChange, onApplyPreset }: ControlsP
         </div>
         
         <div className="mb-4">
-          <SliderWithInput
+          <ElasticSliderWithInput
             label="Setpoint"
             value={localState.setpoint}
             min={0}
@@ -284,7 +341,7 @@ export const ControlsPanel = ({ state, onStateChange, onApplyPreset }: ControlsP
             <span className="font-medium">Parámetros PID</span>
           </div>
           <div className="space-y-3">
-            <SliderWithInput
+            <ElasticSliderWithInput
               label="Kp"
               value={localState.pid.kp}
               min={0}
@@ -296,7 +353,7 @@ export const ControlsPanel = ({ state, onStateChange, onApplyPreset }: ControlsP
               onValueChange={handleValueChange}
               onImmediateValueChange={handleImmediateValueChange}
             />
-            <SliderWithInput
+            <ElasticSliderWithInput
               label="Ki"
               value={localState.pid.ki}
               min={0}
@@ -308,7 +365,7 @@ export const ControlsPanel = ({ state, onStateChange, onApplyPreset }: ControlsP
               onValueChange={handleValueChange}
               onImmediateValueChange={handleImmediateValueChange}
             />
-            <SliderWithInput
+            <ElasticSliderWithInput
               label="Kd"
               value={localState.pid.kd}
               min={0}
@@ -333,7 +390,7 @@ export const ControlsPanel = ({ state, onStateChange, onApplyPreset }: ControlsP
             </div>
           </AccordionTrigger>
           <AccordionContent className="px-2 pt-1 pb-2 space-y-3">
-            <SliderWithInput
+            <ElasticSliderWithInput
               label="K"
               value={localState.plant.k}
               min={0}
@@ -345,7 +402,7 @@ export const ControlsPanel = ({ state, onStateChange, onApplyPreset }: ControlsP
               onValueChange={handleValueChange}
               onImmediateValueChange={handleImmediateValueChange}
             />
-            <SliderWithInput
+            <ElasticSliderWithInput
               label="τ"
               value={localState.plant.tau}
               min={1}
@@ -357,7 +414,7 @@ export const ControlsPanel = ({ state, onStateChange, onApplyPreset }: ControlsP
               onValueChange={handleValueChange}
               onImmediateValueChange={handleImmediateValueChange}
             />
-            <SliderWithInput
+            <ElasticSliderWithInput
               label="L"
               value={localState.plant.l}
               min={0}
@@ -369,7 +426,7 @@ export const ControlsPanel = ({ state, onStateChange, onApplyPreset }: ControlsP
               onValueChange={handleValueChange}
               onImmediateValueChange={handleImmediateValueChange}
             />
-            <SliderWithInput
+            <ElasticSliderWithInput
               label="T_amb"
               value={localState.plant.t_amb}
               min={10}
@@ -403,7 +460,7 @@ export const ControlsPanel = ({ state, onStateChange, onApplyPreset }: ControlsP
               />
             </div>
             {localState.noise.enabled && (
-              <SliderWithInput
+              <ElasticSliderWithInput
                 label="Intensidad"
                 value={localState.noise.intensity}
                 min={0}
@@ -446,7 +503,7 @@ export const ControlsPanel = ({ state, onStateChange, onApplyPreset }: ControlsP
               />
             </div>
             {localState.ssr.enabled && (
-              <SliderWithInput
+              <ElasticSliderWithInput
                 label="Periodo"
                 value={localState.ssr.period}
                 min={0.5}

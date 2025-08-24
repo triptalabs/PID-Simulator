@@ -90,6 +90,8 @@ export interface SimulationContextValue {
   actions: SimulationContextActions
 }
 
+import { SIMULATION_CONFIG } from '../config/app.config'
+
 export interface SimulationProviderProps {
   children: React.ReactNode
   config?: {
@@ -133,8 +135,8 @@ export function SimulationProvider({ children, config = {} }: SimulationProvider
     lastError: null,
     metrics: null,
     config: {
-      timestep: config.timestep || 0.1,
-      bufferSize: config.bufferSize || 10000,
+      timestep: config.timestep || SIMULATION_CONFIG.worker.defaultTimestep,
+      bufferSize: config.bufferSize || SIMULATION_CONFIG.worker.defaultBufferSize,
       debugMode: config.debugMode || false
     }
   })

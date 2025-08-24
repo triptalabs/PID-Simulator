@@ -236,31 +236,13 @@ export class FOPDTPlant {
   }
 }
 
+import { PRESETS } from '../../config/app.config'
+
 /**
  * Presets de plantas típicas para testing y demostración
  */
 export const PLANT_PRESETS = {
-  horno_lento: {
-    K: 5.0,      // 5°C/s por unidad u
-    tau: 120,    // 2 minutos
-    L: 10,       // 10 segundos
-    T_amb: 25,   // 25°C ambiente
-    mode: 'horno' as const
-  },
-
-  horno_medio: {
-    K: 8.0,      // 8°C/s por unidad u  
-    tau: 60,     // 1 minuto
-    L: 5,        // 5 segundos
-    T_amb: 25,   // 25°C ambiente
-    mode: 'horno' as const
-  },
-
-  chiller_compacto: {
-    K: -3.0,     // -3°C/s por unidad u (enfriamiento)
-    tau: 45,     // 45 segundos
-    L: 8,        // 8 segundos
-    T_amb: 25,   // 25°C ambiente
-    mode: 'chiller' as const
-  }
+  horno_lento: PRESETS.plant.horno_lento,
+  horno_medio: PRESETS.plant.horno_medio,
+  chiller_compacto: PRESETS.plant.chiller_compacto
 } as const

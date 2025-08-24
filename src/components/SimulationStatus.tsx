@@ -115,36 +115,35 @@ export function SimulationStatus() {
   // ============================================================================
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-2">
       {/* Estado de conexión y simulación */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg flex items-center gap-2">
-            <Clock className="h-5 w-5" />
-            Estado de Simulación
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {/* Badges de estado */}
-          <div className="flex gap-2">
-            <Badge variant={connectionStatus.variant} className="flex items-center gap-1">
+      <Card className="p-2">
+        <div className="flex justify-between items-center mb-2">
+          <div className="flex items-center gap-1">
+            <Clock className="h-4 w-4" />
+            <h3 className="text-sm font-medium">Estado de Simulación</h3>
+          </div>
+          <div className="flex gap-1">
+            <Badge variant={connectionStatus.variant} className="flex items-center gap-1 text-xs h-5 px-1">
               {connectionStatus.icon}
-              Worker: {connectionStatus.text}
+              {connectionStatus.text}
             </Badge>
-            <Badge variant={simulationStatus.variant}>
-              Simulación: {simulationStatus.text}
+            <Badge variant={simulationStatus.variant} className="text-xs h-5 px-1">
+              {simulationStatus.text}
             </Badge>
           </div>
+        </div>
 
+        <div className="space-y-2">
           {/* Controles */}
-          <div className="flex gap-2">
+          <div className="flex gap-1">
             <Button
               onClick={handleStart}
               disabled={!isConnected || isRunning}
               size="sm"
-              className="flex items-center gap-1"
+              className="flex items-center gap-1 h-7 text-xs"
             >
-              <Play className="h-4 w-4" />
+              <Play className="h-3 w-3" />
               Iniciar
             </Button>
             
@@ -153,9 +152,9 @@ export function SimulationStatus() {
               disabled={!isConnected || !isRunning}
               variant="outline"
               size="sm"
-              className="flex items-center gap-1"
+              className="flex items-center gap-1 h-7 text-xs"
             >
-              <Pause className="h-4 w-4" />
+              <Pause className="h-3 w-3" />
               Pausar
             </Button>
             
@@ -164,16 +163,16 @@ export function SimulationStatus() {
               disabled={!isConnected}
               variant="outline"
               size="sm"
-              className="flex items-center gap-1"
+              className="flex items-center gap-1 h-7 text-xs"
             >
-              <RotateCcw className="h-4 w-4" />
+              <RotateCcw className="h-3 w-3" />
               Reset
             </Button>
           </div>
 
           {/* Datos actuales */}
           {currentData && (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+            <div className="grid grid-cols-4 gap-2 text-xs pt-1">
               <div>
                 <div className="text-muted-foreground">Tiempo</div>
                 <div className="font-mono">{currentData.t.toFixed(1)}s</div>
@@ -195,16 +194,16 @@ export function SimulationStatus() {
 
           {/* Métricas de rendimiento */}
           {state.performance.samples_processed > 0 && (
-            <div className="text-xs text-muted-foreground border-t pt-2">
-              <div className="grid grid-cols-2 gap-2">
+            <div className="text-[10px] text-muted-foreground pt-1 border-t">
+              <div className="grid grid-cols-4 gap-1">
                 <div>
-                  Muestras: {state.performance.samples_processed.toLocaleString()}
+                  M: {state.performance.samples_processed.toLocaleString()}
                 </div>
                 <div>
-                  Uptime: {Math.floor(state.performance.uptime / 60)}m {Math.floor(state.performance.uptime % 60)}s
+                  T: {Math.floor(state.performance.uptime / 60)}m {Math.floor(state.performance.uptime % 60)}s
                 </div>
                 <div>
-                  Ciclo avg: {state.performance.avg_cycle_time.toFixed(1)}ms
+                  Ciclo: {state.performance.avg_cycle_time.toFixed(1)}ms
                 </div>
                 <div>
                   CPU: {state.performance.cpu_usage_estimate.toFixed(1)}%
@@ -212,15 +211,15 @@ export function SimulationStatus() {
               </div>
 
               {(avgCycleWarn || cpuWarn) && (
-                <div className="mt-2">
-                  <Alert variant="default">
-                    <AlertTriangle className="h-4 w-4" />
-                    <AlertDescription className="text-xs">
+                <div className="mt-1">
+                  <Alert variant="default" className="py-1 px-2 text-[10px]">
+                    <AlertTriangle className="h-3 w-3" />
+                    <AlertDescription className="text-[10px]">
                       {avgCycleWarn && (
-                        <div>Advertencia: tiempo de ciclo promedio alto (&gt; {PERF_WARN_MS} ms).</div>
+                        <div>Advertencia: tiempo de ciclo promedio alto</div>
                       )}
                       {cpuWarn && (
-                        <div>Advertencia: uso de CPU elevado (&gt; {CPU_WARN_PERCENT}%).</div>
+                        <div>Advertencia: uso de CPU elevado</div>
                       )}
                     </AlertDescription>
                   </Alert>
@@ -228,25 +227,20 @@ export function SimulationStatus() {
               )}
             </div>
           )}
-        </CardContent>
+        </div>
       </Card>
 
       {/* Alerta de error */}
       {state.lastError && (
-        <Alert variant={state.lastError.severity === 'warning' ? 'default' : 'destructive'}>
-          <AlertCircle className="h-4 w-4" />
+        <Alert variant={state.lastError.severity === 'warning' ? 'default' : 'destructive'} className="py-2 text-xs">
+          <AlertCircle className="h-3 w-3" />
           <AlertDescription className="flex justify-between items-start">
             <div>
-              <div className="font-medium">
+              <div className="font-medium text-xs">
                 {state.lastError.severity.toUpperCase()}: {state.lastError.message}
               </div>
-              {state.lastError.details && (
-                <div className="text-sm mt-1 opacity-80">
-                  {JSON.stringify(state.lastError.details)}
-                </div>
-              )}
               {state.lastError.suggestions && (
-                <ul className="text-sm mt-1 opacity-80 list-disc list-inside">
+                <ul className="text-[10px] mt-1 opacity-80 list-disc list-inside">
                   {state.lastError.suggestions.map((suggestion, index) => (
                     <li key={index}>{suggestion}</li>
                   ))}
@@ -257,9 +251,9 @@ export function SimulationStatus() {
               onClick={clearError}
               variant="ghost"
               size="sm"
-              className="ml-2 shrink-0"
+              className="ml-1 h-5 w-5 p-0 rounded-full"
             >
-              Cerrar
+              ×
             </Button>
           </AlertDescription>
         </Alert>

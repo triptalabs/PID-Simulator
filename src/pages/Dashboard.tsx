@@ -130,29 +130,33 @@ export const Dashboard = () => {
   return (
     <div className="dark h-screen overflow-hidden bg-background text-foreground flex flex-col">
       <Header />
-      <main className="grid flex-1 min-h-0 grid-cols-1 lg:grid-cols-[400px_1fr] gap-4 p-4">
-        <div className="min-h-0 overflow-auto space-y-4">
-          <SimulationStatus />
-          <ControlsPanel 
-            state={state} 
-            onStateChange={handleStateChange}
-            onReset={() => actions.reset(true)}
-            onApplyPreset={(values) => {
-              // Mantener modo actual del estado local
-              actions.setPlant({
-                K: values.k,
-                tau: values.tau,
-                L: values.l,
-                T_amb: values.t_amb,
-                mode: state.mode
-              }).catch(console.error);
-            }}
-          />
-          <div className="grid grid-cols-2 gap-2">
-            <Button variant="outline" onClick={() => actions.exportCSV({ type: 'window', seconds: state.timeWindow })}>
+      <main className="grid flex-1 min-h-0 grid-cols-1 lg:grid-cols-[320px_1fr] gap-4 p-4">
+        <div className="min-h-0 flex flex-col">
+          <div className="flex-none">
+            <SimulationStatus />
+          </div>
+          <div className="flex-1 overflow-y-auto mt-2 pr-1 scrollbar-thin">
+            <ControlsPanel 
+              state={state} 
+              onStateChange={handleStateChange}
+              onReset={() => actions.reset(true)}
+              onApplyPreset={(values) => {
+                // Mantener modo actual del estado local
+                actions.setPlant({
+                  K: values.k,
+                  tau: values.tau,
+                  L: values.l,
+                  T_amb: values.t_amb,
+                  mode: state.mode
+                }).catch(console.error);
+              }}
+            />
+          </div>
+          <div className="flex-none mt-2 grid grid-cols-2 gap-2">
+            <Button variant="outline" size="sm" className="h-7 text-xs" onClick={() => actions.exportCSV({ type: 'window', seconds: state.timeWindow })}>
               Exportar ventana
             </Button>
-            <Button variant="outline" onClick={() => actions.exportCSV({ type: 'all' })}>
+            <Button variant="outline" size="sm" className="h-7 text-xs" onClick={() => actions.exportCSV({ type: 'all' })}>
               Exportar historial
             </Button>
           </div>

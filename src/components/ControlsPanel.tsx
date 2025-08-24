@@ -8,10 +8,9 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Separator } from "@/components/ui/separator";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { PlayCircle, PauseCircle, RotateCw, Download, Zap, Info } from "lucide-react";
+import { Zap, Info, Thermometer, Gauge, Settings, BookOpen } from "lucide-react";
 import { Mode, SimulatorState, Preset as PresetType } from "@/lib/types";
 import { presets } from "@/lib/presets";
 import { toast } from "@/hooks/use-toast";
@@ -95,7 +94,7 @@ export const ControlsPanel = ({ state, onStateChange, onReset, onApplyPreset }: 
     });
   };
 
-  // Componente mejorado con sincronización bidireccional
+  // Componente compacto con sincronización bidireccional
   const SliderWithInput = ({ 
     label, 
     value, 
@@ -104,7 +103,8 @@ export const ControlsPanel = ({ state, onStateChange, onReset, onApplyPreset }: 
     step, 
     unit, 
     tooltip, 
-    sliderKey
+    sliderKey,
+    icon
   }: {
     label: string;
     value: number;
@@ -114,6 +114,7 @@ export const ControlsPanel = ({ state, onStateChange, onReset, onApplyPreset }: 
     unit: string;
     tooltip: string;
     sliderKey: string;
+    icon?: React.ReactNode;
   }) => {
     const [inputValue, setInputValue] = useState(value.toString());
     const [isValid, setIsValid] = useState(true);
@@ -189,28 +190,25 @@ export const ControlsPanel = ({ state, onStateChange, onReset, onApplyPreset }: 
     };
 
     return (
-      <div className="space-y-2">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Label className="text-sm">{label}</Label>
+      <div className="space-y-1">
+        <div className="flex items-center justify-between mb-1">
+          <div className="flex items-center gap-1 text-xs">
+            {icon && <span className="text-muted-foreground">{icon}</span>}
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <button
-                    type="button"
-                    aria-label={`Información: ${label}`}
-                    className="inline-flex h-5 w-5 items-center justify-center rounded text-muted-foreground hover:text-foreground"
-                  >
-                    <Info className="h-4 w-4" />
-                  </button>
+                  <div className="flex items-center gap-1 cursor-help">
+                    <span className="font-medium">{label}</span>
+                    <Info className="h-3 w-3 text-muted-foreground" />
+                  </div>
                 </TooltipTrigger>
-                <TooltipContent>
-                  <p>{tooltip}</p>
+                <TooltipContent side="right">
+                  <p className="text-xs max-w-[200px]">{tooltip}</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
             <Input
               type="number"
               value={inputValue}
@@ -219,10 +217,10 @@ export const ControlsPanel = ({ state, onStateChange, onReset, onApplyPreset }: 
               min={min}
               max={max}
               step={step}
-              className={`w-20 h-8 text-xs ${!isValid ? 'border-red-500' : ''}`}
+              className={`w-16 h-6 text-xs px-1 py-0 ${!isValid ? 'border-red-500' : ''}`}
               aria-label={`Input numérico para ${label}`}
             />
-            <Badge variant="outline" className="control-value">
+            <Badge variant="outline" className="h-5 px-1 text-xs">
               {formatDisplayValue(value)}{unit}
             </Badge>
           </div>
@@ -234,50 +232,49 @@ export const ControlsPanel = ({ state, onStateChange, onReset, onApplyPreset }: 
           max={max}
           step={step}
           aria-label={label}
-          className="w-full"
+          className="w-full h-2"
         />
       </div>
     );
   };
 
   return (
-    <div className="space-y-4">
-      {/* Modo */}
-      <Card className="industrial-control">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-sm">Modo</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Tabs 
-                  value={state.mode} 
-                  onValueChange={(value) => onStateChange({ mode: value as Mode })}
-                  className="w-full"
-                >
-                  <TabsList className="grid grid-cols-2 w-full">
-                    <TabsTrigger value="horno">Horno</TabsTrigger>
-                    <TabsTrigger value="chiller">Chiller</TabsTrigger>
-                  </TabsList>
-                </Tabs>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Cambia el modo de operación. En Chiller el mando se invierte (solo informativo).</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </CardContent>
-      </Card>
-
-      {/* Setpoint */}
-      <Card className="industrial-control">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-sm">Setpoint (°C)</CardTitle>
-        </CardHeader>
-        <CardContent>
+    <div className="space-y-2">
+      {/* Panel Principal Compacto */}
+      <Card className="industrial-control p-2">
+        <div className="grid grid-cols-2 gap-2 mb-2">
+          {/* Modo */}
+          <div className="col-span-2">
+            <div className="flex items-center mb-1 text-xs">
+              <Thermometer className="h-3 w-3 mr-1 text-muted-foreground" />
+              <span className="font-medium">Modo</span>
+            </div>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Tabs 
+                    value={state.mode} 
+                    onValueChange={(value) => onStateChange({ mode: value as Mode })}
+                    className="w-full"
+                  >
+                    <TabsList className="grid grid-cols-2 w-full h-7">
+                      <TabsTrigger value="horno" className="text-xs py-0">Horno</TabsTrigger>
+                      <TabsTrigger value="chiller" className="text-xs py-0">Chiller</TabsTrigger>
+                    </TabsList>
+                  </Tabs>
+                </TooltipTrigger>
+                <TooltipContent side="right">
+                  <p className="text-xs max-w-[200px]">Cambia el modo de operación. En Chiller el mando se invierte (solo informativo).</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+        </div>
+        
+        {/* Setpoint */}
+        <div className="mb-4">
           <SliderWithInput
-            label="Temperatura objetivo"
+            label="Setpoint"
             value={state.setpoint}
             min={0}
             max={200}
@@ -285,59 +282,64 @@ export const ControlsPanel = ({ state, onStateChange, onReset, onApplyPreset }: 
             unit="°C"
             tooltip="Temperatura objetivo del proceso"
             sliderKey="setpoint"
+            icon={<Thermometer className="h-3 w-3" />}
           />
-        </CardContent>
-      </Card>
+        </div>
 
-      {/* PID */}
-      <Card className="industrial-control">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-sm">Gains PID</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <SliderWithInput
-            label="Kp"
-            value={state.pid.kp}
-            min={0}
-            max={10}
-            step={0.01}
-            unit=""
-            tooltip="Ganancia proporcional"
-            sliderKey="pid.kp"
-          />
-          <SliderWithInput
-            label="Ki (s⁻¹)"
-            value={state.pid.ki}
-            min={0}
-            max={1}
-            step={0.001}
-            unit=" s⁻¹"
-            tooltip="Ganancia integral"
-            sliderKey="pid.ki"
-          />
-          <SliderWithInput
-            label="Kd (s)"
-            value={state.pid.kd}
-            min={0}
-            max={200}
-            step={1}
-            unit=" s"
-            tooltip="Ganancia derivativa"
-            sliderKey="pid.kd"
-          />
-        </CardContent>
+        {/* PID */}
+        <div className="mb-3">
+          <div className="flex items-center mb-2 text-xs">
+            <Gauge className="h-3 w-3 mr-1 text-muted-foreground" />
+            <span className="font-medium">Parámetros PID</span>
+          </div>
+          <div className="space-y-3">
+            <SliderWithInput
+              label="Kp"
+              value={state.pid.kp}
+              min={0}
+              max={10}
+              step={0.01}
+              unit=""
+              tooltip="Ganancia proporcional"
+              sliderKey="pid.kp"
+            />
+            <SliderWithInput
+              label="Ki"
+              value={state.pid.ki}
+              min={0}
+              max={1}
+              step={0.001}
+              unit=" s⁻¹"
+              tooltip="Ganancia integral"
+              sliderKey="pid.ki"
+            />
+            <SliderWithInput
+              label="Kd"
+              value={state.pid.kd}
+              min={0}
+              max={200}
+              step={1}
+              unit=" s"
+              tooltip="Ganancia derivativa"
+              sliderKey="pid.kd"
+            />
+          </div>
+        </div>
       </Card>
 
       {/* Controles Avanzados */}
-      <Accordion type="multiple" className="space-y-2">
+      <Accordion type="multiple" className="space-y-1">
         {/* Planta */}
         <AccordionItem value="plant" className="industrial-control border-none">
-          <AccordionTrigger className="px-4 text-sm">
-            Planta (avanzado)
+          <AccordionTrigger className="px-2 py-1 text-xs">
+            <div className="flex items-center">
+              <Settings className="h-3 w-3 mr-1 text-muted-foreground" />
+              Planta (avanzado)
+            </div>
           </AccordionTrigger>
-          <AccordionContent className="px-4 pb-4 space-y-4">
+          <AccordionContent className="px-2 pt-1 pb-2 space-y-3">
             <SliderWithInput
-              label="K (ganancia efectiva)"
+              label="K"
               value={state.plant.k}
               min={0}
               max={0.1}
@@ -347,7 +349,7 @@ export const ControlsPanel = ({ state, onStateChange, onReset, onApplyPreset }: 
               sliderKey="plant.k"
             />
             <SliderWithInput
-              label="τ (constante de tiempo, s)"
+              label="τ"
               value={state.plant.tau}
               min={1}
               max={600}
@@ -357,7 +359,7 @@ export const ControlsPanel = ({ state, onStateChange, onReset, onApplyPreset }: 
               sliderKey="plant.tau"
             />
             <SliderWithInput
-              label="L (tiempo muerto, s)"
+              label="L"
               value={state.plant.l}
               min={0}
               max={15}
@@ -367,7 +369,7 @@ export const ControlsPanel = ({ state, onStateChange, onReset, onApplyPreset }: 
               sliderKey="plant.l"
             />
             <SliderWithInput
-              label="T_amb (°C)"
+              label="T_amb"
               value={state.plant.t_amb}
               min={10}
               max={35}
@@ -381,17 +383,21 @@ export const ControlsPanel = ({ state, onStateChange, onReset, onApplyPreset }: 
 
         {/* Ruido y Disturbios */}
         <AccordionItem value="noise" className="industrial-control border-none">
-          <AccordionTrigger className="px-4 text-sm">
-            Ruido y disturbios
+          <AccordionTrigger className="px-2 py-1 text-xs">
+            <div className="flex items-center">
+              <Zap className="h-3 w-3 mr-1 text-muted-foreground" />
+              Ruido y disturbios
+            </div>
           </AccordionTrigger>
-          <AccordionContent className="px-4 pb-4 space-y-4">
+          <AccordionContent className="px-2 pt-1 pb-2 space-y-2">
             <div className="flex items-center justify-between">
-              <Label className="text-sm">Ruido</Label>
+              <Label className="text-xs">Ruido</Label>
               <Switch
                 checked={state.noise.enabled}
                 onCheckedChange={(enabled) => 
                   onStateChange({ noise: { ...state.noise, enabled } })
                 }
+                className="scale-75"
               />
             </div>
             {state.noise.enabled && (
@@ -409,74 +415,80 @@ export const ControlsPanel = ({ state, onStateChange, onReset, onApplyPreset }: 
             <Button 
               variant="outline" 
               onClick={handleDisturbance}
-              className="w-full gap-2"
+              className="w-full h-7 text-xs gap-1 mt-1"
             >
-              <Zap size={16} />
+              <Zap size={12} />
               Paso de carga
             </Button>
+          </AccordionContent>
+        </AccordionItem>
+        
+        {/* SSR */}
+        <AccordionItem value="ssr" className="industrial-control border-none">
+          <AccordionTrigger className="px-2 py-1 text-xs">
+            <div className="flex items-center">
+              <Settings className="h-3 w-3 mr-1 text-muted-foreground" />
+              Salida / Actuación
+            </div>
+          </AccordionTrigger>
+          <AccordionContent className="px-2 pt-1 pb-2 space-y-2">
+            <div className="flex items-center justify-between">
+              <Label className="text-xs">SSR por ventana</Label>
+              <Switch
+                checked={state.ssr.enabled}
+                onCheckedChange={(enabled) => 
+                  onStateChange({ ssr: { ...state.ssr, enabled } })
+                }
+                className="scale-75"
+              />
+            </div>
+            {state.ssr.enabled && (
+              <SliderWithInput
+                label="Periodo"
+                value={state.ssr.period}
+                min={0.5}
+                max={10}
+                step={0.5}
+                unit=" s"
+                tooltip="Periodo de la ventana SSR"
+                sliderKey="ssr.period"
+              />
+            )}
           </AccordionContent>
         </AccordionItem>
       </Accordion>
 
       {/* Presets */}
-      <Card className="industrial-control">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-sm">Presets</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <Select value={selectedPreset} onValueChange={setSelectedPreset}>
-            <SelectTrigger>
-              <SelectValue placeholder="Seleccionar preset..." />
-            </SelectTrigger>
-            <SelectContent>
-              {presets.map((preset) => (
-                <SelectItem key={preset.key} value={preset.key}>
-                  {preset.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+      <Card className="industrial-control p-2">
+        <div className="flex items-center mb-1 text-xs">
+          <BookOpen className="h-3 w-3 mr-1 text-muted-foreground" />
+          <span className="font-medium">Presets</span>
+        </div>
+        <div className="grid grid-cols-3 gap-2">
+          <div className="col-span-2">
+            <Select value={selectedPreset} onValueChange={setSelectedPreset}>
+              <SelectTrigger className="h-7 text-xs">
+                <SelectValue placeholder="Seleccionar..." />
+              </SelectTrigger>
+              <SelectContent>
+                {presets.map((preset) => (
+                  <SelectItem key={preset.key} value={preset.key} className="text-xs">
+                    {preset.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
           <Button 
             onClick={applyPreset} 
             disabled={!selectedPreset}
-            className="w-full"
+            className="h-7 text-xs"
+            size="sm"
           >
             Aplicar
           </Button>
-        </CardContent>
+        </div>
       </Card>
-
-      {/* SSR */}
-      <Card className="industrial-control">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-sm">Salida / Actuación</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <div className="flex items-center justify-between">
-            <Label className="text-sm">SSR por ventana</Label>
-            <Switch
-              checked={state.ssr.enabled}
-              onCheckedChange={(enabled) => 
-                onStateChange({ ssr: { ...state.ssr, enabled } })
-              }
-            />
-          </div>
-          {state.ssr.enabled && (
-            <SliderWithInput
-              label="Periodo (s)"
-              value={state.ssr.period}
-              min={0.5}
-              max={10}
-              step={0.5}
-              unit=" s"
-              tooltip="Periodo de la ventana SSR"
-              sliderKey="ssr.period"
-            />
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Acciones: eliminado. Los controles viven en SimulationStatus. */}
     </div>
   );
 };

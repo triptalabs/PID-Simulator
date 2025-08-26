@@ -113,7 +113,13 @@ export const ChartPVSP = ({ data, embedded = false, timeWindow }: ChartPVSPProps
   
   if (embedded) {
     return (
-      <div className="chart-container h-full min-h-0 flex flex-col p-4">
+      <div className="h-full min-h-0 flex flex-col">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-2 h-2 bg-primary rounded-full"></div>
+          <h3 className="text-sm font-semibold text-foreground tracking-wide uppercase">
+            Temperatura del Proceso
+          </h3>
+        </div>
         <div className="flex-1 min-h-0">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart 

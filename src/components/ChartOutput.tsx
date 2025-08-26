@@ -1,5 +1,5 @@
 
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { ChartDataPoint } from '@/lib/types';
 
 interface ChartOutputProps {
@@ -59,10 +59,35 @@ export const ChartOutput = ({ data, embedded = false, timeWindow }: ChartOutputP
     }
     return null;
   };
+
+  // Custom legend component
+  const CustomLegend = ({ payload }: any) => {
+    return (
+      <div className="flex items-center justify-center gap-6 mt-2">
+        {payload.map((entry: any, index: number) => (
+          <div key={index} className="flex items-center gap-2">
+            <div 
+              className="w-4 h-0.5 rounded-full" 
+              style={{ backgroundColor: entry.color }}
+            />
+            <span className="text-xs font-medium text-muted-foreground">
+              {entry.value}
+            </span>
+          </div>
+        ))}
+      </div>
+    );
+  };
   
   if (embedded) {
     return (
-      <div className="chart-container h-full min-h-0 flex flex-col p-4">
+      <div className="h-full min-h-0 flex flex-col">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-2 h-2 bg-chart-2 rounded-full"></div>
+          <h3 className="text-sm font-semibold text-foreground tracking-wide uppercase">
+            Salida del Controlador
+          </h3>
+        </div>
         <div className="flex-1 min-h-0">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart 
@@ -97,6 +122,7 @@ export const ChartOutput = ({ data, embedded = false, timeWindow }: ChartOutputP
                 tickLine={false}
               />
               <Tooltip content={<CustomTooltip />} />
+              <Legend content={<CustomLegend />} />
               <Line
                 type="monotone"
                 dataKey="output"
@@ -162,6 +188,7 @@ export const ChartOutput = ({ data, embedded = false, timeWindow }: ChartOutputP
               tickLine={false}
             />
             <Tooltip content={<CustomTooltip />} />
+            <Legend content={<CustomLegend />} />
             <Line
               type="monotone"
               dataKey="output"

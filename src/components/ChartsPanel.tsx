@@ -58,20 +58,27 @@ export const ChartsPanel = ({ data, timeWindow }: ChartsPanelProps) => {
   }, [isVisible]);
 
   return (
-    <Card className="industrial-panel h-full flex flex-col transition-all duration-500 ease-in-out transform hover:scale-[1.01] hover:shadow-xl">
-      <CardHeader className="flex-shrink-0 py-3 transition-all duration-300 ease-in-out">
-        <CardTitle className="text-sm font-medium flex items-center gap-2 animate-in slide-in-from-top-4 duration-500">
-          <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse-glow"></div>
-          Gráficas de Control
+    <Card className="h-full flex flex-col bg-background/50 backdrop-blur-sm border border-border/50 shadow-lg">
+      <CardHeader className="flex-shrink-0 pb-4">
+        <CardTitle className="text-sm font-semibold text-foreground tracking-wide uppercase flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 bg-primary rounded-full"></div>
+            <span>Gráficas de control</span>
+          </div>
+          {data.length > 0 && (
+            <div className="text-xs text-muted-foreground font-normal ml-auto">
+              {data.length} puntos
+            </div>
+          )}
         </CardTitle>
       </CardHeader>
-      <CardContent className="flex-1 min-h-0 p-4 pt-0 transition-all duration-500 ease-in-out">
+      <CardContent className="flex-1 min-h-0 p-6 pt-0">
         {isVisible && (
-          <div ref={containerRef} className="h-full grid grid-cols-1 xl:grid-cols-2 gap-4">
-            <div className="h-full min-h-0 animate-in slide-in-from-left-4 duration-500 delay-200">
+          <div ref={containerRef} className="h-full grid grid-cols-1 xl:grid-cols-2 gap-6">
+            <div className="h-full min-h-0">
               <ChartPVSP key={`pvsp-${key}`} data={data} embedded timeWindow={timeWindow} />
             </div>
-            <div className="h-full min-h-0 animate-in slide-in-from-right-4 duration-500 delay-300">
+            <div className="h-full min-h-0">
               <ChartOutput key={`output-${key}`} data={data} embedded timeWindow={timeWindow} />
             </div>
           </div>

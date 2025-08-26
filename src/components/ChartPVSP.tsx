@@ -56,14 +56,76 @@ export const ChartPVSP = ({ data, embedded = false, timeWindow }: ChartPVSPProps
   };
   
   const xTicks = timeWindow ? generateXTicks(timeWindow) : undefined;
+
+  // Custom tooltip component with glassmorphism
+  const CustomTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="chart-tooltip p-4">
+          <div className="flex items-center gap-2 mb-3 pb-2 border-b border-white/10">
+            <div className="w-2 h-2 bg-primary rounded-full"></div>
+            <span className="text-xs font-semibold text-white/90 tracking-wide uppercase">
+              Tiempo: {label}s
+            </span>
+          </div>
+          <div className="space-y-2">
+            {payload.map((entry: any, index: number) => (
+              <div key={index} className="flex items-center justify-between p-2 bg-white/5 rounded-lg border border-white/10">
+                <div className="flex items-center gap-3">
+                  <div 
+                    className="w-3 h-0.5 rounded-full" 
+                    style={{ backgroundColor: entry.color }}
+                  />
+                  <span className="text-xs font-medium text-white/80">
+                    {entry.name}:
+                  </span>
+                </div>
+                <span className="text-xs font-mono font-bold text-white bg-white/10 px-2 py-1 rounded">
+                  {entry.value.toFixed(1)}°C
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+    return null;
+  };
+
+  // Custom legend component
+  const CustomLegend = ({ payload }: any) => {
+    return (
+      <div className="flex items-center justify-center gap-6 mt-2">
+        {payload.map((entry: any, index: number) => (
+          <div key={index} className="flex items-center gap-2">
+            <div 
+              className="w-4 h-0.5 rounded-full" 
+              style={{ backgroundColor: entry.color }}
+            />
+            <span className="text-xs font-medium text-muted-foreground">
+              {entry.value}
+            </span>
+          </div>
+        ))}
+      </div>
+    );
+  };
   
   if (embedded) {
     return (
-      <div className="h-full min-h-0 flex flex-col">
+      <div className="chart-container h-full min-h-0 flex flex-col p-4">
         <div className="flex-1 min-h-0">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" />
+            <LineChart 
+              data={data} 
+              margin={{ top: 20, right: 20, left: 20, bottom: 20 }}
+            >
+              <CartesianGrid 
+                strokeDasharray="1 2" 
+                stroke="hsl(var(--border))" 
+                opacity={0.3}
+                vertical={false}
+              />
               <XAxis
                 dataKey="time"
                 type="number"
@@ -73,40 +135,52 @@ export const ChartPVSP = ({ data, embedded = false, timeWindow }: ChartPVSPProps
                 tickFormatter={(value) => `${value}s`}
                 allowDataOverflow={false}
                 allowDecimals={false}
-                minTickGap={20}
+                minTickGap={30}
+                tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
+                axisLine={{ stroke: 'hsl(var(--border))', strokeWidth: 1 }}
+                tickLine={false}
               />
               <YAxis
                 domain={yAxisDomain}
                 tickFormatter={(value) => `${value}°C`}
+                tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
+                axisLine={{ stroke: 'hsl(var(--border))', strokeWidth: 1 }}
+                tickLine={false}
               />
-              <Tooltip
-                formatter={(value: number, name: string) => [
-                  <span className="font-mono">{value.toFixed(1)}°C</span>,
-                  name === 'pv' ? 'Proceso' : 'Setpoint'
-                ]}
-                labelFormatter={(value) => `Tiempo: ${value}s`}
-                isAnimationActive={false}
-                animationDuration={0}
-              />
-              <Legend />
+              <Tooltip content={<CustomTooltip />} />
+              <Legend content={<CustomLegend />} />
               <Line
                 type="monotone"
                 dataKey="pv"
-                stroke="hsl(var(--industrial-blue))"
-                strokeWidth={2}
-                name="PV (Proceso)"
-                dot={{ fill: "hsl(var(--industrial-blue))", strokeWidth: 1, r: 2 }}
+                stroke="hsl(var(--primary))"
+                strokeWidth={2.5}
+                name="Proceso"
+                dot={false}
+                activeDot={{ 
+                  r: 4, 
+                  fill: 'hsl(var(--primary))',
+                  stroke: 'hsl(var(--background))',
+                  strokeWidth: 2
+                }}
                 isAnimationActive={false}
+                className="chart-line"
               />
               <Line
                 type="monotone"
                 dataKey="sp"
-                stroke="hsl(var(--industrial-orange))"
+                stroke="hsl(var(--muted-foreground))"
                 strokeWidth={2}
-                strokeDasharray="5 5"
-                name="SP (Setpoint)"
-                dot={{ fill: "hsl(var(--industrial-orange))", strokeWidth: 1, r: 2 }}
+                strokeDasharray="4 4"
+                name="Setpoint"
+                dot={false}
+                activeDot={{ 
+                  r: 3, 
+                  fill: 'hsl(var(--muted-foreground))',
+                  stroke: 'hsl(var(--background))',
+                  strokeWidth: 2
+                }}
                 isAnimationActive={false}
+                className="chart-line"
               />
             </LineChart>
           </ResponsiveContainer>
@@ -116,12 +190,25 @@ export const ChartPVSP = ({ data, embedded = false, timeWindow }: ChartPVSPProps
   }
 
   return (
-    <div className="industrial-control p-4 h-full min-h-0 flex flex-col">
-      <h3 className="text-sm font-medium text-muted-foreground mb-4">PV vs SP</h3>
+    <div className="chart-container p-6 h-full min-h-0 flex flex-col">
+      <div className="flex items-center gap-3 mb-6">
+        <div className="w-2 h-2 bg-primary rounded-full"></div>
+        <h3 className="text-sm font-semibold text-foreground tracking-wide uppercase">
+          Temperatura del Proceso
+        </h3>
+      </div>
       <div className="flex-1 min-h-[200px]">
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-            <CartesianGrid strokeDasharray="3 3" />
+          <LineChart 
+            data={data} 
+            margin={{ top: 20, right: 20, left: 20, bottom: 20 }}
+          >
+            <CartesianGrid 
+              strokeDasharray="1 2" 
+              stroke="hsl(var(--border))" 
+              opacity={0.3}
+              vertical={false}
+            />
             <XAxis
               dataKey="time"
               type="number"
@@ -131,40 +218,52 @@ export const ChartPVSP = ({ data, embedded = false, timeWindow }: ChartPVSPProps
               tickFormatter={(value) => `${value}s`}
               allowDataOverflow={false}
               allowDecimals={false}
-              minTickGap={20}
+              minTickGap={30}
+              tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
+              axisLine={{ stroke: 'hsl(var(--border))', strokeWidth: 1 }}
+              tickLine={false}
             />
             <YAxis
               domain={yAxisDomain}
               tickFormatter={(value) => `${value}°C`}
+              tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
+              axisLine={{ stroke: 'hsl(var(--border))', strokeWidth: 1 }}
+              tickLine={false}
             />
-            <Tooltip
-              formatter={(value: number, name: string) => [
-                <span className="font-mono">{value.toFixed(1)}°C</span>,
-                name === 'pv' ? 'Proceso' : 'Setpoint'
-              ]}
-              labelFormatter={(value) => `Tiempo: ${value}s`}
-              isAnimationActive={false}
-              animationDuration={0}
-            />
-            <Legend />
+            <Tooltip content={<CustomTooltip />} />
+            <Legend content={<CustomLegend />} />
             <Line
               type="monotone"
               dataKey="pv"
-              stroke="hsl(var(--industrial-blue))"
-              strokeWidth={2}
-              name="PV (Proceso)"
-              dot={{ fill: "hsl(var(--industrial-blue))", strokeWidth: 1, r: 2 }}
+              stroke="hsl(var(--primary))"
+              strokeWidth={2.5}
+              name="Proceso"
+              dot={false}
+              activeDot={{ 
+                r: 4, 
+                fill: 'hsl(var(--primary))',
+                stroke: 'hsl(var(--background))',
+                strokeWidth: 2
+              }}
               isAnimationActive={false}
+              className="chart-line"
             />
             <Line
               type="monotone"
               dataKey="sp"
-              stroke="hsl(var(--industrial-orange))"
+              stroke="hsl(var(--muted-foreground))"
               strokeWidth={2}
-              strokeDasharray="5 5"
-              name="SP (Setpoint)"
-              dot={{ fill: "hsl(var(--industrial-orange))", strokeWidth: 1, r: 2 }}
+              strokeDasharray="4 4"
+              name="Setpoint"
+              dot={false}
+              activeDot={{ 
+                r: 3, 
+                fill: 'hsl(var(--muted-foreground))',
+                stroke: 'hsl(var(--background))',
+                strokeWidth: 2
+              }}
               isAnimationActive={false}
+              className="chart-line"
             />
           </LineChart>
         </ResponsiveContainer>

@@ -82,8 +82,7 @@ export const ChartOutput = ({ data, embedded = false, timeWindow }: ChartOutputP
   if (embedded) {
     return (
       <div className="h-full min-h-0 flex flex-col">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-2 h-2 bg-chart-2 rounded-full"></div>
+        <div className="flex items-center justify-center mb-4">
           <h3 className="text-sm font-semibold text-foreground tracking-wide uppercase">
             Salida del Controlador
           </h3>
@@ -148,8 +147,7 @@ export const ChartOutput = ({ data, embedded = false, timeWindow }: ChartOutputP
 
   return (
     <div className="chart-container p-6 h-full min-h-0 flex flex-col">
-      <div className="flex items-center gap-3 mb-6">
-        <div className="w-2 h-2 bg-chart-2 rounded-full"></div>
+      <div className="flex items-center justify-center mb-6">
         <h3 className="text-sm font-semibold text-foreground tracking-wide uppercase">
           Salida del Controlador
         </h3>

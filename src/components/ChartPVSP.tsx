@@ -114,8 +114,7 @@ export const ChartPVSP = ({ data, embedded = false, timeWindow }: ChartPVSPProps
   if (embedded) {
     return (
       <div className="h-full min-h-0 flex flex-col">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-2 h-2 bg-primary rounded-full"></div>
+        <div className="flex items-center justify-center mb-4">
           <h3 className="text-sm font-semibold text-foreground tracking-wide uppercase">
             Temperatura del Proceso
           </h3>
@@ -197,8 +196,7 @@ export const ChartPVSP = ({ data, embedded = false, timeWindow }: ChartPVSPProps
 
   return (
     <div className="chart-container p-6 h-full min-h-0 flex flex-col">
-      <div className="flex items-center gap-3 mb-6">
-        <div className="w-2 h-2 bg-primary rounded-full"></div>
+      <div className="flex items-center justify-center mb-6">
         <h3 className="text-sm font-semibold text-foreground tracking-wide uppercase">
           Temperatura del Proceso
         </h3>

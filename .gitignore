@@ -28,3 +28,4 @@ coverage/
 
 .cursor
 coverage/
+.playwright-mcp

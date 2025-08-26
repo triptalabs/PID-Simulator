@@ -11,9 +11,10 @@ import { presets } from "@/lib/presets";
 interface HeaderProps {
   state?: SimulatorState;
   onStateChange?: (updates: Partial<SimulatorState>) => void;
+  onExpansionChange?: (expanded: boolean) => void;
 }
 
-export const Header = ({ state, onStateChange }: HeaderProps) => {
+export const Header = ({ state, onStateChange, onExpansionChange }: HeaderProps) => {
   const [helpOpen, setHelpOpen] = useState(false);
 
   const handleHelpClick = () => {
@@ -238,6 +239,7 @@ export const Header = ({ state, onStateChange }: HeaderProps) => {
         onDocsClick={handleDocsClick}
         simulatorState={state}
         onStateChange={onStateChange}
+        onExpansionChange={onExpansionChange}
       />
       
       {/* HelpDialog para el botón de ayuda */}

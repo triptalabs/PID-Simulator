@@ -7,42 +7,72 @@
 
 @layer base {
   :root {
-    --background: 218 23% 8%;
-    --foreground: 220 15% 95%;
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222.2 84% 4.9%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222.2 84% 4.9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221.2 83.2% 53.3%;
+    --radius: 0.5rem;
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+    
+    /* Industrial theme colors for charts */
+    --industrial-blue: 221.2 83.2% 53.3%;
+    --industrial-orange: 27 87% 67%;
+    --industrial-green: 173 58% 39%;
+    --industrial-panel: 0 0% 100%;
+    --industrial-glass: 0 0% 100% / 0.8;
+  }
 
-    --card: 220 20% 12%;
-    --card-foreground: 220 15% 95%;
-
-    --popover: 220 25% 10%;
-    --popover-foreground: 220 15% 95%;
-
-    --primary: 210 95% 55%;
-    --primary-foreground: 220 15% 5%;
-
-    --secondary: 220 15% 18%;
-    --secondary-foreground: 220 15% 90%;
-
-    --muted: 220 15% 15%;
-    --muted-foreground: 220 10% 65%;
-
-    --accent: 220 15% 20%;
-    --accent-foreground: 220 15% 95%;
-
-    --destructive: 0 75% 60%;
-    --destructive-foreground: 220 15% 95%;
-
-    --border: 220 15% 20%;
-    --input: 220 15% 18%;
-    --ring: 210 95% 55%;
-
-    --radius: 0.75rem;
-
-    /* Industrial Theme Colors */
-    --industrial-blue: 210 95% 55%;
-    --industrial-orange: 25 95% 60%;
-    --industrial-green: 142 85% 55%;
-    --industrial-panel: 220 20% 14%;
-    --industrial-glass: 220 15% 25% / 0.3;
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 84% 4.9%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 224.3 76.3% 94.1%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+    
+    /* Industrial theme colors for charts */
+    --industrial-blue: 220 70% 50%;
+    --industrial-orange: 30 80% 55%;
+    --industrial-green: 160 60% 45%;
+    --industrial-panel: 222.2 84% 4.9%;
+    --industrial-glass: 222.2 84% 4.9% / 0.8;
   }
 }
 
@@ -50,18 +80,13 @@
   * {
     @apply border-border;
   }
-
   body {
-    @apply bg-background text-foreground font-industrial;
-    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    @apply bg-background text-foreground;
   }
 
   /* Industrial UI Components */
   .industrial-panel {
-    @apply bg-industrial-panel/50 backdrop-blur-sm border border-border/50;
-    background-image: 
-      linear-gradient(135deg, hsl(var(--industrial-glass)) 0%, transparent 50%),
-      radial-gradient(circle at top left, hsl(var(--industrial-blue) / 0.1) 0%, transparent 50%);
+    @apply bg-gradient-to-br from-slate-900/95 to-slate-800/95 backdrop-blur-xl border border-slate-700/50 shadow-2xl;
   }
 
   .industrial-control {
@@ -84,7 +109,7 @@
   }
 
   .control-value {
-    @apply font-mono text-sm font-semibold text-industrial-blue;
+    @apply text-blue-400 font-mono;
   }
 
   .status-active {
@@ -216,28 +241,153 @@
   /* Chart styling */
   .recharts-cartesian-grid-horizontal line,
   .recharts-cartesian-grid-vertical line {
-    @apply stroke-border/30;
+    @apply stroke-border/20;
+    stroke-width: 0.5px;
   }
 
   .recharts-text {
-    @apply fill-muted-foreground text-xs;
+    @apply fill-muted-foreground text-xs font-medium;
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
+  }
+
+  /* Custom chart container styling */
+  .chart-container {
+    @apply bg-background/30 backdrop-blur-sm border border-border/30 rounded-xl;
+    box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
+  }
+
+
+
+  /* Chart line styling for better visual appeal */
+  .chart-line {
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+  }
+
+  .chart-line:hover {
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
+  }
+
+  /* Disable text selection and cursor on charts */
+  .recharts-wrapper,
+  .recharts-surface,
+  .recharts-legend-wrapper,
+  .recharts-tooltip-wrapper {
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    cursor: default;
+  }
+
+  /* Disable text selection on chart containers */
+  .chart-container,
+  .h-full.min-h-0.flex.flex-col {
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    cursor: default;
+  }
+
+  /* Simplified chart interaction styles - allow tooltips to work */
+  .recharts-wrapper,
+  .recharts-surface,
+  .recharts-legend-wrapper {
+    cursor: default !important;
+    user-select: none !important;
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+  }
+
+  /* Allow tooltips to work */
+  .recharts-tooltip-wrapper,
+  .recharts-tooltip-wrapper * {
+    pointer-events: auto !important;
+    z-index: 9999 !important;
+  }
+
+  /* Allow chart lines to be interactive for tooltips */
+  .recharts-line,
+  .recharts-line *,
+  .recharts-line-curve,
+  .recharts-line-curve *,
+  .recharts-line-dots,
+  .recharts-line-dots * {
+    cursor: default !important;
+    user-select: none !important;
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+    pointer-events: auto !important;
+  }
+
+  /* Allow SVG paths and lines to be interactive */
+  .recharts-wrapper svg path,
+  .recharts-wrapper svg line,
+  .recharts-surface svg path,
+  .recharts-surface svg line {
+    cursor: default !important;
+    pointer-events: auto !important;
+  }
+
+  /* Disable interactions for non-interactive elements */
+  .recharts-cartesian-axis,
+  .recharts-cartesian-axis *,
+  .recharts-cartesian-grid,
+  .recharts-cartesian-grid *,
+  .recharts-wrapper svg rect,
+  .recharts-wrapper svg circle,
+  .recharts-wrapper svg text,
+  .recharts-surface svg rect,
+  .recharts-surface svg circle,
+  .recharts-surface svg text {
+    cursor: default !important;
+    pointer-events: none !important;
+  }
+
+  /* Ensure tooltips are visible and functional */
+  .recharts-tooltip {
+    background: rgba(0, 0, 0, 0.9) !important;
+    border: 1px solid white !important;
+    border-radius: 8px !important;
+    color: white !important;
+    z-index: 9999 !important;
+    pointer-events: auto !important;
+  }
+
+  /* Force tooltip wrapper to be interactive */
+  .recharts-tooltip-wrapper {
+    pointer-events: auto !important;
+    z-index: 9999 !important;
+  }
+
+  /* Ensure all tooltip content is interactive */
+  .recharts-tooltip-wrapper * {
+    pointer-events: auto !important;
   }
 
   /* Custom scrollbar for industrial feel */
+  .industrial-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(148, 163, 184, 0.3) transparent;
+  }
+
   .industrial-scroll::-webkit-scrollbar {
     width: 6px;
   }
 
   .industrial-scroll::-webkit-scrollbar-track {
-    @apply bg-muted/20 rounded-full;
+    background: transparent;
   }
 
   .industrial-scroll::-webkit-scrollbar-thumb {
-    @apply bg-industrial-blue/60 rounded-full;
+    background-color: rgba(148, 163, 184, 0.3);
+    border-radius: 3px;
   }
 
   .industrial-scroll::-webkit-scrollbar-thumb:hover {
-    @apply bg-industrial-blue/80;
+    background-color: rgba(148, 163, 184, 0.5);
   }
 }
 
@@ -245,4 +395,296 @@
   .text-shadow-glow {
     text-shadow: 0 0 10px currentColor;
   }
+}
+
+/* Animaciones personalizadas */
+@layer utilities {
+  .animate-in {
+    animation-fill-mode: both;
+  }
+
+  .animate-out {
+    animation-fill-mode: both;
+  }
+
+  .slide-in-from-top-4 {
+    animation: slideInFromTop 0.5s ease-out;
+  }
+
+  .slide-in-from-bottom-4 {
+    animation: slideInFromBottom 0.5s ease-out;
+  }
+
+  .slide-in-from-left-4 {
+    animation: slideInFromLeft 0.5s ease-out;
+  }
+
+  .slide-in-from-right-4 {
+    animation: slideInFromRight 0.5s ease-out;
+  }
+
+  .slide-in-from-left-2 {
+    animation: slideInFromLeft2 0.5s ease-out;
+  }
+
+  .fade-in-0 {
+    animation: fadeIn 0.5s ease-out;
+  }
+
+  .delay-100 {
+    animation-delay: 100ms;
+  }
+
+  .delay-150 {
+    animation-delay: 150ms;
+  }
+
+  .delay-200 {
+    animation-delay: 200ms;
+  }
+
+  .delay-300 {
+    animation-delay: 300ms;
+  }
+
+  .delay-400 {
+    animation-delay: 400ms;
+  }
+
+  .delay-500 {
+    animation-delay: 500ms;
+  }
+
+  .delay-600 {
+    animation-delay: 600ms;
+  }
+
+  .delay-700 {
+    animation-delay: 700ms;
+  }
+
+  .delay-800 {
+    animation-delay: 800ms;
+  }
+
+  .delay-900 {
+    animation-delay: 900ms;
+  }
+
+  .delay-1000 {
+    animation-delay: 1000ms;
+  }
+}
+
+/* Keyframes para las animaciones */
+@keyframes slideInFromTop {
+  from {
+    opacity: 0;
+    transform: translateY(-1rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInFromBottom {
+  from {
+    opacity: 0;
+    transform: translateY(1rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInFromLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-1rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInFromRight {
+  from {
+    opacity: 0;
+    transform: translateX(1rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInFromLeft2 {
+  from {
+    opacity: 0;
+    transform: translateX(-0.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Animación de pulso para elementos activos */
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(59, 130, 246, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.8);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Animación de rotación suave */
+@keyframes rotate-smooth {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-rotate-smooth {
+  animation: rotate-smooth 3s linear infinite;
+}
+
+/* Animación de escala con rebote */
+@keyframes scale-bounce {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.animate-scale-bounce {
+  animation: scale-bounce 0.6s ease-in-out;
+}
+
+/* Animación de deslizamiento suave */
+@keyframes slide-smooth {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.animate-slide-smooth {
+  animation: slide-smooth 0.8s ease-out;
+}
+
+/* Efecto de hover con gradiente */
+.hover-gradient {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(147, 51, 234, 0.1));
+  transition: all 0.3s ease;
+}
+
+.hover-gradient:hover {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(147, 51, 234, 0.2));
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+/* Efecto de brillo en hover */
+.hover-shine {
+  position: relative;
+  overflow: hidden;
+}
+
+.hover-shine::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transition: left 0.5s ease;
+}
+
+.hover-shine:hover::before {
+  left: 100%;
+}
+
+/* Animación de carga con puntos */
+@keyframes loading-dots {
+  0%, 20% {
+    color: rgba(0, 0, 0, 0);
+    text-shadow: 0.25em 0 0 rgba(0, 0, 0, 0), 0.5em 0 0 rgba(0, 0, 0, 0);
+  }
+  40% {
+    color: rgba(0, 0, 0, 0);
+    text-shadow: 0.25em 0 0 rgba(0, 0, 0, 0), 0.5em 0 0 rgba(0, 0, 0, 0);
+  }
+  60% {
+    text-shadow: 0.25em 0 0 rgba(0, 0, 0, 0), 0.5em 0 0 rgba(0, 0, 0, 0);
+  }
+  80%, 100% {
+    text-shadow: 0.25em 0 0 rgba(0, 0, 0, 0), 0.5em 0 0 rgba(0, 0, 0, 0);
+  }
+}
+
+.animate-loading-dots {
+  animation: loading-dots 1.4s infinite;
+}
+
+/* Efecto de transición suave para el layout */
+.layout-transition {
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Animación de entrada para elementos del grid */
+.grid-item-enter {
+  opacity: 0;
+  transform: scale(0.8) translateY(20px);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.grid-item-enter-active {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+}
+
+/* Efecto de hover para botones con profundidad */
+.btn-depth {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.btn-depth:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.btn-depth:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }

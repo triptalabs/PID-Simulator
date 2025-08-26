@@ -42,6 +42,7 @@ interface UnifiedControlPanelProps {
   onExportAll: () => void;
   metrics: MetricsData;
   currentPV: number;
+  compact?: boolean;
 }
 
 export const UnifiedControlPanel = ({ 
@@ -51,7 +52,8 @@ export const UnifiedControlPanel = ({
   onExportWindow, 
   onExportAll,
   metrics,
-  currentPV
+  currentPV,
+  compact = false
 }: UnifiedControlPanelProps) => {
   const { state: simState } = useSimulation()
   const { currentData, isRunning, isConnected } = useSimulationData()
@@ -134,201 +136,322 @@ export const UnifiedControlPanel = ({
   }
 
   return (
-    <Card className="industrial-panel h-full flex flex-col">
-      <CardHeader className="flex-shrink-0 pb-3">
+    <Card className={`industrial-panel ${compact ? 'h-auto' : 'h-full flex flex-col'} transition-all duration-500 ease-in-out`}>
+      <CardHeader className={`flex-shrink-0 ${compact ? 'pb-2' : 'pb-3'} transition-all duration-300 ease-in-out`}>
         <CardTitle className="flex items-center justify-between text-sm">
           <div className="flex items-center gap-2">
-            <Zap className="w-4 h-4 text-industrial-blue" />
+            <Zap className="w-4 h-4 text-industrial-blue transition-transform duration-300" />
             <span className="font-semibold">Panel de Control</span>
           </div>
-          <Badge variant={connectionStatus.variant} className="flex items-center gap-1 text-xs h-5 px-2">
+          <Badge variant={connectionStatus.variant} className="flex items-center gap-1 text-xs h-5 px-2 transition-all duration-300 ease-in-out">
             {connectionStatus.icon}
             {connectionStatus.text}
           </Badge>
         </CardTitle>
       </CardHeader>
 
-      <CardContent className="flex-1 min-h-0 overflow-y-auto industrial-scroll p-4 pt-0 space-y-4">
-        {/* Controles principales */}
-        <div className="grid grid-cols-3 gap-2">
-          <Button
-            onClick={handleStart}
-            disabled={!isConnected || isRunning}
-            size="sm"
-            className="flex items-center gap-1 h-8 text-xs"
-          >
-            <Play className="h-3 w-3" />
-            Iniciar
-          </Button>
-          
-          <Button
-            onClick={handlePause}
-            disabled={!isConnected || !isRunning}
-            variant="outline"
-            size="sm"
-            className="flex items-center gap-1 h-8 text-xs"
-          >
-            <Pause className="h-3 w-3" />
-            Pausar
-          </Button>
-          
-          <Button
-            onClick={handleReset}
-            disabled={!isConnected}
-            variant="outline"
-            size="sm"
-            className="flex items-center gap-1 h-8 text-xs"
-          >
-            <RotateCcw className="h-3 w-3" />
-            Reset
-          </Button>
-        </div>
-
-        <Separator />
-
-        {/* Estado actual compacto */}
-        <div className="space-y-3">
-          <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Estado Actual</h4>
-          <div className="grid grid-cols-2 gap-3 text-xs">
-            <div className="space-y-2">
-              <div className="flex justify-between items-center">
-                <span className="text-muted-foreground">Modo:</span>
-                <Badge variant={state.mode === 'horno' ? 'default' : 'secondary'} className="text-xs h-4 px-2">
-                  <Thermometer className="w-2 h-2 mr-1" />
-                  {state.mode === 'horno' ? 'Horno' : 'Chiller'}
-                </Badge>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-muted-foreground">SP:</span>
-                <span className="control-value font-mono font-semibold">{state.setpoint}°C</span>
+      <CardContent className={`${compact ? 'p-3 pt-0' : 'flex-1 min-h-0 overflow-y-auto industrial-scroll p-4 pt-0'} space-y-4 transition-all duration-500 ease-in-out`}>
+        {compact ? (
+          // Layout compacto horizontal con animaciones
+          <div className="grid grid-cols-4 gap-4 animate-in fade-in-0 duration-500">
+            {/* Controles principales */}
+            <div className="space-y-2 animate-in slide-in-from-left-2 duration-500 delay-100">
+              <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Controles</h4>
+              <div className="grid grid-cols-3 gap-1">
+                <Button
+                  onClick={handleStart}
+                  disabled={!isConnected || isRunning}
+                  size="sm"
+                  className="flex items-center gap-1 h-7 text-xs transition-all duration-200 active:scale-95"
+                >
+                  <Play className="h-3 w-3" />
+                  Iniciar
+                </Button>
+                
+                <Button
+                  onClick={handlePause}
+                  disabled={!isConnected || !isRunning}
+                  variant="outline"
+                  size="sm"
+                  className="flex items-center gap-1 h-7 text-xs transition-all duration-200 active:scale-95"
+                >
+                  <Pause className="h-3 w-3" />
+                  Pausar
+                </Button>
+                
+                <Button
+                  onClick={handleReset}
+                  disabled={!isConnected}
+                  variant="outline"
+                  size="sm"
+                  className="flex items-center gap-1 h-7 text-xs transition-all duration-200 active:scale-95"
+                >
+                  <RotateCcw className="h-3 w-3" />
+                  Reset
+                </Button>
               </div>
             </div>
-            <div className="space-y-2">
-              <div className="flex justify-between items-center">
-                <span className="text-muted-foreground">PV:</span>
-                <span className="control-value font-mono font-semibold">{formatTemperature(currentPV)}</span>
+
+            {/* Estado actual */}
+            <div className="space-y-2 animate-in slide-in-from-left-2 duration-500 delay-200">
+              <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Estado</h4>
+              <div className="space-y-1 text-xs">
+                <div className="flex justify-between items-center transition-all duration-200 hover:bg-muted/20 rounded px-1 py-0.5">
+                  <span className="text-muted-foreground">Modo:</span>
+                  <Badge variant={state.mode === 'horno' ? 'default' : 'secondary'} className="text-xs h-4 px-2 transition-all duration-200">
+                    <Thermometer className="w-2 h-2 mr-1" />
+                    {state.mode === 'horno' ? 'Horno' : 'Chiller'}
+                  </Badge>
+                </div>
+                <div className="flex justify-between items-center transition-all duration-200 hover:bg-muted/20 rounded px-1 py-0.5">
+                  <span className="text-muted-foreground">SP:</span>
+                  <span className="font-mono font-semibold">{state.setpoint}°C</span>
+                </div>
+                <div className="flex justify-between items-center transition-all duration-200 hover:bg-muted/20 rounded px-1 py-0.5">
+                  <span className="text-muted-foreground">PV:</span>
+                  <span className="font-mono font-semibold">{formatTemperature(currentPV)}</span>
+                </div>
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-muted-foreground">Ventana:</span>
-                <span className="control-value font-mono font-semibold">
-                  {state.timeWindow === 60 ? '1m' : state.timeWindow === 300 ? '5m' : '30m'}
+            </div>
+
+            {/* Métricas */}
+            <div className="space-y-2 animate-in slide-in-from-left-2 duration-500 delay-300">
+              <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Métricas</h4>
+              <div className="space-y-1 text-xs">
+                <div className="flex justify-between items-center transition-all duration-200 hover:bg-muted/20 rounded px-1 py-0.5">
+                  <span className="text-muted-foreground">Overshoot:</span>
+                  <Badge 
+                    variant="outline" 
+                    className={`${getOvershootColor(metrics.overshoot)} text-white border-0 text-xs h-4 px-2 transition-all duration-200`}
+                  >
+                    {formatOvershoot(metrics.overshoot)}
+                  </Badge>
+                </div>
+                <div className="flex justify-between items-center transition-all duration-200 hover:bg-muted/20 rounded px-1 py-0.5">
+                  <span className="text-muted-foreground">T. Est.:</span>
+                  <span className="font-mono font-semibold">
+                    {formatTime(metrics.settling_time > 0 ? metrics.settling_time + 2 : 0)}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center transition-all duration-200 hover:bg-muted/20 rounded px-1 py-0.5">
+                  <span className="text-muted-foreground">Ventana:</span>
+                  <span className="font-mono font-semibold">
+                    {state.timeWindow === 60 ? '1m' : state.timeWindow === 300 ? '5m' : '30m'}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Exportación */}
+            <div className="space-y-2 animate-in slide-in-from-left-2 duration-500 delay-400">
+              <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Exportar</h4>
+              <div className="space-y-1">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={onExportWindow}
+                  className="w-full text-xs h-7 transition-all duration-200 active:scale-95"
+                >
+                  <Download className="w-3 h-3 mr-1" />
+                  Ventana
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={onExportAll}
+                  className="w-full text-xs h-7 transition-all duration-200 active:scale-95"
+                >
+                  <Download className="w-3 h-3 mr-1" />
+                  Todo
+                </Button>
+              </div>
+            </div>
+          </div>
+        ) : (
+          // Layout normal vertical con animaciones
+          <div className="animate-in fade-in-0 duration-500">
+            {/* Controles principales */}
+            <div className="grid grid-cols-3 gap-2 animate-in slide-in-from-top-4 duration-500 delay-100">
+              <Button
+                onClick={handleStart}
+                disabled={!isConnected || isRunning}
+                size="sm"
+                className="flex items-center gap-1 h-8 text-xs transition-all duration-200 active:scale-95"
+              >
+                <Play className="h-3 w-3" />
+                Iniciar
+              </Button>
+              
+              <Button
+                onClick={handlePause}
+                disabled={!isConnected || !isRunning}
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-1 h-8 text-xs transition-all duration-200 active:scale-95"
+              >
+                <Pause className="h-3 w-3" />
+                Pausar
+              </Button>
+              
+              <Button
+                onClick={handleReset}
+                disabled={!isConnected}
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-1 h-8 text-xs transition-all duration-200 active:scale-95"
+              >
+                <RotateCcw className="h-3 w-3" />
+                Reset
+              </Button>
+            </div>
+
+            <Separator className="animate-in fade-in-0 duration-500 delay-200" />
+
+            {/* Estado actual compacto */}
+            <div className="space-y-3 animate-in slide-in-from-top-4 duration-500 delay-300">
+              <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Estado Actual</h4>
+              <div className="grid grid-cols-2 gap-3 text-xs">
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center transition-all duration-200 hover:bg-muted/20 rounded px-2 py-1">
+                    <span className="text-muted-foreground">Modo:</span>
+                    <Badge variant={state.mode === 'horno' ? 'default' : 'secondary'} className="text-xs h-4 px-2 transition-all duration-200">
+                      <Thermometer className="w-2 h-2 mr-1" />
+                      {state.mode === 'horno' ? 'Horno' : 'Chiller'}
+                    </Badge>
+                  </div>
+                  <div className="flex justify-between items-center transition-all duration-200 hover:bg-muted/20 rounded px-2 py-1">
+                    <span className="text-muted-foreground">SP:</span>
+                    <span className="control-value font-mono font-semibold">{state.setpoint}°C</span>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center transition-all duration-200 hover:bg-muted/20 rounded px-2 py-1">
+                    <span className="text-muted-foreground">PV:</span>
+                    <span className="control-value font-mono font-semibold">{formatTemperature(currentPV)}</span>
+                  </div>
+                  <div className="flex justify-between items-center transition-all duration-200 hover:bg-muted/20 rounded px-2 py-1">
+                    <span className="text-muted-foreground">Ventana:</span>
+                    <span className="control-value font-mono font-semibold">
+                      {state.timeWindow === 60 ? '1m' : state.timeWindow === 300 ? '5m' : '30m'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <Separator className="animate-in fade-in-0 duration-500 delay-400" />
+
+            {/* Métricas de control */}
+            <div className="space-y-3 animate-in slide-in-from-top-4 duration-500 delay-500">
+              <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wide flex items-center gap-2">
+                <Target className="h-3 w-3" />
+                Métricas de Control
+              </h4>
+              
+              {/* Estado de cálculo */}
+              <div className="flex items-center justify-between p-2 bg-muted/20 rounded-md transition-all duration-200 hover:bg-muted/30">
+                <span className="text-xs text-muted-foreground">
+                  {metrics.is_calculating ? "Calculando..." : "En espera"}
+                </span>
+                <Badge 
+                  variant={metrics.is_calculating ? "default" : "secondary"}
+                  className={`text-xs h-4 px-2 ${metrics.is_calculating ? "bg-blue-500" : ""} transition-all duration-200`}
+                >
+                  {metrics.is_calculating ? "Activo" : "Inactivo"}
+                </Badge>
+              </div>
+
+              {/* Overshoot */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <TrendingUp className="h-3 w-3" />
+                    <span className="text-xs font-medium">Overshoot</span>
+                  </div>
+                  <Badge 
+                    variant="outline" 
+                    className={`${getOvershootColor(metrics.overshoot)} text-white border-0 text-xs h-4 px-2 transition-all duration-200`}
+                  >
+                    {formatOvershoot(metrics.overshoot)}
+                  </Badge>
+                </div>
+                <Progress 
+                  value={Math.min(100, metrics.overshoot / 2)} 
+                  className="h-1 transition-all duration-500 ease-in-out"
+                />
+              </div>
+
+              {/* Tiempo de establecimiento */}
+              <div className="flex items-center justify-between p-2 bg-muted/20 rounded-md transition-all duration-200 hover:bg-muted/30">
+                <div className="flex items-center gap-2">
+                  <Clock className="h-3 w-3" />
+                  <span className="text-xs font-medium">Tiempo Est.</span>
+                </div>
+                <span className="text-xs font-mono font-semibold">
+                  {formatTime(metrics.settling_time > 0 ? metrics.settling_time + 2 : 0)}
                 </span>
               </div>
             </div>
-          </div>
-        </div>
 
-        <Separator />
+            <Separator className="animate-in fade-in-0 duration-500 delay-600" />
 
-        {/* Métricas de control */}
-        <div className="space-y-3">
-          <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wide flex items-center gap-2">
-            <Target className="h-3 w-3" />
-            Métricas de Control
-          </h4>
-          
-          {/* Estado de cálculo */}
-          <div className="flex items-center justify-between p-2 bg-muted/20 rounded-md">
-            <span className="text-xs text-muted-foreground">
-              {metrics.is_calculating ? "Calculando..." : "En espera"}
-            </span>
-            <Badge 
-              variant={metrics.is_calculating ? "default" : "secondary"}
-              className={`text-xs h-4 px-2 ${metrics.is_calculating ? "bg-blue-500" : ""}`}
-            >
-              {metrics.is_calculating ? "Activo" : "Inactivo"}
-            </Badge>
-          </div>
-
-          {/* Overshoot */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <TrendingUp className="h-3 w-3" />
-                <span className="text-xs font-medium">Overshoot</span>
-              </div>
-              <Badge 
-                variant="outline" 
-                className={`${getOvershootColor(metrics.overshoot)} text-white border-0 text-xs h-4 px-2`}
-              >
-                {formatOvershoot(metrics.overshoot)}
-              </Badge>
-            </div>
-            <Progress 
-              value={Math.min(100, metrics.overshoot / 2)} 
-              className="h-1"
-            />
-          </div>
-
-          {/* Tiempo de establecimiento */}
-          <div className="flex items-center justify-between p-2 bg-muted/20 rounded-md">
-            <div className="flex items-center gap-2">
-              <Clock className="h-3 w-3" />
-              <span className="text-xs font-medium">Tiempo Est.</span>
-            </div>
-            <span className="text-xs font-mono font-semibold">
-              {formatTime(metrics.settling_time > 0 ? metrics.settling_time + 2 : 0)}
-            </span>
-          </div>
-        </div>
-
-        <Separator />
-
-        {/* Exportación */}
-        <div className="space-y-2">
-          <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Exportar Datos</h4>
-          <div className="grid grid-cols-2 gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={onExportWindow}
-              className="w-full text-xs h-7"
-            >
-              <Download className="w-3 h-3 mr-1" />
-              Ventana
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={onExportAll}
-              className="w-full text-xs h-7"
-            >
-              <Download className="w-3 h-3 mr-1" />
-              Todo
-            </Button>
-          </div>
-        </div>
-
-        {/* Datos en tiempo real */}
-        {currentData && (
-          <>
-            <Separator />
-            <div className="grid grid-cols-2 gap-2 text-xs">
-              <div className="text-center p-2 bg-muted/20 rounded">
-                <div className="text-muted-foreground mb-1">Tiempo</div>
-                <div className="font-mono font-semibold">{currentData.t.toFixed(1)}s</div>
-              </div>
-              <div className="text-center p-2 bg-muted/20 rounded">
-                <div className="text-muted-foreground mb-1">Salida</div>
-                <div className="font-mono font-semibold">{(currentData.u * 100).toFixed(1)}%</div>
+            {/* Exportación */}
+            <div className="space-y-2 animate-in slide-in-from-top-4 duration-500 delay-700">
+              <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Exportar Datos</h4>
+              <div className="grid grid-cols-2 gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={onExportWindow}
+                  className="w-full text-xs h-7 transition-all duration-200 active:scale-95"
+                >
+                  <Download className="w-3 h-3 mr-1" />
+                  Ventana
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={onExportAll}
+                  className="w-full text-xs h-7 transition-all duration-200 active:scale-95"
+                >
+                  <Download className="w-3 h-3 mr-1" />
+                  Todo
+                </Button>
               </div>
             </div>
-          </>
+
+            {/* Datos en tiempo real */}
+            {currentData && (
+              <>
+                <Separator className="animate-in fade-in-0 duration-500 delay-800" />
+                <div className="grid grid-cols-2 gap-2 text-xs animate-in slide-in-from-top-4 duration-500 delay-900">
+                  <div className="text-center p-2 bg-muted/20 rounded transition-all duration-200 hover:bg-muted/30">
+                    <div className="text-muted-foreground mb-1">Tiempo</div>
+                    <div className="font-mono font-semibold">{currentData.t.toFixed(1)}s</div>
+                  </div>
+                  <div className="text-center p-2 bg-muted/20 rounded transition-all duration-200 hover:bg-muted/30">
+                    <div className="text-muted-foreground mb-1">Salida</div>
+                    <div className="font-mono font-semibold">{(currentData.u * 100).toFixed(1)}%</div>
+                  </div>
+                </div>
+              </>
+            )}
+
+            {/* Atajos de teclado */}
+            <div className="pt-2 border-t border-muted/20 animate-in fade-in-0 duration-500 delay-1000">
+              <div className="text-[10px] text-muted-foreground space-y-1">
+                <div className="flex justify-between items-center">
+                  <span><kbd className="text-[9px] bg-muted px-1 rounded transition-all duration-200 hover:bg-muted/80">S</kbd> Start/Pause</span>
+                  <span><kbd className="text-[9px] bg-muted px-1 rounded transition-all duration-200 hover:bg-muted/80">R</kbd> Reset</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span><kbd className="text-[9px] bg-muted px-1 rounded transition-all duration-200 hover:bg-muted/80">↑/↓</kbd> SP ±1°C</span>
+                  <span><kbd className="text-[9px] bg-muted px-1 rounded transition-all duration-200 hover:bg-muted/80">←/→</kbd> Ventana</span>
+                </div>
+              </div>
+            </div>
+          </div>
         )}
-
-        {/* Atajos de teclado */}
-        <div className="pt-2 border-t border-muted/20">
-          <div className="text-[10px] text-muted-foreground space-y-1">
-            <div className="flex justify-between items-center">
-              <span><kbd className="text-[9px] bg-muted px-1 rounded">S</kbd> Start/Pause</span>
-              <span><kbd className="text-[9px] bg-muted px-1 rounded">R</kbd> Reset</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span><kbd className="text-[9px] bg-muted px-1 rounded">↑/↓</kbd> SP ±1°C</span>
-              <span><kbd className="text-[9px] bg-muted px-1 rounded">←/→</kbd> Ventana</span>
-            </div>
-          </div>
-        </div>
       </CardContent>
     </Card>
   );

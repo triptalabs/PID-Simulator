@@ -51,10 +51,12 @@ export interface CardNavProps {
   menuColor?: string;
   buttonBgColor?: string;
   buttonTextColor?: string;
+  ease?: string;
   onHelpClick?: () => void;
   onDocsClick?: () => void;
   simulatorState?: any;
   onStateChange?: (updates: any) => void;
+  onExpansionChange?: (expanded: boolean) => void;
 }
 
 const CardNav: React.FC<CardNavProps> = ({
@@ -66,13 +68,17 @@ const CardNav: React.FC<CardNavProps> = ({
   menuColor,
   buttonBgColor,
   buttonTextColor,
+  ease,
   onHelpClick,
   onDocsClick,
+  onExpansionChange,
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const toggleMenu = () => {
-    setIsExpanded(!isExpanded);
+    const newExpandedState = !isExpanded;
+    setIsExpanded(newExpandedState);
+    onExpansionChange?.(newExpandedState);
   };
 
   return (
@@ -129,13 +135,6 @@ const CardNav: React.FC<CardNavProps> = ({
               onClick={onDocsClick}
             >
               Docs
-            </button>
-            <button
-              type="button"
-              className="card-nav-cta-button hidden md:inline-flex border-0 rounded-xl px-6 py-2 h-10 font-bold cursor-pointer transition-all duration-300 text-sm hover:opacity-90 hover:scale-105 shadow-lg"
-              style={{ backgroundColor: buttonBgColor, color: buttonTextColor }}
-            >
-              Iniciar Simulación
             </button>
           </div>
         </div>

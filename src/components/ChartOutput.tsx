@@ -1,5 +1,5 @@
 
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { ChartDataPoint } from '@/lib/types';
 
 interface ChartOutputProps {
@@ -24,53 +24,152 @@ export const ChartOutput = ({ data, embedded = false, timeWindow }: ChartOutputP
   };
   
   const xTicks = timeWindow ? generateXTicks(timeWindow) : undefined;
+
+  // Custom legend component
+  const CustomLegend = ({ payload }: any) => {
+    return (
+      <div className="flex items-center justify-center gap-6 mt-2">
+        {payload.map((entry: any, index: number) => (
+          <div key={index} className="flex items-center gap-2">
+            <div 
+              className="w-4 h-0.5 rounded-full" 
+              style={{ backgroundColor: entry.color }}
+            />
+            <span className="text-xs font-medium text-muted-foreground">
+              {entry.value}
+            </span>
+          </div>
+        ))}
+      </div>
+    );
+  };
   
+  // Glassmorphism tooltip matching CardNav style exactly
+  const GlassmorphismTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+      return (
+        <div
+          className="nav-card select-none relative flex flex-col gap-2 p-3 rounded-lg min-w-0 flex-[1_1_auto] h-auto min-h-[100px] transition-all duration-300 overflow-hidden"
+          style={{ 
+            backgroundColor: 'rgba(15, 23, 42, 0.98)', 
+            color: 'rgba(255, 255, 255, 0.9)',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            boxShadow: '0 8px 32px -8px rgba(0, 0, 0, 0.2)',
+            backdropFilter: 'blur(20px)',
+            zIndex: 99999
+          }}
+        >
+          {/* Header - matching CardNav card header exactly */}
+          <div className="nav-card-label font-bold tracking-tight text-[12px] mb-1 leading-tight">
+            TIEMPO: {label}s
+          </div>
+
+          {/* Content - matching CardNav controls structure exactly */}
+          <div className="nav-card-controls flex flex-col gap-1">
+            {payload.map((entry: any, index: number) => (
+              <div key={`${entry.name}-${index}`} className="control-item">
+                <div className="flex items-center justify-between p-1.5 bg-white/5 rounded hover:bg-white/10 transition-colors">
+                  <span className="text-[10px] font-semibold opacity-90">{entry.name}</span>
+                  <span className="text-[10px] font-bold font-mono opacity-95 bg-white/10 px-1.5 py-0.5 rounded">
+                    {entry.value.toFixed(1)}%
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+    return null;
+  };
+
   if (embedded) {
     return (
-      <div className="h-full min-h-0">
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis
-              dataKey="time"
-              type="number"
-              scale="linear"
-              domain={xAxisDomain}
-              ticks={xTicks}
-              tickFormatter={(value) => `${value}s`}
-              allowDataOverflow={false}
-              allowDecimals={false}
-              minTickGap={20}
-            />
-            <YAxis
-              domain={[0, 100]}
-              tickFormatter={(value) => `${value}%`}
-            />
-            <Tooltip
-              formatter={(value: number) => [<span className="font-mono">{value.toFixed(1)}%</span>, 'Salida']}
-              labelFormatter={(value) => `Tiempo: ${value}s`}
-            />
-            <Line
-              type="monotone"
-              dataKey="output"
-              stroke="hsl(var(--industrial-green))"
-              strokeWidth={2}
-              name="Salida (%)"
-              dot={false}
-            />
-          </LineChart>
-        </ResponsiveContainer>
+      <div className="h-full min-h-0 flex flex-col">
+        <div className="flex items-center justify-center mb-4">
+          <h3 className="text-sm font-semibold text-foreground tracking-wide uppercase">
+            Salida del Controlador
+          </h3>
+        </div>
+        <div className="flex-1 min-h-0">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart 
+              data={data} 
+              margin={{ top: 20, right: 20, left: 20, bottom: 20 }}
+            >
+              <CartesianGrid 
+                strokeDasharray="1 2" 
+                stroke="hsl(var(--border))" 
+                opacity={0.3}
+                vertical={false}
+              />
+              <XAxis
+                dataKey="time"
+                type="number"
+                scale="linear"
+                domain={xAxisDomain}
+                ticks={xTicks}
+                tickFormatter={(value) => `${value}s`}
+                allowDataOverflow={false}
+                allowDecimals={false}
+                minTickGap={30}
+                tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
+                axisLine={{ stroke: 'hsl(var(--border))', strokeWidth: 1 }}
+                tickLine={false}
+              />
+              <YAxis
+                domain={[0, 100]}
+                tickFormatter={(value) => `${value}%`}
+                tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
+                axisLine={{ stroke: 'hsl(var(--border))', strokeWidth: 1 }}
+                tickLine={false}
+              />
+              <Tooltip 
+                content={<GlassmorphismTooltip />}
+              />
+              <Legend content={<CustomLegend />} />
+              <Line
+                type="monotone"
+                dataKey="output"
+                stroke="hsl(var(--chart-2))"
+                strokeWidth={2.5}
+                name="Salida"
+                dot={false}
+                activeDot={{ 
+                  r: 4, 
+                  fill: 'hsl(var(--chart-2))',
+                  stroke: 'hsl(var(--background))',
+                  strokeWidth: 2
+                }}
+                isAnimationActive={false}
+                className="chart-line"
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="industrial-control p-4 h-full min-h-0 flex flex-col">
-      <h3 className="text-sm font-medium text-muted-foreground mb-4">Salida del PID (%)</h3>
+    <div className="chart-container p-6 h-full min-h-0 flex flex-col">
+      <div className="flex items-center justify-center mb-6">
+        <h3 className="text-sm font-semibold text-foreground tracking-wide uppercase">
+          Salida del Controlador
+        </h3>
+      </div>
       <div className="flex-1 min-h-[200px]">
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-            <CartesianGrid strokeDasharray="3 3" />
+          <LineChart 
+            data={data} 
+            margin={{ top: 20, right: 20, left: 20, bottom: 20 }}
+          >
+            <CartesianGrid 
+              strokeDasharray="1 2" 
+              stroke="hsl(var(--border))" 
+              opacity={0.3}
+              vertical={false}
+            />
             <XAxis
               dataKey="time"
               type="number"
@@ -80,23 +179,37 @@ export const ChartOutput = ({ data, embedded = false, timeWindow }: ChartOutputP
               tickFormatter={(value) => `${value}s`}
               allowDataOverflow={false}
               allowDecimals={false}
-              minTickGap={20}
+              minTickGap={30}
+              tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
+              axisLine={{ stroke: 'hsl(var(--border))', strokeWidth: 1 }}
+              tickLine={false}
             />
             <YAxis
               domain={[0, 100]}
               tickFormatter={(value) => `${value}%`}
+              tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
+              axisLine={{ stroke: 'hsl(var(--border))', strokeWidth: 1 }}
+              tickLine={false}
             />
-            <Tooltip
-              formatter={(value: number) => [<span className="font-mono">{value.toFixed(1)}%</span>, 'Salida']}
-              labelFormatter={(value) => `Tiempo: ${value}s`}
+            <Tooltip 
+              content={<GlassmorphismTooltip />}
             />
+            <Legend content={<CustomLegend />} />
             <Line
               type="monotone"
               dataKey="output"
-              stroke="hsl(var(--industrial-green))"
-              strokeWidth={2}
-              name="Salida (%)"
+              stroke="hsl(var(--chart-2))"
+              strokeWidth={2.5}
+              name="Salida"
               dot={false}
+              activeDot={{ 
+                r: 4, 
+                fill: 'hsl(var(--chart-2))',
+                stroke: 'hsl(var(--background))',
+                strokeWidth: 2
+              }}
+              isAnimationActive={false}
+              className="chart-line"
             />
           </LineChart>
         </ResponsiveContainer>

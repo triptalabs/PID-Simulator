@@ -1,6 +1,7 @@
 
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { ChartDataPoint } from '@/lib/types';
+import { useEffect, useState } from 'react';
 
 interface ChartOutputProps {
   data: ChartDataPoint[];
@@ -9,6 +10,25 @@ interface ChartOutputProps {
 }
 
 export const ChartOutput = ({ data, embedded = false, timeWindow }: ChartOutputProps) => {
+  const [chartData, setChartData] = useState<ChartDataPoint[]>([]);
+
+  // Actualizar datos del chart cuando cambian, con throttling mínimo para actualización frecuente
+  useEffect(() => {
+    if (data.length > 0) {
+      // Solo actualizar si hay cambios significativos en los datos
+      const currentData = data[data.length - 1];
+      const lastData = chartData[chartData.length - 1];
+      
+      if (!lastData || 
+          Math.abs(currentData.time - lastData.time) > 0.02 || // Umbral muy pequeño para actualización muy frecuente
+          Math.abs(currentData.output - lastData.output) > 0.005) { // Umbral mínimo para cambios de output
+        setChartData(data);
+      }
+    } else {
+      setChartData(data);
+    }
+  }, [data]);
+
   // Dominio fijo del eje X basado en la ventana de tiempo
   const xAxisDomain = timeWindow ? [-timeWindow, 0] : ['dataMin', 'dataMax'];
   
@@ -27,39 +47,44 @@ export const ChartOutput = ({ data, embedded = false, timeWindow }: ChartOutputP
   
   if (embedded) {
     return (
-      <div className="h-full min-h-0">
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis
-              dataKey="time"
-              type="number"
-              scale="linear"
-              domain={xAxisDomain}
-              ticks={xTicks}
-              tickFormatter={(value) => `${value}s`}
-              allowDataOverflow={false}
-              allowDecimals={false}
-              minTickGap={20}
-            />
-            <YAxis
-              domain={[0, 100]}
-              tickFormatter={(value) => `${value}%`}
-            />
-            <Tooltip
-              formatter={(value: number) => [<span className="font-mono">{value.toFixed(1)}%</span>, 'Salida']}
-              labelFormatter={(value) => `Tiempo: ${value}s`}
-            />
-            <Line
-              type="monotone"
-              dataKey="output"
-              stroke="hsl(var(--industrial-green))"
-              strokeWidth={2}
-              name="Salida (%)"
-              dot={false}
-            />
-          </LineChart>
-        </ResponsiveContainer>
+      <div className="h-full min-h-0 flex flex-col">
+        <div className="flex-1 min-h-0">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis
+                dataKey="time"
+                type="number"
+                scale="linear"
+                domain={xAxisDomain}
+                ticks={xTicks}
+                tickFormatter={(value) => `${value}s`}
+                allowDataOverflow={false}
+                allowDecimals={false}
+                minTickGap={20}
+              />
+              <YAxis
+                domain={[0, 100]}
+                tickFormatter={(value) => `${value}%`}
+              />
+              <Tooltip
+                formatter={(value: number) => [<span className="font-mono">{value.toFixed(1)}%</span>, 'Salida']}
+                labelFormatter={(value) => `Tiempo: ${value}s`}
+                isAnimationActive={false}
+                animationDuration={0}
+              />
+              <Line
+                type="monotone"
+                dataKey="output"
+                stroke="hsl(var(--industrial-green))"
+                strokeWidth={2}
+                name="Salida (%)"
+                dot={{ fill: "hsl(var(--industrial-green))", strokeWidth: 1, r: 2 }}
+                isAnimationActive={false}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
       </div>
     );
   }
@@ -69,7 +94,7 @@ export const ChartOutput = ({ data, embedded = false, timeWindow }: ChartOutputP
       <h3 className="text-sm font-medium text-muted-foreground mb-4">Salida del PID (%)</h3>
       <div className="flex-1 min-h-[200px]">
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+          <LineChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis
               dataKey="time"
@@ -89,6 +114,8 @@ export const ChartOutput = ({ data, embedded = false, timeWindow }: ChartOutputP
             <Tooltip
               formatter={(value: number) => [<span className="font-mono">{value.toFixed(1)}%</span>, 'Salida']}
               labelFormatter={(value) => `Tiempo: ${value}s`}
+              isAnimationActive={false}
+              animationDuration={0}
             />
             <Line
               type="monotone"
@@ -96,7 +123,8 @@ export const ChartOutput = ({ data, embedded = false, timeWindow }: ChartOutputP
               stroke="hsl(var(--industrial-green))"
               strokeWidth={2}
               name="Salida (%)"
-              dot={false}
+              dot={{ fill: "hsl(var(--industrial-green))", strokeWidth: 1, r: 2 }}
+              isAnimationActive={false}
             />
           </LineChart>
         </ResponsiveContainer>

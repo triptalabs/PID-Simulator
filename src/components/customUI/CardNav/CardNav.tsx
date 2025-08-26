@@ -51,10 +51,12 @@ export interface CardNavProps {
   menuColor?: string;
   buttonBgColor?: string;
   buttonTextColor?: string;
+  ease?: string;
   onHelpClick?: () => void;
   onDocsClick?: () => void;
   simulatorState?: any;
   onStateChange?: (updates: any) => void;
+  onExpansionChange?: (expanded: boolean) => void;
 }
 
 const CardNav: React.FC<CardNavProps> = ({
@@ -66,13 +68,17 @@ const CardNav: React.FC<CardNavProps> = ({
   menuColor,
   buttonBgColor,
   buttonTextColor,
+  ease,
   onHelpClick,
   onDocsClick,
+  onExpansionChange,
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const toggleMenu = () => {
-    setIsExpanded(!isExpanded);
+    const newExpandedState = !isExpanded;
+    setIsExpanded(newExpandedState);
+    onExpansionChange?.(newExpandedState);
   };
 
   return (

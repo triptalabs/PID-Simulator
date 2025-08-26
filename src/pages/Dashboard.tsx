@@ -34,6 +34,8 @@ const initialState: SimulatorState = {
 export const Dashboard = () => {
   const [state, setState] = useState<SimulatorState>(initialState);
   const [chartData, setChartData] = useState<ChartDataPoint[]>([]);
+  const [isHeaderExpanded, setIsHeaderExpanded] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
   const { state: simState, actions } = useSimulation();
   const { currentData, buffer } = useSimulationData();
@@ -46,10 +48,13 @@ export const Dashboard = () => {
     // Obtener datos de la ventana de tiempo seleccionada
     const windowData = actions.getWindowData(state.timeWindow);
     
+    if (windowData.length === 0) return;
+    
     // Transformar datos: tiempo absoluto -> tiempo relativo al momento actual
     const mapped: ChartDataPoint[] = windowData.map(d => {
       // Calcular tiempo relativo al momento actual: 0s = actual, valores negativos = pasado
-      const timeFromCurrent = d.t - (windowData[windowData.length - 1]?.t || 0);
+      const currentTime = windowData[windowData.length - 1]?.t || 0;
+      const timeFromCurrent = d.t - currentTime;
       
       return {
         time: timeFromCurrent,
@@ -58,6 +63,8 @@ export const Dashboard = () => {
         output: d.u * 100
       };
     });
+    
+
     
     setChartData(mapped);
   }, [buffer, state.timeWindow, actions]);
@@ -180,42 +187,117 @@ export const Dashboard = () => {
     return () => window.removeEventListener('keydown', handleKey);
   }, [actions, controls.isRunning, state.setpoint, state.mode, state.timeWindow, handleStateChange]);
 
+  // Callback para detectar cuando el header se expande/comprime con animación
+  const handleHeaderStateChange = useCallback((expanded: boolean) => {
+    setIsTransitioning(true);
+    setIsHeaderExpanded(expanded);
+    
+    // Permitir que la animación se complete antes de permitir otra transición
+    setTimeout(() => {
+      setIsTransitioning(false);
+    }, 600); // Duración de la transición más un pequeño buffer
+  }, []);
+
   return (
-    <div className="dark h-screen bg-background text-foreground flex flex-col">
-      {/* Header con altura dinámica */}
-      <div className="flex-shrink-0 z-50 border-b border-border">
-        <Header state={state} onStateChange={handleStateChange} />
+    <div className="dark h-screen bg-background text-foreground flex flex-col overflow-hidden">
+      {/* Header con altura fija y animación */}
+      <div className="flex-shrink-0 z-50 border-b border-border transition-all duration-500 ease-in-out">
+        <Header 
+          state={state} 
+          onStateChange={handleStateChange}
+          onExpansionChange={handleHeaderStateChange}
+        />
       </div>
       
-      {/* Contenido principal que usa el espacio restante */}
-      <div className="flex-1 flex flex-col lg:flex-row gap-4 p-4 min-h-0">
-        {/* Panel de control lateral */}
-        <div className="flex-shrink-0 w-full lg:w-80 xl:w-96">
-          <UnifiedControlPanel 
-            state={state} 
-            onStateChange={handleStateChange}
-            onReset={() => actions.reset(true)}
-            onExportWindow={() => actions.exportCSV({ type: 'window', seconds: state.timeWindow })}
-            onExportAll={() => actions.exportCSV({ type: 'all' })}
-            metrics={simState.metrics || {
-              overshoot: 0,
-              t_peak: 0,
-              settling_time: 0,
-              is_calculating: false,
-              sp_previous: 0,
-              pv_max: -Infinity,
-              pv_min: Infinity,
-              t_start: 0,
-              t_current: 0,
-              samples_count: 0
-            }}
-            currentPV={chartData.length > 0 ? chartData[chartData.length - 1]?.pv || 0 : 0}
-          />
+      {/* Contenido principal con layout dinámico y animaciones */}
+      <div className="flex-1 min-h-0 relative">
+        {/* Overlay de transición para suavizar cambios */}
+        {isTransitioning && (
+          <div className="absolute inset-0 bg-background/50 backdrop-blur-sm z-10 transition-opacity duration-300 ease-in-out" />
+        )}
+        
+        {/* Layout expandido con animaciones */}
+        <div 
+          className={`absolute inset-0 transition-all duration-500 ease-in-out ${
+            isHeaderExpanded 
+              ? 'opacity-100 translate-y-0' 
+              : 'opacity-0 -translate-y-4 pointer-events-none'
+          }`}
+        >
+          <div className="h-full flex flex-col lg:flex-row gap-4 p-4">
+            {/* Panel de control lateral con animación de entrada */}
+            <div className="flex-shrink-0 w-full lg:w-80 xl:w-96 animate-in slide-in-from-left-4 duration-500">
+              <UnifiedControlPanel 
+                state={state} 
+                onStateChange={handleStateChange}
+                onReset={() => actions.reset(true)}
+                onExportWindow={() => actions.exportCSV({ type: 'window', seconds: state.timeWindow })}
+                onExportAll={() => actions.exportCSV({ type: 'all' })}
+                metrics={simState.metrics || {
+                  overshoot: 0,
+                  t_peak: 0,
+                  settling_time: 0,
+                  is_calculating: false,
+                  sp_previous: 0,
+                  pv_max: -Infinity,
+                  pv_min: Infinity,
+                  t_start: 0,
+                  t_current: 0,
+                  samples_count: 0
+                }}
+                currentPV={chartData.length > 0 ? chartData[chartData.length - 1]?.pv || 0 : 0}
+              />
+            </div>
+            
+            {/* Panel de gráficas con animación de entrada */}
+            <div className="flex-1 min-h-0 animate-in slide-in-from-right-4 duration-500 delay-100">
+              <ChartsPanel data={chartData} timeWindow={state.timeWindow} />
+            </div>
+          </div>
         </div>
         
-        {/* Panel de gráficas que se expande */}
-        <div className="flex-1 min-w-0">
-          <ChartsPanel data={chartData} timeWindow={state.timeWindow} />
+        {/* Layout comprimido con animaciones */}
+        <div 
+          className={`absolute inset-0 transition-all duration-500 ease-in-out ${
+            !isHeaderExpanded 
+              ? 'opacity-100 translate-y-0' 
+              : 'opacity-0 translate-y-4 pointer-events-none'
+          }`}
+        >
+          <div className="h-full flex flex-col gap-2 p-2">
+            {/* Contenedor centrado con ancho máximo igual al header */}
+            <div className="w-full max-w-[1200px] mx-auto flex flex-col gap-2 h-full">
+              {/* Panel de control con animación de entrada - altura fija */}
+              <div className="flex-shrink-0 w-full animate-in slide-in-from-top-4 duration-500">
+                <UnifiedControlPanel 
+                  state={state} 
+                  onStateChange={handleStateChange}
+                  onReset={() => actions.reset(true)}
+                  onExportWindow={() => actions.exportCSV({ type: 'window', seconds: state.timeWindow })}
+                  onExportAll={() => actions.exportCSV({ type: 'all' })}
+                  metrics={simState.metrics || {
+                    overshoot: 0,
+                    t_peak: 0,
+                    settling_time: 0,
+                    is_calculating: false,
+                    sp_previous: 0,
+                    pv_max: -Infinity,
+                    pv_min: Infinity,
+                    t_start: 0,
+                    t_current: 0,
+                    samples_count: 0
+                  }}
+                  currentPV={chartData.length > 0 ? chartData[chartData.length - 1]?.pv || 0 : 0}
+                  compact={true}
+                />
+              </div>
+              
+              {/* Panel de gráficas con animación de entrada - altura restante */}
+              <div className="flex-1 min-h-0 animate-in slide-in-from-bottom-4 duration-500 delay-150">
+                <ChartsPanel data={chartData} timeWindow={state.timeWindow} />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

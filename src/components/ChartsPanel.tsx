@@ -8,9 +8,10 @@ import { useEffect, useState, useRef } from "react";
 interface ChartsPanelProps {
   data: ChartDataPoint[];
   timeWindow?: number;
+  isRunning?: boolean;
 }
 
-export const ChartsPanel = ({ data, timeWindow }: ChartsPanelProps) => {
+export const ChartsPanel = ({ data, timeWindow, isRunning = false }: ChartsPanelProps) => {
   const [isVisible, setIsVisible] = useState(false);
   const [key, setKey] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -62,7 +63,9 @@ export const ChartsPanel = ({ data, timeWindow }: ChartsPanelProps) => {
       <CardHeader className="flex-shrink-0 pb-4">
         <CardTitle className="text-sm font-semibold text-foreground tracking-wide uppercase flex items-center gap-3">
           <div className="flex items-center gap-2">
-            <div className="w-2 h-2 bg-primary rounded-full"></div>
+            <div className={`w-2 h-2 rounded-full transition-colors duration-300 ${
+              isRunning ? 'bg-green-500' : 'bg-red-500'
+            }`}></div>
             <span>Gráficas de control</span>
           </div>
           {data.length > 0 && (

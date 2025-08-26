@@ -251,10 +251,10 @@ export const Dashboard = () => {
               />
             </div>
             
-            {/* Panel de gráficas con animación de entrada */}
-            <div className="flex-1 min-h-0 animate-in slide-in-from-right-4 duration-500 delay-100">
-              <ChartsPanel data={chartData} timeWindow={state.timeWindow} />
-            </div>
+                         {/* Panel de gráficas con animación de entrada */}
+             <div className="flex-1 min-h-0 animate-in slide-in-from-right-4 duration-500 delay-100">
+               <ChartsPanel data={chartData} timeWindow={state.timeWindow} isRunning={controls.isRunning} />
+             </div>
             </div>
           </div>
         </div>
@@ -295,10 +295,10 @@ export const Dashboard = () => {
                 />
               </div>
               
-              {/* Panel de gráficas con animación de entrada - altura restante */}
-              <div className="flex-1 min-h-0 animate-in slide-in-from-bottom-4 duration-500 delay-150">
-                <ChartsPanel data={chartData} timeWindow={state.timeWindow} />
-              </div>
+                             {/* Panel de gráficas con animación de entrada - altura restante */}
+               <div className="flex-1 min-h-0 animate-in slide-in-from-bottom-4 duration-500 delay-150">
+                 <ChartsPanel data={chartData} timeWindow={state.timeWindow} isRunning={controls.isRunning} />
+               </div>
             </div>
           </div>
         </div>

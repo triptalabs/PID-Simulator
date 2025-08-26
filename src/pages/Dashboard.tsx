@@ -225,6 +225,8 @@ export const Dashboard = () => {
           }`}
         >
           <div className="h-full flex flex-col lg:flex-row gap-4 p-4">
+            {/* Contenedor centrado con ancho máximo igual al header */}
+            <div className="w-full max-w-[1200px] mx-auto flex flex-col lg:flex-row gap-4 h-full">
             {/* Panel de control lateral con animación de entrada */}
             <div className="flex-shrink-0 w-full lg:w-80 xl:w-96 animate-in slide-in-from-left-4 duration-500">
               <UnifiedControlPanel 
@@ -253,6 +255,7 @@ export const Dashboard = () => {
             <div className="flex-1 min-h-0 animate-in slide-in-from-right-4 duration-500 delay-100">
               <ChartsPanel data={chartData} timeWindow={state.timeWindow} />
             </div>
+            </div>
           </div>
         </div>
         
@@ -266,7 +269,7 @@ export const Dashboard = () => {
         >
           <div className="h-full flex flex-col gap-2 p-2">
             {/* Contenedor centrado con ancho máximo igual al header */}
-            <div className="w-full max-w-[1200px] mx-auto flex flex-col gap-2 h-full">
+            <div className="w-full max-w-[1200px] mx-auto flex flex-col gap-2 h-full p-2">
               {/* Panel de control con animación de entrada - altura fija */}
               <div className="flex-shrink-0 w-full animate-in slide-in-from-top-4 duration-500">
                 <UnifiedControlPanel 

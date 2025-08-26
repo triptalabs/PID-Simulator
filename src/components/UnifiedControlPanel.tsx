@@ -136,11 +136,11 @@ export const UnifiedControlPanel = ({
   }
 
   return (
-    <Card className={`industrial-panel ${compact ? 'h-auto' : 'h-full flex flex-col'} transition-all duration-500 ease-in-out transform hover:scale-[1.01] hover:shadow-xl`}>
+    <Card className={`industrial-panel ${compact ? 'h-auto' : 'h-full flex flex-col'} transition-all duration-500 ease-in-out`}>
       <CardHeader className={`flex-shrink-0 ${compact ? 'pb-2' : 'pb-3'} transition-all duration-300 ease-in-out`}>
         <CardTitle className="flex items-center justify-between text-sm">
           <div className="flex items-center gap-2">
-            <Zap className="w-4 h-4 text-industrial-blue transition-transform duration-300 hover:rotate-12" />
+            <Zap className="w-4 h-4 text-industrial-blue transition-transform duration-300" />
             <span className="font-semibold">Panel de Control</span>
           </div>
           <Badge variant={connectionStatus.variant} className="flex items-center gap-1 text-xs h-5 px-2 transition-all duration-300 ease-in-out">
@@ -162,7 +162,7 @@ export const UnifiedControlPanel = ({
                   onClick={handleStart}
                   disabled={!isConnected || isRunning}
                   size="sm"
-                  className="flex items-center gap-1 h-7 text-xs transition-all duration-200 hover:scale-105 active:scale-95"
+                  className="flex items-center gap-1 h-7 text-xs transition-all duration-200 active:scale-95"
                 >
                   <Play className="h-3 w-3" />
                   Iniciar
@@ -173,7 +173,7 @@ export const UnifiedControlPanel = ({
                   disabled={!isConnected || !isRunning}
                   variant="outline"
                   size="sm"
-                  className="flex items-center gap-1 h-7 text-xs transition-all duration-200 hover:scale-105 active:scale-95"
+                  className="flex items-center gap-1 h-7 text-xs transition-all duration-200 active:scale-95"
                 >
                   <Pause className="h-3 w-3" />
                   Pausar
@@ -184,7 +184,7 @@ export const UnifiedControlPanel = ({
                   disabled={!isConnected}
                   variant="outline"
                   size="sm"
-                  className="flex items-center gap-1 h-7 text-xs transition-all duration-200 hover:scale-105 active:scale-95"
+                  className="flex items-center gap-1 h-7 text-xs transition-all duration-200 active:scale-95"
                 >
                   <RotateCcw className="h-3 w-3" />
                   Reset
@@ -198,7 +198,7 @@ export const UnifiedControlPanel = ({
               <div className="space-y-1 text-xs">
                 <div className="flex justify-between items-center transition-all duration-200 hover:bg-muted/20 rounded px-1 py-0.5">
                   <span className="text-muted-foreground">Modo:</span>
-                  <Badge variant={state.mode === 'horno' ? 'default' : 'secondary'} className="text-xs h-4 px-2 transition-all duration-200 hover:scale-105">
+                  <Badge variant={state.mode === 'horno' ? 'default' : 'secondary'} className="text-xs h-4 px-2 transition-all duration-200">
                     <Thermometer className="w-2 h-2 mr-1" />
                     {state.mode === 'horno' ? 'Horno' : 'Chiller'}
                   </Badge>
@@ -222,7 +222,7 @@ export const UnifiedControlPanel = ({
                   <span className="text-muted-foreground">Overshoot:</span>
                   <Badge 
                     variant="outline" 
-                    className={`${getOvershootColor(metrics.overshoot)} text-white border-0 text-xs h-4 px-2 transition-all duration-200 hover:scale-105`}
+                    className={`${getOvershootColor(metrics.overshoot)} text-white border-0 text-xs h-4 px-2 transition-all duration-200`}
                   >
                     {formatOvershoot(metrics.overshoot)}
                   </Badge>
@@ -250,7 +250,7 @@ export const UnifiedControlPanel = ({
                   variant="outline"
                   size="sm"
                   onClick={onExportWindow}
-                  className="w-full text-xs h-7 transition-all duration-200 hover:scale-105 active:scale-95"
+                  className="w-full text-xs h-7 transition-all duration-200 active:scale-95"
                 >
                   <Download className="w-3 h-3 mr-1" />
                   Ventana
@@ -259,7 +259,7 @@ export const UnifiedControlPanel = ({
                   variant="outline"
                   size="sm"
                   onClick={onExportAll}
-                  className="w-full text-xs h-7 transition-all duration-200 hover:scale-105 active:scale-95"
+                  className="w-full text-xs h-7 transition-all duration-200 active:scale-95"
                 >
                   <Download className="w-3 h-3 mr-1" />
                   Todo
@@ -276,7 +276,7 @@ export const UnifiedControlPanel = ({
                 onClick={handleStart}
                 disabled={!isConnected || isRunning}
                 size="sm"
-                className="flex items-center gap-1 h-8 text-xs transition-all duration-200 hover:scale-105 active:scale-95"
+                className="flex items-center gap-1 h-8 text-xs transition-all duration-200 active:scale-95"
               >
                 <Play className="h-3 w-3" />
                 Iniciar
@@ -287,7 +287,7 @@ export const UnifiedControlPanel = ({
                 disabled={!isConnected || !isRunning}
                 variant="outline"
                 size="sm"
-                className="flex items-center gap-1 h-8 text-xs transition-all duration-200 hover:scale-105 active:scale-95"
+                className="flex items-center gap-1 h-8 text-xs transition-all duration-200 active:scale-95"
               >
                 <Pause className="h-3 w-3" />
                 Pausar
@@ -298,7 +298,7 @@ export const UnifiedControlPanel = ({
                 disabled={!isConnected}
                 variant="outline"
                 size="sm"
-                className="flex items-center gap-1 h-8 text-xs transition-all duration-200 hover:scale-105 active:scale-95"
+                className="flex items-center gap-1 h-8 text-xs transition-all duration-200 active:scale-95"
               >
                 <RotateCcw className="h-3 w-3" />
                 Reset
@@ -314,7 +314,7 @@ export const UnifiedControlPanel = ({
                 <div className="space-y-2">
                   <div className="flex justify-between items-center transition-all duration-200 hover:bg-muted/20 rounded px-2 py-1">
                     <span className="text-muted-foreground">Modo:</span>
-                    <Badge variant={state.mode === 'horno' ? 'default' : 'secondary'} className="text-xs h-4 px-2 transition-all duration-200 hover:scale-105">
+                    <Badge variant={state.mode === 'horno' ? 'default' : 'secondary'} className="text-xs h-4 px-2 transition-all duration-200">
                       <Thermometer className="w-2 h-2 mr-1" />
                       {state.mode === 'horno' ? 'Horno' : 'Chiller'}
                     </Badge>
@@ -355,7 +355,7 @@ export const UnifiedControlPanel = ({
                 </span>
                 <Badge 
                   variant={metrics.is_calculating ? "default" : "secondary"}
-                  className={`text-xs h-4 px-2 ${metrics.is_calculating ? "bg-blue-500" : ""} transition-all duration-200 hover:scale-105`}
+                  className={`text-xs h-4 px-2 ${metrics.is_calculating ? "bg-blue-500" : ""} transition-all duration-200`}
                 >
                   {metrics.is_calculating ? "Activo" : "Inactivo"}
                 </Badge>
@@ -370,7 +370,7 @@ export const UnifiedControlPanel = ({
                   </div>
                   <Badge 
                     variant="outline" 
-                    className={`${getOvershootColor(metrics.overshoot)} text-white border-0 text-xs h-4 px-2 transition-all duration-200 hover:scale-105`}
+                    className={`${getOvershootColor(metrics.overshoot)} text-white border-0 text-xs h-4 px-2 transition-all duration-200`}
                   >
                     {formatOvershoot(metrics.overshoot)}
                   </Badge>
@@ -403,7 +403,7 @@ export const UnifiedControlPanel = ({
                   variant="outline"
                   size="sm"
                   onClick={onExportWindow}
-                  className="w-full text-xs h-7 transition-all duration-200 hover:scale-105 active:scale-95"
+                  className="w-full text-xs h-7 transition-all duration-200 active:scale-95"
                 >
                   <Download className="w-3 h-3 mr-1" />
                   Ventana
@@ -412,7 +412,7 @@ export const UnifiedControlPanel = ({
                   variant="outline"
                   size="sm"
                   onClick={onExportAll}
-                  className="w-full text-xs h-7 transition-all duration-200 hover:scale-105 active:scale-95"
+                  className="w-full text-xs h-7 transition-all duration-200 active:scale-95"
                 >
                   <Download className="w-3 h-3 mr-1" />
                   Todo
@@ -425,11 +425,11 @@ export const UnifiedControlPanel = ({
               <>
                 <Separator className="animate-in fade-in-0 duration-500 delay-800" />
                 <div className="grid grid-cols-2 gap-2 text-xs animate-in slide-in-from-top-4 duration-500 delay-900">
-                  <div className="text-center p-2 bg-muted/20 rounded transition-all duration-200 hover:bg-muted/30 hover:scale-105">
+                  <div className="text-center p-2 bg-muted/20 rounded transition-all duration-200 hover:bg-muted/30">
                     <div className="text-muted-foreground mb-1">Tiempo</div>
                     <div className="font-mono font-semibold">{currentData.t.toFixed(1)}s</div>
                   </div>
-                  <div className="text-center p-2 bg-muted/20 rounded transition-all duration-200 hover:bg-muted/30 hover:scale-105">
+                  <div className="text-center p-2 bg-muted/20 rounded transition-all duration-200 hover:bg-muted/30">
                     <div className="text-muted-foreground mb-1">Salida</div>
                     <div className="font-mono font-semibold">{(currentData.u * 100).toFixed(1)}%</div>
                   </div>

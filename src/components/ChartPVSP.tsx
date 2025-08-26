@@ -1,7 +1,6 @@
 
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { ChartDataPoint } from '@/lib/types';
-import { useEffect, useState } from 'react';
 
 interface ChartPVSPProps {
   data: ChartDataPoint[];
@@ -10,36 +9,16 @@ interface ChartPVSPProps {
 }
 
 export const ChartPVSP = ({ data, embedded = false, timeWindow }: ChartPVSPProps) => {
-  const [chartData, setChartData] = useState<ChartDataPoint[]>([]);
-
-  // Actualizar datos del chart cuando cambian, con throttling mínimo para actualización frecuente
-  useEffect(() => {
-    if (data.length > 0) {
-      // Solo actualizar si hay cambios significativos en los datos
-      const currentData = data[data.length - 1];
-      const lastData = chartData[chartData.length - 1];
-      
-      if (!lastData || 
-          Math.abs(currentData.time - lastData.time) > 0.02 || // Umbral muy pequeño para actualización muy frecuente
-          Math.abs(currentData.pv - lastData.pv) > 0.005 || // Umbral mínimo para cambios de PV
-          Math.abs(currentData.sp - lastData.sp) > 0.005) { // Umbral mínimo para cambios de SP
-        setChartData(data);
-      }
-    } else {
-      setChartData(data);
-    }
-  }, [data]);
-
   // Dominio fijo del eje X basado en la ventana de tiempo
   const xAxisDomain = timeWindow ? [-timeWindow, 0] : ['dataMin', 'dataMax'];
   
   // Dominio fijo del eje Y para temperaturas coherentes (horno: 0-200°C, chiller: -50-50°C)
   const getYAxisDomain = () => {
-    if (!chartData || chartData.length === 0) return [0, 100];
+    if (!data || data.length === 0) return [0, 100];
     
     // Calcular rangos de datos reales
-    const pvValues = chartData.map(d => d.pv).filter(v => !isNaN(v) && isFinite(v));
-    const spValues = chartData.map(d => d.sp).filter(v => !isNaN(v) && isFinite(v));
+    const pvValues = data.map(d => d.pv).filter(v => !isNaN(v) && isFinite(v));
+    const spValues = data.map(d => d.sp).filter(v => !isNaN(v) && isFinite(v));
     const allValues = [...pvValues, ...spValues];
     
     if (allValues.length === 0) return [0, 100];
@@ -83,7 +62,7 @@ export const ChartPVSP = ({ data, embedded = false, timeWindow }: ChartPVSPProps
       <div className="h-full min-h-0 flex flex-col">
         <div className="flex-1 min-h-0">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+            <LineChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis
                 dataKey="time"
@@ -141,7 +120,7 @@ export const ChartPVSP = ({ data, embedded = false, timeWindow }: ChartPVSPProps
       <h3 className="text-sm font-medium text-muted-foreground mb-4">PV vs SP</h3>
       <div className="flex-1 min-h-[200px]">
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+          <LineChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis
               dataKey="time"

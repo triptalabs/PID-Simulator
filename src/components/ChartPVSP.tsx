@@ -57,41 +57,6 @@ export const ChartPVSP = ({ data, embedded = false, timeWindow }: ChartPVSPProps
   
   const xTicks = timeWindow ? generateXTicks(timeWindow) : undefined;
 
-  // Custom tooltip component with glassmorphism
-  const CustomTooltip = ({ active, payload, label }: any) => {
-    if (active && payload && payload.length) {
-      return (
-        <div className="chart-tooltip p-4">
-          <div className="flex items-center gap-2 mb-3 pb-2 border-b border-white/10">
-            <div className="w-2 h-2 bg-primary rounded-full"></div>
-            <span className="text-xs font-semibold text-white/90 tracking-wide uppercase">
-              Tiempo: {label}s
-            </span>
-          </div>
-          <div className="space-y-2">
-            {payload.map((entry: any, index: number) => (
-              <div key={index} className="flex items-center justify-between p-2 bg-white/5 rounded-lg border border-white/10">
-                <div className="flex items-center gap-3">
-                  <div 
-                    className="w-3 h-0.5 rounded-full" 
-                    style={{ backgroundColor: entry.color }}
-                  />
-                  <span className="text-xs font-medium text-white/80">
-                    {entry.name}:
-                  </span>
-                </div>
-                <span className="text-xs font-mono font-bold text-white bg-white/10 px-2 py-1 rounded">
-                  {entry.value.toFixed(1)}°C
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-      );
-    }
-    return null;
-  };
-
   // Custom legend component
   const CustomLegend = ({ payload }: any) => {
     return (
@@ -109,6 +74,45 @@ export const ChartPVSP = ({ data, embedded = false, timeWindow }: ChartPVSPProps
         ))}
       </div>
     );
+  };
+
+  // Glassmorphism tooltip matching CardNav style exactly
+  const GlassmorphismTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+      return (
+        <div
+          className="nav-card select-none relative flex flex-col gap-2 p-3 rounded-lg min-w-0 flex-[1_1_auto] h-auto min-h-[100px] transition-all duration-300 overflow-hidden"
+          style={{ 
+            backgroundColor: 'rgba(15, 23, 42, 0.98)', 
+            color: 'rgba(255, 255, 255, 0.9)',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            boxShadow: '0 8px 32px -8px rgba(0, 0, 0, 0.2)',
+            backdropFilter: 'blur(20px)',
+            zIndex: 99999
+          }}
+        >
+          {/* Header - matching CardNav card header exactly */}
+          <div className="nav-card-label font-bold tracking-tight text-[12px] mb-1 leading-tight">
+            TIEMPO: {label}s
+          </div>
+
+          {/* Content - matching CardNav controls structure exactly */}
+          <div className="nav-card-controls flex flex-col gap-1">
+            {payload.map((entry: any, index: number) => (
+              <div key={`${entry.name}-${index}`} className="control-item">
+                <div className="flex items-center justify-between p-1.5 bg-white/5 rounded hover:bg-white/10 transition-colors">
+                  <span className="text-[10px] font-semibold opacity-90">{entry.name}</span>
+                  <span className="text-[10px] font-bold font-mono opacity-95 bg-white/10 px-1.5 py-0.5 rounded">
+                    {entry.value.toFixed(1)}°C
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+    return null;
   };
   
   if (embedded) {
@@ -152,7 +156,7 @@ export const ChartPVSP = ({ data, embedded = false, timeWindow }: ChartPVSPProps
                 axisLine={{ stroke: 'hsl(var(--border))', strokeWidth: 1 }}
                 tickLine={false}
               />
-              <Tooltip content={<CustomTooltip />} />
+              <Tooltip content={<GlassmorphismTooltip />} />
               <Legend content={<CustomLegend />} />
               <Line
                 type="monotone"
@@ -234,7 +238,7 @@ export const ChartPVSP = ({ data, embedded = false, timeWindow }: ChartPVSPProps
               axisLine={{ stroke: 'hsl(var(--border))', strokeWidth: 1 }}
               tickLine={false}
             />
-            <Tooltip content={<CustomTooltip />} />
+            <Tooltip content={<GlassmorphismTooltip />} />
             <Legend content={<CustomLegend />} />
             <Line
               type="monotone"

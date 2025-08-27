@@ -93,7 +93,7 @@ export const ChartPVSP = ({ data, embedded = false, timeWindow }: ChartPVSPProps
         >
           {/* Header - matching CardNav card header exactly */}
           <div className="nav-card-label font-bold tracking-tight text-[12px] mb-1 leading-tight">
-            TIEMPO: {label}s
+            TIEMPO: {Math.round(label)}s
           </div>
 
           {/* Content - matching CardNav controls structure exactly */}

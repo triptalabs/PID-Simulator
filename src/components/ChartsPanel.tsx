@@ -70,7 +70,7 @@ export const ChartsPanel = ({ data, timeWindow, isRunning = false }: ChartsPanel
           </div>
           {data.length > 0 && (
             <div className="text-xs text-muted-foreground font-normal ml-auto">
-              {data.length} puntos
+              {data.length > 1 ? `${(data[data.length - 1].time - data[0].time).toFixed(1)}s` : '0.0s'}
             </div>
           )}
         </CardTitle>

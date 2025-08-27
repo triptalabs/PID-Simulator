@@ -7,7 +7,6 @@
  * Ecuación continua: τ·(dT/dt) + T = K·u(t-L) + T_amb
  * Donde: T = temperatura [°C], u = entrada control [0-1], L = tiempo muerto [s]
  * 
- * Referencia: docs/ADR/0001-discretizacion-exacta-vs-euler.md
  */
 
 export interface PlantParameters {

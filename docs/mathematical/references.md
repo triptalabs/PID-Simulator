@@ -42,7 +42,6 @@
 6. **Franklin, G.F. & Powell, J.D.** (1980). "Digital Control of Dynamic Systems." *Addison-Wesley*.
    - **Tema**: Comparación de métodos de discretización
    - **Resultado**: Ventajas de discretización exacta vs Euler
-   - **Relevancia**: Justificación de ADR-0001
 
 #### Anti-windup y Derivada Filtrada
 7. **Hägglund, T.** (1999). "Automatic Detection of Oscillating Control Loops." *Control Engineering Practice*, 7(8), 1003-1009.
@@ -124,26 +123,6 @@
     - **URL**: https://www.mathworks.com/help/control/pid-controller-design.html
     - **Relevancia**: Validación de resultados
 
-## 🔬 Publicaciones Específicas del Proyecto
-
-### ADRs (Architecture Decision Records)
-
-18. **ADR-0001** (2024). *Discretización Exacta vs Euler para Modelo FOPDT*.
-    - **Autor**: Equipo de desarrollo PID-Simulator
-    - **Contenido**: Justificación de discretización exacta
-    - **Relevancia**: Decisiones arquitectónicas del proyecto
-
-19. **ADR-0002** (2024). *Derivada Filtrada y Estrategia Anti-windup en PID*.
-    - **Autor**: Equipo de desarrollo PID-Simulator
-    - **Contenido**: Implementación de características avanzadas
-    - **Relevancia**: Decisiones de implementación
-
-### Documentación Técnica
-
-20. **Documentación del Proyecto** (2024). *Lógica y Matemática - Versión Técnica*.
-    - **Archivo**: `docs/00-discovery/logica_y_matematica_version_tecnica_programador_matematico.md`
-    - **Contenido**: Fundamentos matemáticos del simulador
-    - **Relevancia**: Documentación interna del proyecto
 
 ## 📊 Recursos de Validación
 

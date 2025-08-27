@@ -1,8 +1,8 @@
-# Optimización de Parámetros
+# Optimización de Parámetros PID
 
 ## Resumen
 
-Este documento describe las técnicas de optimización de parámetros para el controlador PID, incluyendo métodos clásicos de sintonización, algoritmos de optimización automática y validación de resultados.
+Este documento presenta las técnicas fundamentales de optimización de parámetros para el controlador PID. Estas metodologías son esenciales para el diseño y sintonización efectiva de sistemas de control, proporcionando métodos sistemáticos para obtener el mejor rendimiento del controlador.
 
 ## Índice
 
@@ -13,6 +13,8 @@ Este documento describe las técnicas de optimización de parámetros para el co
 ## Métodos Clásicos
 
 ### Ziegler-Nichols
+
+El método Ziegler-Nichols es una técnica fundamental para la sintonización de controladores PID en sistemas de primer orden con tiempo muerto (FOPDT):
 
 ```typescript
 class ZieglerNicholsTuner {
@@ -31,6 +33,8 @@ class ZieglerNicholsTuner {
 
 ### IMC (Internal Model Control)
 
+El método IMC proporciona un enfoque sistemático para el diseño de controladores basado en el modelo interno del proceso:
+
 ```typescript
 class IMCTuner {
   tuneByIMC(plantParams: PlantParameters, lambda: number): PIDParameters {
@@ -48,6 +52,8 @@ class IMCTuner {
 ## Optimización Automática
 
 ### Algoritmo Genético
+
+Los algoritmos genéticos son herramientas poderosas para optimización multi-objetivo en sistemas de control PID:
 
 ```typescript
 class GeneticOptimizer {
@@ -69,6 +75,8 @@ class GeneticOptimizer {
 ```
 
 ### Búsqueda Directa
+
+La búsqueda directa es un método de optimización robusto para encontrar parámetros PID óptimos:
 
 ```typescript
 class DirectSearchOptimizer {
@@ -98,6 +106,8 @@ class DirectSearchOptimizer {
 
 ### Criterios de Validación
 
+La validación de resultados es crucial para asegurar la calidad y robustez del controlador optimizado:
+
 ```typescript
 class OptimizationValidator {
   validateResult(result: OptimizationResult, plantParams: PlantParameters): ValidationReport {
@@ -118,11 +128,21 @@ class OptimizationValidator {
 - **Robustez:** Sensibilidad a variaciones de parámetros < 2.0
 - **Factibilidad:** Parámetros dentro de rangos aceptables
 
+## Aplicaciones en Sistemas PID
+
+Estas técnicas de optimización son fundamentales para:
+
+1. **Sistemas Industriales**: Hornos, reactores, intercambiadores de calor
+2. **Control de Procesos**: Temperatura, presión, nivel, flujo
+3. **Sistemas Mecánicos**: Control de posición, velocidad, torque
+4. **Sistemas Electrónicos**: Control de voltaje, corriente, frecuencia
+
 ## Conclusiones
 
-La optimización automática proporciona:
+La optimización de parámetros PID es un aspecto fundamental del control de procesos que proporciona:
 
-1. **Sintonización Rápida:** Reducción del tiempo de ajuste
-2. **Soluciones Óptimas:** Basadas en criterios objetivos
-3. **Robustez:** Estabilidad ante variaciones
-4. **Reproducibilidad:** Resultados consistentes
+1. **Sintonización Sistemática:** Metodologías estructuradas para el ajuste de parámetros
+2. **Soluciones Óptimas:** Resultados basados en criterios objetivos y matemáticos
+3. **Robustez:** Estabilidad ante variaciones de parámetros del proceso
+4. **Reproducibilidad:** Resultados consistentes y documentados
+

@@ -1,8 +1,10 @@
-# Análisis de Rendimiento
+# Análisis de Rendimiento PID
 
 ## Resumen
 
-Este documento describe el análisis de rendimiento del sistema PID controlado, incluyendo características de respuesta temporal, análisis de frecuencia, y guías de optimización. Se enfoca en la evaluación cuantitativa del comportamiento del sistema.
+Este documento presenta **sugerencias de funcionalidades** para el análisis avanzado de rendimiento en sistemas PID. Las técnicas descritas son **propuestas para próximas versiones** del simulador, enfocadas en proporcionar herramientas de evaluación cuantitativa y análisis profundo del comportamiento del sistema.
+
+> **🚀 Sugerencias para Próximas Versiones**: Los ejemplos de código en este documento son **funcionalidades propuestas** para futuras versiones del simulador PID. Representan capacidades avanzadas de análisis que podrían implementarse para mejorar la experiencia del usuario.
 
 ## Índice
 
@@ -35,7 +37,7 @@ graph TD
     K --> L[Evaluación de Agilidad]
 ```
 
-#### Implementación de Análisis
+#### Propuesta de Implementación Avanzada
 
 ```typescript
 class TemporalResponseAnalyzer {
@@ -94,7 +96,7 @@ class TemporalResponseAnalyzer {
 
 ### Respuesta a Perturbaciones
 
-#### Análisis de Rechazo de Perturbaciones
+#### Propuesta de Análisis de Rechazo de Perturbaciones
 
 ```typescript
 class DisturbanceRejectionAnalyzer {
@@ -177,7 +179,7 @@ graph TD
     K --> L
 ```
 
-#### Implementación de Análisis de Frecuencia
+#### Propuesta de Análisis de Frecuencia
 
 ```typescript
 class FrequencyResponseAnalyzer {
@@ -244,7 +246,7 @@ class FrequencyResponseAnalyzer {
 
 ### Análisis de Robustez
 
-#### Sensibilidad a Variaciones de Parámetros
+#### Propuesta de Análisis de Sensibilidad
 
 ```typescript
 class RobustnessAnalyzer {
@@ -312,7 +314,7 @@ class RobustnessAnalyzer {
 
 ### Criterios de Estabilidad
 
-#### Análisis de Polos
+#### Propuesta de Análisis de Polos
 
 ```typescript
 class StabilityAnalyzer {
@@ -388,7 +390,7 @@ graph TD
 
 ### Métodos de Sintonización
 
-#### Sintonización por Ziegler-Nichols
+#### Propuesta de Sintonización por Ziegler-Nichols
 
 ```typescript
 class ZieglerNicholsTuner {
@@ -434,7 +436,7 @@ class ZieglerNicholsTuner {
 }
 ```
 
-#### Sintonización por IMC (Internal Model Control)
+#### Propuesta de Sintonización por IMC (Internal Model Control)
 
 ```typescript
 class IMCTuner {
@@ -457,7 +459,7 @@ class IMCTuner {
 }
 ```
 
-### Optimización Multi-Objetivo
+### Propuesta de Optimización Multi-Objetivo
 
 ```typescript
 class MultiObjectiveOptimizer {
@@ -521,7 +523,7 @@ class MultiObjectiveOptimizer {
 
 ## Comparación de Configuraciones
 
-### Análisis Comparativo
+### Propuesta de Análisis Comparativo
 
 ```typescript
 class ConfigurationComparator {
@@ -593,6 +595,16 @@ interface ComparisonTable {
 }
 ```
 
+## Estado de Implementación
+
+| Funcionalidad | Estado Actual | Propuesta para |
+|---------------|---------------|----------------|
+| Métricas básicas (overshoot, t_peak, settling_time) | ✅ Implementado | `src/lib/simulation/metrics-calculator.ts` |
+| Análisis temporal avanzado | ❌ No implementado | Próxima versión |
+| Análisis de frecuencia | ❌ No implementado | Próxima versión |
+| Análisis de robustez | ❌ No implementado | Próxima versión |
+| Comparación automática | ❌ No implementado | Próxima versión |
+
 ## Métricas de Rendimiento
 
 ### Indicadores de Calidad
@@ -624,13 +636,37 @@ interface ComparisonTable {
 - **Aceptable:** Overall Score 0.4-0.6
 - **Pobre:** Overall Score < 0.4
 
+## Roadmap de Funcionalidades
+
+### Versión 2.0 - Análisis Avanzado
+1. **Análisis Temporal Extendido**
+   - Respuesta a perturbaciones
+   - Análisis de múltiples setpoints
+   - Métricas de calidad mejoradas
+
+2. **Análisis de Frecuencia**
+   - Diagramas de Bode
+   - Márgenes de estabilidad
+   - Análisis de robustez
+
+### Versión 3.0 - Optimización Automática
+1. **Sintonización Automática**
+   - Métodos Ziegler-Nichols
+   - Optimización IMC
+   - Algoritmos genéticos
+
+2. **Comparación de Configuraciones**
+   - Análisis comparativo automático
+   - Rankings de configuraciones
+   - Recomendaciones inteligentes
+
 ## Conclusiones
 
-El análisis de rendimiento permite:
+La implementación de estas funcionalidades de análisis avanzado permitiría:
 
 1. **Evaluación Cuantitativa:** Medición objetiva del comportamiento del sistema
 2. **Optimización Sistemática:** Mejora basada en criterios específicos
 3. **Comparación Objetiva:** Evaluación imparcial de diferentes configuraciones
 4. **Guías de Diseño:** Criterios para selección de parámetros
 
-Estos resultados proporcionan una base sólida para el diseño y optimización de sistemas de control PID.
+Estas capacidades transformarían el simulador PID en una herramienta de análisis profesional para el diseño y optimización de sistemas de control.

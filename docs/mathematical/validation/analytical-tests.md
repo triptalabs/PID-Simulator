@@ -489,8 +489,6 @@ describe('Numerical Stability Validation', () => {
 
 1. **Franklin, G.F., et al.** "Digital Control of Dynamic Systems" - Capítulos 3 y 4
 2. **Åström, K.J.** "Computer-Controlled Systems" - Sección 2.3
-3. **ADR-0001**: Discretización exacta vs Euler
-4. **ADR-0002**: Derivada filtrada y anti-windup
 
 ---
 

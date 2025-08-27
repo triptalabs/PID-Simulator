@@ -201,7 +201,7 @@ export const Dashboard = () => {
   return (
     <div className="dark h-screen bg-background text-foreground flex flex-col overflow-hidden">
       {/* Header con altura fija y animación */}
-      <div className="flex-shrink-0 z-50 border-b border-border transition-all duration-500 ease-in-out">
+      <div className="flex-shrink-0 z-50 transition-all duration-500 ease-in-out">
         <Header 
           state={state} 
           onStateChange={handleStateChange}

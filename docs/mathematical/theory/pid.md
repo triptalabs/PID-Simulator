@@ -448,7 +448,6 @@ graph TD
 1. **Åström, K.J. & Hägglund, T.** "Advanced PID Control" - Capítulos 3 y 6
 2. **Visioli, A.** "Practical PID Control" - Derivada filtrada y anti-windup
 3. **ISA Standard 51.1-1979** "Process Instrumentation Terminology"
-4. **ADR-0002**: Derivada filtrada y anti-windup
 
 ---
 

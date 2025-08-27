@@ -298,7 +298,6 @@ La discretización exacta es **incondicionalmente estable**:
 1. **Franklin, G.F., et al.** "Digital Control of Dynamic Systems" - Capítulo 3
 2. **Åström, K.J.** "Computer-Controlled Systems" - Sección 2.3
 3. **Seborg, D.E., et al.** "Process Dynamics and Control" - Capítulo 5
-4. **ADR-0001**: Discretización exacta vs Euler
 
 ---
 

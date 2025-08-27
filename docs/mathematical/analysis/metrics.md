@@ -1,12 +1,14 @@
-# Análisis de Métricas de Control
+# Análisis de Métricas de Control PID
 
 ## 📖 Descripción General
 
 El simulador PID calcula automáticamente métricas de rendimiento para evaluar la calidad del control. Estas métricas proporcionan información cuantitativa sobre la respuesta del sistema y ayudan en la sintonía del controlador.
 
+> **📊 Estado Actual**: Las métricas básicas (overshoot, tiempo de pico, tiempo de establecimiento) están **implementadas** en el simulador. Los índices de rendimiento avanzados (IAE, ISE) son **mejoras propuestas** para próximas versiones.
+
 ## 📊 Métricas Principales
 
-### 1. Overshoot (Sobreimpulso)
+### 1. Overshoot (Sobreimpulso) ✅ **Implementado**
 
 #### Definición Matemática
 
@@ -20,7 +22,7 @@ Donde:
 - *PV_max* = Valor máximo de la variable de proceso
 - *SP_final* = Setpoint final después del cambio
 
-#### Implementación
+#### Implementación Actual
 
 ```typescript
 private calculateOvershoot(sp: number, pv: number, t: number): void {
@@ -83,7 +85,7 @@ graph TD
     style I fill:#e3f2fd
 ```
 
-### 2. Tiempo de Pico (*t_peak*)
+### 2. Tiempo de Pico (*t_peak*) ✅ **Implementado**
 
 #### Definición
 
@@ -99,7 +101,7 @@ t_peak = arg max_t |PV(t) - SP_final|
 - **Para pasos descendentes**: Tiempo del máximo undershoot
 - **Indicador de velocidad**: Tiempos menores indican respuesta más rápida
 
-### 3. Tiempo de Establecimiento (*t_s*)
+### 3. Tiempo de Establecimiento (*t_s*) ✅ **Implementado**
 
 #### Definición Matemática
 
@@ -111,7 +113,7 @@ t_s = min { t | |PV(τ) - SP_final| ≤ ε·|SP_final|, ∀τ ≥ t }
 
 Donde *ε* = tolerancia (típicamente 2% o 5%)
 
-#### Implementación
+#### Implementación Actual
 
 ```typescript
 private calculateSettlingTime(sp: number, pv: number, t: number): void {
@@ -150,7 +152,7 @@ graph LR
     style D fill:#ffebee
 ```
 
-## 📈 Índices de Rendimiento
+## 📈 Índices de Rendimiento 🚀 **Mejoras para Próximas Versiones**
 
 ### 1. IAE (Integral of Absolute Error)
 
@@ -160,7 +162,7 @@ graph LR
 IAE = ∫|e(t)|dt
 ```
 
-#### Implementación Discreta
+#### Propuesta de Implementación
 
 ```typescript
 function calculateIAE(error_samples: number[], timestep: number): number {
@@ -178,7 +180,7 @@ function calculateIAE(error_samples: number[], timestep: number): number {
 ISE = ∫e²(t)dt
 ```
 
-#### Implementación Discreta
+#### Propuesta de Implementación
 
 ```typescript
 function calculateISE(error_samples: number[], timestep: number): number {
@@ -198,17 +200,26 @@ RMSE = √(∫e²(t)dt / T) = √(ISE / T)
 
 Donde *T* = tiempo total de evaluación
 
-#### Implementación
+#### Implementación Parcial ✅
 
 ```typescript
-function calculateRMSE(error_samples: number[], timestep: number): number {
-  const ISE = calculateISE(error_samples, timestep)
-  const total_time = error_samples.length * timestep
-  return Math.sqrt(ISE / total_time)
+// Implementado solo para validación numérica
+export function rmse(a: number[], b: number[]): number {
+  if (a.length !== b.length) throw new Error('RMSE: longitudes distintas')
+  const n = a.length
+  if (n === 0) return 0
+  let acc = 0
+  for (let i = 0; i < n; i++) {
+    const d = a[i] - b[i]
+    acc += d * d
+  }
+  return Math.sqrt(acc / n)
 }
 ```
 
-## 🔄 Proceso de Cálculo Automático
+> **Nota**: RMSE está implementado solo para validación numérica. La versión como métrica de control está propuesta para próximas versiones.
+
+## 🔄 Proceso de Cálculo Automático ✅ **Implementado**
 
 ### Flujo de Detección
 
@@ -234,7 +245,7 @@ graph TD
     style K fill:#e8f5e8
 ```
 
-### Configuración
+### Configuración Actual
 
 ```typescript
 interface MetricsConfig {
@@ -256,7 +267,7 @@ const DEFAULT_CONFIG = {
 }
 ```
 
-## 🧮 Casos de Prueba
+## 🧮 Casos de Prueba 🚀 **Mejoras para Próximas Versiones**
 
 ### Test 1: Overshoot en Paso Ascendente
 
@@ -328,7 +339,7 @@ graph TD
     style E fill:#e3f2fd
 ```
 
-## ⚠️ Casos Especiales
+## ⚠️ Casos Especiales ✅ **Implementado**
 
 ### SP = 0 (Setpoint Cero)
 
@@ -370,7 +381,7 @@ if (t - this.state.t_start > this.config.max_calculation_time) {
 }
 ```
 
-## 🔍 Validación de Métricas
+## 🔍 Validación de Métricas 🚀 **Mejoras para Próximas Versiones**
 
 ### Verificación de Rango
 
@@ -399,6 +410,41 @@ if (this.state.settling_time > 0 && this.state.t_peak > this.state.settling_time
 }
 ```
 
+## Estado de Implementación
+
+| Funcionalidad | Estado | Ubicación |
+|---------------|--------|-----------|
+| Métricas básicas (overshoot, t_peak, settling_time) | ✅ Implementado | `src/lib/simulation/metrics-calculator.ts` |
+| Detección automática de cambios SP | ✅ Implementado | `src/lib/simulation/metrics-calculator.ts` |
+| RMSE para validación | ✅ Implementado | `src/lib/simulation/plant-analytic.ts` |
+| IAE/ISE como métricas de control | ❌ Propuesto | Próxima versión |
+| Tests automatizados | ❌ Propuesto | Próxima versión |
+| Validación avanzada | ❌ Propuesto | Próxima versión |
+
+## Roadmap de Mejoras
+
+### Versión 2.0 - Métricas Avanzadas
+1. **Índices de Rendimiento**
+   - Implementación de IAE
+   - Implementación de ISE
+   - RMSE como métrica de control
+
+2. **Validación Robusta**
+   - Verificación de rangos automática
+   - Detección de inconsistencias
+   - Alertas de calidad de datos
+
+### Versión 3.0 - Análisis Inteligente
+1. **Tests Automatizados**
+   - Suite de pruebas de métricas
+   - Validación de casos edge
+   - Benchmarks de rendimiento
+
+2. **Métricas Compuestas**
+   - Índices de calidad global
+   - Comparación de configuraciones
+   - Recomendaciones automáticas
+
 ## 🔗 Referencias
 
 1. **Franklin, G.F., et al.** "Digital Control of Dynamic Systems" - Capítulo 4
@@ -408,6 +454,6 @@ if (this.state.settling_time > 0 && this.state.t_peak > this.state.settling_time
 
 ---
 
-**Implementación**: `src/lib/simulation/metrics-calculator.ts`  
+**Implementación Actual**: `src/lib/simulation/metrics-calculator.ts`  
 **Validación**: `tests/metrics.settling.test.ts`  
 **Última actualización**: Enero 2024

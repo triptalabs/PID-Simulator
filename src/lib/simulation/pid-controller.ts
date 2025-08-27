@@ -7,7 +7,6 @@
  * - Anti-windup por back-calculation cuando la salida se satura
  * - Ganancias en unidades estándar: Kp [adimensional], Ki [s⁻¹], Kd [s]
  * 
- * Referencia: docs/ADR/0002-derivada-filtrada-y-anti-windup.md
  */
 
 export interface PIDParameters {

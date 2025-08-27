@@ -226,8 +226,7 @@ export const Header = ({ state, onStateChange, onExpansionChange }: HeaderProps)
     <div className="w-full">
       {/* CardNav que se ajusta al contenido */}
       <CardNav
-        logo="/placeholder.svg"
-        logoAlt="PID Simulator Pro"
+        logoText="Simulador de control de variable (PID)"
         items={cardNavItems}
         className="w-full"
         ease="power3.out"

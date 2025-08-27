@@ -94,17 +94,24 @@ export default {
 				'data-flow': {
 					'0%': { transform: 'translateX(-100%)' },
 					'100%': { transform: 'translateX(100%)' }
+				},
+				'gradient': {
+					'0%': { backgroundPosition: '0% 50%' },
+					'50%': { backgroundPosition: '100% 50%' },
+					'100%': { backgroundPosition: '0% 50%' }
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out',
 				'pulse-glow': 'pulse-glow 2s ease-in-out infinite',
-				'data-flow': 'data-flow 3s linear infinite'
+				'data-flow': 'data-flow 3s linear infinite',
+				'gradient': 'gradient 8s linear infinite'
 			},
 			fontFamily: {
 				'mono': ['JetBrains Mono', 'Consolas', 'monospace'],
-				'industrial': ['Inter', 'system-ui', 'sans-serif']
+				'industrial': ['Inter', 'system-ui', 'sans-serif'],
+				'iceland': ['Iceland', 'cursive']
 			},
 			backdropBlur: {
 				'xs': '2px'

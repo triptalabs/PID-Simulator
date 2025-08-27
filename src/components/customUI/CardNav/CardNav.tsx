@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { GoArrowUpRight } from "react-icons/go";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import GradientText from "../GradientText/GradientText";
 
 type CardNavControl = {
   label: string;
@@ -43,8 +44,9 @@ type CardNavLink = {
 };
 
 export interface CardNavProps {
-  logo: string;
+  logo?: string;
   logoAlt?: string;
+  logoText?: string;
   items: CardNavItem[];
   className?: string;
   baseColor?: string;
@@ -62,6 +64,7 @@ export interface CardNavProps {
 const CardNav: React.FC<CardNavProps> = ({
   logo,
   logoAlt = "Logo",
+  logoText,
   items,
   className = "",
   baseColor = "#fff",
@@ -83,61 +86,74 @@ const CardNav: React.FC<CardNavProps> = ({
 
   return (
     <div className={`w-full max-w-[1200px] mx-auto p-2 ${className}`}>
-      <nav
-        className={`block rounded-2xl shadow-2xl backdrop-blur-xl transition-all duration-500 ease-in-out ${
-          isExpanded ? 'h-auto' : 'h-[70px]'
-        }`}
-        style={{ 
-          backgroundColor: baseColor,
-          border: '1px solid rgba(255, 255, 255, 0.1)',
-          boxShadow: '0 20px 40px -12px rgba(0, 0, 0, 0.25), 0 8px 16px -8px rgba(0, 0, 0, 0.3)'
-        }}
-      >
-        {/* Top bar - siempre visible */}
-        <div className="h-[70px] flex items-center justify-between px-6 border-b border-white/10">
-          <div
-            className={`hamburger-menu group h-full flex flex-col items-center justify-center cursor-pointer gap-[7px] order-2 md:order-none transition-all duration-300 hover:scale-110`}
-            onClick={toggleMenu}
-            role="button"
-            aria-label={isExpanded ? "Close menu" : "Open menu"}
-            tabIndex={0}
-            style={{ color: menuColor || "#000" }}
-          >
-            <div
-              className={`hamburger-line w-[32px] h-[3px] bg-current transition-all duration-400 ease-out rounded-full [transform-origin:50%_50%] ${
-                isExpanded ? "translate-y-[5px] rotate-45" : ""
-              } group-hover:opacity-80`}
-            />
-            <div
-              className={`hamburger-line w-[32px] h-[3px] bg-current transition-all duration-400 ease-out rounded-full [transform-origin:50%_50%] ${
-                isExpanded ? "-translate-y-[5px] -rotate-45" : ""
-              } group-hover:opacity-80`}
-            />
-          </div>
+             <nav
+         className={`block rounded-2xl shadow-2xl backdrop-blur-xl transition-all duration-500 ease-in-out relative z-40 ${
+           isExpanded ? 'h-auto' : 'h-[70px]'
+         }`}
+         style={{ 
+           backgroundColor: baseColor,
+           border: '1px solid rgba(255, 255, 255, 0.1)',
+           boxShadow: '0 20px 40px -12px rgba(0, 0, 0, 0.25), 0 8px 16px -8px rgba(0, 0, 0, 0.3)'
+         }}
+       >
+                 {/* Top bar - siempre visible */}
+                   <div className="h-[70px] grid grid-cols-3 items-center px-6">
+           <div className="flex justify-start">
+             <div
+               className={`hamburger-menu group h-full flex flex-col items-center justify-center cursor-pointer gap-[7px] transition-all duration-300 hover:scale-110`}
+               onClick={toggleMenu}
+               role="button"
+               aria-label={isExpanded ? "Close menu" : "Open menu"}
+               tabIndex={0}
+               style={{ color: menuColor || "#000" }}
+             >
+               <div
+                 className={`hamburger-line w-[32px] h-[3px] bg-current transition-all duration-400 ease-out rounded-full [transform-origin:50%_50%] ${
+                   isExpanded ? "translate-y-[5px] rotate-45" : ""
+                 } group-hover:opacity-80`}
+               />
+               <div
+                 className={`hamburger-line w-[32px] h-[3px] bg-current transition-all duration-400 ease-out rounded-full [transform-origin:50%_50%] ${
+                   isExpanded ? "-translate-y-[5px] -rotate-45" : ""
+                 } group-hover:opacity-80`}
+               />
+             </div>
+           </div>
 
-          <div className="logo-container flex items-center md:absolute md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 order-1 md:order-none">
-            <img src={logo} alt={logoAlt} className="logo h-[32px] transition-transform duration-300 hover:scale-105" />
-          </div>
+                       <div className="flex justify-center items-center">
+              {logoText ? (
+                <GradientText 
+                  className="text-[28px] font-bold font-iceland whitespace-nowrap select-none"
+                  colors={["#3b82f6", "#8b5cf6", "#06b6d4", "#3b82f6"]}
+                  animationSpeed={6}
+                  showBorder={false}
+                >
+                  {logoText}
+                </GradientText>
+              ) : logo ? (
+                <img src={logo} alt={logoAlt} className="logo h-[32px] transition-transform duration-300 hover:scale-105" />
+              ) : null}
+            </div>
 
-          <div className="flex items-center gap-4 order-3 md:order-none">
-            <button
-              type="button"
-              className="card-nav-help-button hidden md:inline-flex border-2 border-current rounded-xl px-5 py-2 h-10 font-semibold cursor-pointer transition-all duration-300 text-sm hover:bg-white/15 hover:scale-105 backdrop-blur-sm"
-              style={{ color: menuColor }}
-              onClick={onHelpClick}
-            >
-              Cómo usar
-            </button>
-            <button
-              type="button"
-              className="card-nav-docs-button hidden md:inline-flex border-2 border-current rounded-xl px-5 py-2 h-10 font-semibold cursor-pointer transition-all duration-300 text-sm hover:bg-white/15 hover:scale-105 backdrop-blur-sm"
-              style={{ color: menuColor }}
-              onClick={onDocsClick}
-            >
-              Docs
-            </button>
-          </div>
-        </div>
+           <div className="flex justify-end items-center gap-4">
+             <button
+               type="button"
+               className="card-nav-help-button hidden md:inline-flex border-2 border-current rounded-xl px-5 py-2 h-10 font-semibold cursor-pointer transition-all duration-300 text-sm hover:bg-white/15 hover:scale-105 backdrop-blur-sm"
+               style={{ color: menuColor }}
+               onClick={onHelpClick}
+             >
+               Cómo usar
+             </button>
+             <button
+               type="button"
+               className="card-nav-docs-button hidden md:inline-flex border-2 border-current rounded-xl px-5 py-2 h-10 font-semibold cursor-pointer transition-all duration-300 text-sm hover:bg-white/15 hover:scale-105 backdrop-blur-sm"
+               style={{ color: menuColor }}
+               onClick={onDocsClick}
+             >
+               Docs
+             </button>
+           </div>
+         </div>
 
                  {/* Expandable content */}
          <div
@@ -147,16 +163,16 @@ const CardNav: React.FC<CardNavProps> = ({
          >
            <div className="p-4 flex flex-col items-stretch gap-3 justify-start md:flex-row md:items-stretch md:gap-3">
             {(items || []).slice(0, 5).map((item, idx) => (
-                             <div
-                 key={`${item.label}-${idx}`}
-                                   className="nav-card select-none relative flex flex-col gap-2 p-3 rounded-lg min-w-0 flex-[1_1_auto] h-auto min-h-[100px] md:h-full md:min-h-0 md:flex-[1_1_0%] transition-all duration-300 hover:scale-[1.02] hover:shadow-xl overflow-hidden"
-                style={{ 
-                  backgroundColor: item.bgColor, 
-                  color: item.textColor,
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
-                  boxShadow: '0 8px 32px -8px rgba(0, 0, 0, 0.2)'
-                }}
-              >
+                                                           <div
+                  key={`${item.label}-${idx}`}
+                                    className="nav-card select-none relative flex flex-col gap-2 p-3 rounded-lg min-w-0 flex-[1_1_auto] h-auto min-h-[100px] md:h-full md:min-h-0 md:flex-[1_1_0%] transition-all duration-300 hover:scale-[1.02] hover:shadow-xl overflow-hidden z-30"
+                 style={{ 
+                   backgroundColor: item.bgColor, 
+                   color: item.textColor,
+                   border: '1px solid rgba(255, 255, 255, 0.1)',
+                   boxShadow: '0 8px 32px -8px rgba(0, 0, 0, 0.2)'
+                 }}
+               >
                                  <div className="nav-card-label font-bold tracking-tight text-[12px] md:text-[14px] mb-1 leading-tight">
                    {item.label}
                  </div>

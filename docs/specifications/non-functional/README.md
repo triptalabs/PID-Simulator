@@ -1,4 +1,4 @@
-# Especificaciones No Funcionales - PID-Simulator
+# Especificaciones No Funcionales - PID Playground
 
 ## 📋 Propósito
 

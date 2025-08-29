@@ -1,12 +1,12 @@
-# Documentación PID-Simulator
+# Documentación PID Playground
 
 ## 📋 Resumen
 
-Bienvenido a la documentación completa del **PID-Simulator**, un simulador web en tiempo real de sistemas de control térmico con controlador PID ajustable. Esta documentación está diseñada para ingenieros, técnicos, estudiantes y desarrolladores que necesiten entender, usar o extender el simulador.
+Bienvenido a la documentación completa del **PID Playground**, un simulador web en tiempo real de sistemas de control térmico con controlador PID ajustable. Esta documentación está diseñada para ingenieros, técnicos, estudiantes y desarrolladores que necesiten entender, usar o extender el simulador.
 
 ## 🎯 Propósito del Simulador
 
-El PID-Simulator es una aplicación web que simula sistemas de control térmico (horno/chiller) usando:
+El PID Playground es una aplicación web que simula sistemas de control térmico (horno/chiller) usando:
 
 - **Controlador PID industrial** con anti-windup y derivada filtrada
 - **Modelo FOPDT** (First Order Plus Dead Time) con discretización exacta
@@ -228,17 +228,6 @@ node docs/validation/validate-documentation.js
 
 ---
 
-## 📄 Información del Proyecto
-
-**Versión**: 1.0.0  
-**Última actualización**: Diciembre 2024  
-**Estado**: Documentación completa y validada  
-**Mantenimiento**: Activo  
-
-**Autores**: Equipo de desarrollo PID-Simulator  
-**Licencia**: MIT  
-**Repositorio**: [GitHub](https://github.com/your-repo/pid-simulator)
-
----
-
-*Esta documentación es mantenida activamente. Para sugerencias o reportar problemas, por favor crear un issue en el repositorio.*
+**Última actualización**: Agosto 2024
+**Versión**: 1.0
+**Estado**: Documentación completa y validada

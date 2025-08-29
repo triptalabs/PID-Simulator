@@ -31,7 +31,7 @@ El **Simulador PID — Horno/Chiller** es una aplicación web que simula en tiem
 ```bash
 # Clonar el repositorio
 git clone <YOUR_GIT_URL>
-cd PID-Simulator
+cd PID-Playground
 
 # Instalar dependencias
 pnpm install
@@ -335,3 +335,9 @@ Ahora que has completado esta guía, puedes:
 Has completado tu primera simulación PID. Ahora tienes las herramientas básicas para explorar el fascinante mundo del control automático.
 
 **¿Listo para el siguiente nivel?** → [Tutorial 1: Conceptos Básicos de PID](./tutorials/01-basic-pid.md)
+
+---
+
+**Última actualización**: Agosto 2024
+**Versión**: 1.0
+**Estado**: Documentación completa de inicio rápido

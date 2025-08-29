@@ -530,3 +530,9 @@ Ahora que comprendes los conceptos básicos, puedes:
 Has completado el tutorial básico de PID. Ahora tienes una comprensión sólida de cómo funcionan los controladores PID y cómo ajustar sus parámetros.
 
 **¿Listo para el siguiente nivel?** → [Tutorial 2: Ajuste de Ganancias](./02-tuning.md)
+
+---
+
+**Última actualización**: Agosto 2024
+**Versión**: 1.0
+**Estado**: Documentación completa de tutorial básico PID

@@ -235,7 +235,7 @@ export default defineConfig({
 ### Nginx
 
 ```nginx
-# /etc/nginx/sites-available/pid-simulator
+# /etc/nginx/sites-available/pid-playground
 server {
     listen 80;
     server_name pidsimulator.com www.pidsimulator.com;
@@ -263,7 +263,7 @@ server {
     add_header Content-Security-Policy "default-src 'self' http: https: data: blob: 'unsafe-inline'" always;
     
     # Root directory
-    root /var/www/pid-simulator;
+    root /var/www/pid-playground;
     index index.html;
     
     # Gzip compression
@@ -304,11 +304,11 @@ server {
 ### Apache
 
 ```apache
-# /etc/apache2/sites-available/pid-simulator.conf
+# /etc/apache2/sites-available/pid-playground.conf
 <VirtualHost *:80>
     ServerName pidsimulator.com
     ServerAlias www.pidsimulator.com
-    DocumentRoot /var/www/pid-simulator
+    DocumentRoot /var/www/pid-playground
     
     # Redirect to HTTPS
     RewriteEngine On
@@ -319,7 +319,7 @@ server {
 <VirtualHost *:443>
     ServerName pidsimulator.com
     ServerAlias www.pidsimulator.com
-    DocumentRoot /var/www/pid-simulator
+    DocumentRoot /var/www/pid-playground
     
     # SSL Configuration
     SSLEngine on
@@ -353,7 +353,7 @@ server {
     </FilesMatch>
     
     # SPA routing
-    <Directory /var/www/pid-simulator>
+    <Directory /var/www/pid-playground>
         Options -Indexes +FollowSymLinks
         AllowOverride All
         Require all granted
@@ -408,7 +408,7 @@ CMD ["nginx", "-g", "daemon off;"]
 version: '3.8'
 
 services:
-  pid-simulator:
+  pid-playground:
     build: .
     ports:
       - "80:80"
@@ -438,10 +438,10 @@ pnpm run build:prod
 pnpm run preview
 
 # 3. Copiar archivos al servidor
-scp -r dist/* user@server:/var/www/pid-simulator/
+scp -r dist/* user@server:/var/www/pid-playground/
 
 # 4. Configurar permisos
-ssh user@server "chmod -R 755 /var/www/pid-simulator"
+ssh user@server "chmod -R 755 /var/www/pid-playground"
 ```
 
 ### Despliegue Automatizado (GitHub Actions)
@@ -529,15 +529,15 @@ jobs:
         key: ${{ secrets.SSH_KEY }}
         script: |
           # Backup current version
-          cp -r /var/www/pid-simulator /var/www/pid-simulator.backup.$(date +%Y%m%d_%H%M%S)
+          cp -r /var/www/pid-playground /var/www/pid-playground.backup.$(date +%Y%m%d_%H%M%S)
           
           # Deploy new version
-          rm -rf /var/www/pid-simulator/*
-          cp -r dist/* /var/www/pid-simulator/
+          rm -rf /var/www/pid-playground/*
+cp -r dist/* /var/www/pid-playground/
           
           # Set permissions
-          chmod -R 755 /var/www/pid-simulator
-          chown -R www-data:www-data /var/www/pid-simulator
+          chmod -R 755 /var/www/pid-playground
+chown -R www-data:www-data /var/www/pid-playground
           
           # Reload nginx
           nginx -t && systemctl reload nginx
@@ -809,7 +809,7 @@ export function LazyChartsPanel(props: any) {
 
 ```typescript
 // public/sw.js
-const CACHE_NAME = 'pid-simulator-v1'
+const CACHE_NAME = 'pid-playground-v1'
 const urlsToCache = [
   '/',
   '/index.html',
@@ -953,3 +953,9 @@ netstat -tulpn | grep :443
 Esta documentación proporciona una guía completa para configurar y desplegar el Simulador PID en diferentes entornos. Siguiendo estas prácticas, se asegura un despliegue robusto y mantenible.
 
 Para problemas específicos o configuraciones adicionales, consulta la documentación técnica o crea un issue en el repositorio.
+
+---
+
+**Última actualización**: Agosto 2024
+**Versión**: 1.0
+**Estado**: Documentación completa de despliegue

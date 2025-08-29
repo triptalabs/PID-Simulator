@@ -210,6 +210,6 @@ Este proyecto se basa en el trabajo de la comunidad de control automático y las
 
 ---
 
-**Última actualización**: Enero 2024  
+**Última actualización**: Agosto 2024
 **Versión**: 1.0  
 **Estado**: Documentación completa de referencias

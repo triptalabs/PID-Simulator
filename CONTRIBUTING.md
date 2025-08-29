@@ -1,6 +1,6 @@
 # 🤝 Guía de Contribución
 
-¡Gracias por tu interés en contribuir al PID-Simulator! Este documento te guiará a través del proceso de contribución.
+¡Gracias por tu interés en contribuir al PID Playground! Este documento te guiará a través del proceso de contribución.
 
 ## 📋 Tabla de Contenidos
 
@@ -103,15 +103,15 @@ Otras soluciones evaluadas
 
 ```bash
 # 1. Fork del repositorio
-# Ve a https://github.com/triptalabs/pid-simulator
+# Ve a https://github.com/triptalabs/pid-playground
 # Haz clic en "Fork"
 
 # 2. Clona tu fork
-git clone https://github.com/YOUR_USERNAME/pid-simulator.git
-cd pid-simulator
+git clone https://github.com/YOUR_USERNAME/pid-playground.git
+cd pid-playground
 
 # 3. Agrega el repositorio original como upstream
-git remote add upstream https://github.com/original-owner/pid-simulator.git
+git remote add upstream https://github.com/original-owner/pid-playground.git
 
 # 4. Instala dependencias
 pnpm install
@@ -428,6 +428,6 @@ Closes #123
 
 ---
 
-**¡Gracias por contribuir al PID-Simulator! 🎛️**
+**¡Gracias por contribuir al PID Playground! 🎛️**
 
 Tu contribución ayuda a hacer el control automático más accesible para todos.

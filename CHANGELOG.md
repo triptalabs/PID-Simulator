@@ -61,8 +61,8 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.h
 
 ## 🔗 Enlaces de Descarga
 
-- **[v1.0.0](https://github.com/triptalabs/pid-simulator/releases/tag/v1.0.0)** - Versión estable actual
-- **[Latest](https://github.com/triptalabs/pid-simulator/releases/latest)** - Última versión
+- **[v1.0.0](https://github.com/triptalabs/pid-playground/releases/tag/v1.0.0)** - Versión estable actual
+- **[Latest](https://github.com/triptalabs/pid-playground/releases/latest)** - Última versión
 
 
 ## 🏷️ Convenciones de Versionado
@@ -115,7 +115,7 @@ pnpm preview
 
 ### v1.0.0 - Primera Versión Estable
 
-Esta es la primera versión estable del PID-Simulator. Incluye todas las funcionalidades core necesarias para simular sistemas de control PID industriales.
+Esta es la primera versión estable del PID Playground. Incluye todas las funcionalidades core necesarias para simular sistemas de control PID industriales.
 
 **Características destacadas:**
 - Controlador PID industrial completo con anti-windup
@@ -132,4 +132,4 @@ Esta es la primera versión estable del PID-Simulator. Incluye todas las funcion
 
 ---
 
-*Para más detalles sobre cada versión, consulta los [releases en GitHub](https://github.com/triptalabs/pid-simulator/releases).*
+*Para más detalles sobre cada versión, consulta los [releases en GitHub](https://github.com/triptalabs/pid-playground/releases).*

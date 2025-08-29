@@ -314,8 +314,10 @@ export class WorkerManager {
    * Maneja evento TICK del Worker
    */
   private handleTickEvent(event: TickEvent): void {
-    // Actualizar buffer
-    this.addToBuffer(event.payload)
+    // Añadir al buffer solo si t > 0 (no eventos de reset)
+    if (event.payload.t > 0) {
+      this.addToBuffer(event.payload)
+    }
     
     // Actualizar status
     this.status.lastTick = event.timestamp
@@ -504,6 +506,9 @@ export class WorkerManager {
    * Resetea la simulación
    */
   async reset(preserveParams: boolean = false): Promise<void> {
+    // Limpiar buffer ANTES de enviar el comando
+    this.clearBuffer()
+    
     const command: ResetCommand = {
       id: this.generateId(),
       type: 'RESET',
@@ -511,7 +516,6 @@ export class WorkerManager {
       payload: { preserveParams }
     }
     
-    this.clearBuffer()
     await this.sendCommand(command)
   }
 

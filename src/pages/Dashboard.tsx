@@ -43,12 +43,20 @@ export const Dashboard = () => {
 
   // Mapear buffer del Worker a datos de charts con ventana FIFO
   useEffect(() => {
-    if (!buffer || buffer.length === 0) return;
+    // Si no hay buffer o está vacío, limpiar chartData
+    if (!buffer || buffer.length === 0) {
+      setChartData([]);
+      return;
+    }
     
     // Obtener datos de la ventana de tiempo seleccionada
     const windowData = actions.getWindowData(state.timeWindow);
     
-    if (windowData.length === 0) return;
+    // Si no hay datos en la ventana, limpiar chartData
+    if (windowData.length === 0) {
+      setChartData([]);
+      return;
+    }
     
     // Transformar datos: tiempo absoluto -> tiempo relativo al momento actual
     const mapped: ChartDataPoint[] = windowData.map(d => {
@@ -63,8 +71,6 @@ export const Dashboard = () => {
         output: d.u * 100
       };
     });
-    
-
     
     setChartData(mapped);
   }, [buffer, state.timeWindow, actions]);

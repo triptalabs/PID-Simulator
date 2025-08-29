@@ -421,7 +421,6 @@ function stopSimulation(): void {
  * Resetea la simulación a estado inicial
  */
 function resetSimulation(preserveParams: boolean = false): void {
-  const wasRunning = workerState.status === 'running'
   
   // Detener simulación
   stopSimulation()
@@ -436,6 +435,15 @@ function resetSimulation(preserveParams: boolean = false): void {
   workerState.simulation.u = 0
   workerState.simulation.plant_state = 0
   
+  // Resetear variables PID internas
+  workerState.simulation.pid_integral = 0
+  workerState.simulation.pid_derivative_prev = 0
+  workerState.simulation.pid_error_prev = 0
+  
+  // Limpiar buffer de dead time
+  workerState.simulation.dead_time_buffer = []
+  
+  // Resetear setpoint solo si no preservamos parámetros
   if (!preserveParams) {
     workerState.simulation.SP = workerState.simulation.config.plant.T_amb
   }
@@ -448,12 +456,32 @@ function resetSimulation(preserveParams: boolean = false): void {
   
   workerState.status = 'ready'
   
-  // Reiniciar si estaba corriendo
-  if (wasRunning) {
-    startSimulation()
-  } else {
-    postStateEvent()
+  // Enviar evento de estado
+  postStateEvent()
+  
+  // NO enviar evento de tick de reset - esto causa que se acumule en el buffer
+  // En su lugar, solo enviar el evento de estado
+  
+  // Enviar evento de métricas reseteado
+  const resetMetricsEvent: MetricsEvent = {
+    id: generateId(),
+    type: 'METRICS',
+    timestamp: performance.now(),
+    payload: {
+      overshoot: 0,
+      t_peak: 0,
+      settling_time: 0,
+      is_calculating: false,
+      sp_previous: workerState.simulation.SP,
+      pv_max: workerState.simulation.PV,
+      pv_min: workerState.simulation.PV,
+      t_start: 0,
+      t_current: 0,
+      samples_count: 0
+    }
   }
+  
+  postEvent(resetMetricsEvent)
 }
 
 // ============================================================================

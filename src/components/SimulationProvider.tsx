@@ -298,14 +298,27 @@ export function SimulationProvider({ children, config = {} }: SimulationProvider
       if (!workerManagerRef.current) {
         throw new Error('Worker no inicializado')
       }
-      await workerManagerRef.current.reset(preserveParams)
       
-      // Limpiar estado local
+      // Limpiar estado local ANTES del reset
       setState(prev => ({
         ...prev,
         currentData: null,
-        buffer: []
+        buffer: [],
+        metrics: {
+          overshoot: 0,
+          t_peak: 0,
+          settling_time: 0,
+          is_calculating: false,
+          sp_previous: 0,
+          pv_max: 0,
+          pv_min: 0,
+          t_start: 0,
+          t_current: 0,
+          samples_count: 0
+        }
       }))
+      
+      await workerManagerRef.current.reset(preserveParams)
     }, []),
 
     setPID: useCallback(async (params: SetPIDCommand['payload']) => {

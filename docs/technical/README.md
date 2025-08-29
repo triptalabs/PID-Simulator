@@ -1,8 +1,8 @@
-# Documentación Técnica - Simulador PID
+# Documentación Técnica - PID Playground
 
 ## Visión General
 
-Esta sección contiene toda la documentación técnica del Simulador PID, incluyendo arquitectura, APIs, guías de desarrollo y configuración de despliegue.
+Esta sección contiene toda la documentación técnica del PID Playground, incluyendo arquitectura, APIs, guías de desarrollo y configuración de despliegue.
 
 ## Índice de Documentación
 
@@ -185,7 +185,7 @@ La documentación usa referencias cruzadas para:
 
 ## Conclusión
 
-Esta documentación técnica proporciona una base sólida para entender, desarrollar y mantener el Simulador PID. Se actualiza regularmente para reflejar el estado actual del proyecto y las mejores prácticas de la industria.
+Esta documentación técnica proporciona una base sólida para entender, desarrollar y mantener el PID Playground. Se actualiza regularmente para reflejar el estado actual del proyecto y las mejores prácticas de la industria.
 
 Para preguntas específicas o sugerencias de mejora, consulta los issues del repositorio o contacta al equipo de desarrollo.
 

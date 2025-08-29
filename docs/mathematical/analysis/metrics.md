@@ -2,9 +2,9 @@
 
 ## 📖 Descripción General
 
-El simulador PID calcula automáticamente métricas de rendimiento para evaluar la calidad del control. Estas métricas proporcionan información cuantitativa sobre la respuesta del sistema y ayudan en la sintonía del controlador.
+El PID Playground calcula automáticamente métricas de rendimiento para evaluar la calidad del control. Estas métricas proporcionan información cuantitativa sobre la respuesta del sistema y ayudan en la sintonía del controlador.
 
-> **📊 Estado Actual**: Las métricas básicas (overshoot, tiempo de pico, tiempo de establecimiento) están **implementadas** en el simulador. Los índices de rendimiento avanzados (IAE, ISE) son **mejoras propuestas** para próximas versiones.
+> **📊 Estado Actual**: Las métricas básicas (overshoot, tiempo de pico, tiempo de establecimiento) están **implementadas** en el PID Playground. Los índices de rendimiento avanzados (IAE, ISE) son **mejoras propuestas** para próximas versiones.
 
 ## 📊 Métricas Principales
 

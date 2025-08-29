@@ -1,5 +1,5 @@
 /**
- * Configuración unificada del simulador PID
+ * Configuración unificada del PID Playground
  * 
  * Este archivo centraliza todos los parámetros de configuración del proyecto,
  * incluyendo configuración de desarrollo, simulación, UI y presets.

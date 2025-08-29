@@ -1,4 +1,4 @@
-# Referencias Bibliográficas - Simulador PID
+# Referencias Bibliográficas - PID Playground
 
 ## 📚 Bibliografía Técnica Especializada
 
@@ -201,8 +201,8 @@
 Para citar este simulador en trabajos académicos:
 
 ```
-PID-Simulator Team (2024). "PID-Simulator: Educational PID Control Simulator with FOPDT Plant Model."
-GitHub Repository. https://github.com/username/pid-simulator
+PID Playground Team (2024). "PID Playground: Educational PID Control Simulator with FOPDT Plant Model."
+GitHub Repository. https://github.com/username/pid-playground
 ```
 
 ### Agradecimientos

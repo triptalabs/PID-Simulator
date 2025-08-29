@@ -2,9 +2,9 @@
 
 ## Resumen
 
-Este documento presenta **sugerencias de funcionalidades** para el análisis avanzado de rendimiento en sistemas PID. Las técnicas descritas son **propuestas para próximas versiones** del simulador, enfocadas en proporcionar herramientas de evaluación cuantitativa y análisis profundo del comportamiento del sistema.
+Este documento presenta **sugerencias de funcionalidades** para el análisis avanzado de rendimiento en sistemas PID. Las técnicas descritas son **propuestas para próximas versiones** del PID Playground, enfocadas en proporcionar herramientas de evaluación cuantitativa y análisis profundo del comportamiento del sistema.
 
-> **🚀 Sugerencias para Próximas Versiones**: Los ejemplos de código en este documento son **funcionalidades propuestas** para futuras versiones del simulador PID. Representan capacidades avanzadas de análisis que podrían implementarse para mejorar la experiencia del usuario.
+> **🚀 Sugerencias para Próximas Versiones**: Los ejemplos de código en este documento son **funcionalidades propuestas** para futuras versiones del PID Playground. Representan capacidades avanzadas de análisis que podrían implementarse para mejorar la experiencia del usuario.
 
 ## Índice
 
@@ -669,4 +669,4 @@ La implementación de estas funcionalidades de análisis avanzado permitiría:
 3. **Comparación Objetiva:** Evaluación imparcial de diferentes configuraciones
 4. **Guías de Diseño:** Criterios para selección de parámetros
 
-Estas capacidades transformarían el simulador PID en una herramienta de análisis profesional para el diseño y optimización de sistemas de control.
+Estas capacidades transformarían el PID Playground en una herramienta de análisis profesional para el diseño y optimización de sistemas de control.

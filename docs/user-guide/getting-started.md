@@ -1,4 +1,4 @@
-# 🚀 Guía de Inicio Rápido - Simulador PID
+# 🚀 Guía de Inicio Rápido - PID Playground
 
 > **Tiempo estimado**: 5 minutos  
 > **Nivel**: Principiante  
@@ -6,9 +6,9 @@
 
 ---
 
-## 📋 ¿Qué es el Simulador PID?
+## 📋 ¿Qué es el PID Playground?
 
-El **Simulador PID — Horno/Chiller** es una aplicación web que simula en tiempo real la respuesta térmica de un sistema (horno o chiller) controlado por un algoritmo PID ajustable.
+El **PID Playground — Horno/Chiller** es una aplicación web que simula en tiempo real la respuesta térmica de un sistema (horno o chiller) controlado por un algoritmo PID ajustable.
 
 ### 🎯 ¿Para qué sirve?
 

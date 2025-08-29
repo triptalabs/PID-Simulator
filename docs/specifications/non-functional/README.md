@@ -2,7 +2,7 @@
 
 ## 📋 Propósito
 
-Este directorio contiene las especificaciones no funcionales del simulador PID, definiendo requisitos de rendimiento, escalabilidad, usabilidad, mantenibilidad y otros aspectos de calidad del sistema.
+Este directorio contiene las especificaciones no funcionales del PID Playground, definiendo requisitos de rendimiento, escalabilidad, usabilidad, mantenibilidad y otros aspectos de calidad del sistema.
 
 ## 🏗️ Estructura
 

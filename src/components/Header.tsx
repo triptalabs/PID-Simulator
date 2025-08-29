@@ -25,7 +25,7 @@ export const Header = ({ state, onStateChange, onExpansionChange }: HeaderProps)
     console.log("Abrir documentación");
   };
 
-  // Configurar las cards para el CardNav con TODAS las configuraciones del simulador
+  // Configurar las cards para el CardNav con TODAS las configuraciones del PID Playground
   const cardNavItems = [
     {
       label: "Modo de Operación",
@@ -226,7 +226,7 @@ export const Header = ({ state, onStateChange, onExpansionChange }: HeaderProps)
     <div className="w-full">
       {/* CardNav que se ajusta al contenido */}
       <CardNav
-        logoText="Simulador de control de variable (PID)"
+        logoText="PID Playground"
         items={cardNavItems}
         className="w-full"
         ease="power3.out"

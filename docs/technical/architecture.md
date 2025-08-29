@@ -1,8 +1,8 @@
-# Arquitectura del Simulador PID
+# Arquitectura del PID Playground
 
 ## Visión General
 
-El Simulador PID es una aplicación web que simula en tiempo real la respuesta térmica de un horno o chiller usando un controlador PID ajustable. La arquitectura está diseñada para proporcionar simulación de alta precisión manteniendo la UI fluida y responsiva.
+El PID Playground es una aplicación web que simula en tiempo real la respuesta térmica de un horno o chiller usando un controlador PID ajustable. La arquitectura está diseñada para proporcionar simulación de alta precisión manteniendo la UI fluida y responsiva.
 
 ## Arquitectura de Alto Nivel
 
@@ -453,7 +453,7 @@ graph TB
 
 ## Conclusión
 
-La arquitectura del Simulador PID está diseñada para ser:
+La arquitectura del PID Playground está diseñada para ser:
 
 - **Escalable**: Fácil de extender con nuevas funcionalidades
 - **Mantenible**: Código bien estructurado y documentado
@@ -461,7 +461,7 @@ La arquitectura del Simulador PID está diseñada para ser:
 - **Robusta**: Manejo robusto de errores y recuperación
 - **Tipada**: Seguridad de tipos en toda la aplicación
 
-Esta arquitectura proporciona una base sólida para el desarrollo futuro y mantenimiento del simulador.
+Esta arquitectura proporciona una base sólida para el desarrollo futuro y mantenimiento del PID Playground.
 
 ---
 

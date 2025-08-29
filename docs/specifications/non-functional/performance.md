@@ -2,12 +2,12 @@
 
 ## 📋 Resumen
 
-Este documento define los requisitos de rendimiento específicos del simulador PID, incluyendo métricas de tiempo de respuesta, frecuencias de operación, uso de recursos y eficiencia computacional.
+Este documento define los requisitos de rendimiento específicos del PID Playground, incluyendo métricas de tiempo de respuesta, frecuencias de operación, uso de recursos y eficiencia computacional.
 
 ## 🎯 Objetivos de Rendimiento
 
 ### Objetivo Principal
-El simulador debe proporcionar simulación en tiempo real estable y fluida con latencia mínima y uso eficiente de recursos del sistema.
+El PID Playground debe proporcionar simulación en tiempo real estable y fluida con latencia mínima y uso eficiente de recursos del sistema.
 
 ## ⏱️ Métricas de Tiempo de Respuesta
 

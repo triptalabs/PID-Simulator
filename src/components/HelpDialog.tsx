@@ -17,7 +17,7 @@ export const HelpDialog = ({ open, onOpenChange }: HelpDialogProps) => {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>Cómo usar este simulador (UI)</DialogTitle>
+          <DialogTitle>Cómo usar PID Playground (UI)</DialogTitle>
           <DialogDescription className="space-y-4 text-sm">
             <p>
               Este prototipo muestra la interfaz para ajustar el controlador PID 

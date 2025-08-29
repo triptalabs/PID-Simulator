@@ -1,8 +1,8 @@
-# Guía de Desarrollo - Simulador PID
+# Guía de Desarrollo - PID Playground
 
 ## Visión General
 
-Esta guía proporciona toda la información necesaria para desarrollar y contribuir al Simulador PID, incluyendo configuración del entorno, convenciones de código, y procesos de desarrollo.
+Esta guía proporciona toda la información necesaria para desarrollar y contribuir al PID Playground, incluyendo configuración del entorno, convenciones de código, y procesos de desarrollo.
 
 ## Índice
 
@@ -695,7 +695,7 @@ Ninguno
 
 ## Conclusión
 
-Esta guía proporciona las bases para desarrollar efectivamente en el Simulador PID. Siguiendo estas convenciones y procesos, se asegura la calidad del código y la mantenibilidad del proyecto.
+Esta guía proporciona las bases para desarrollar efectivamente en el PID Playground. Siguiendo estas convenciones y procesos, se asegura la calidad del código y la mantenibilidad del proyecto.
 
 Para preguntas específicas o clarificaciones, consulta la documentación técnica o crea un issue en el repositorio.
 

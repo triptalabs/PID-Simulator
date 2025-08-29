@@ -2,12 +2,12 @@
 
 ## 📋 Resumen
 
-Este documento define los requisitos de usabilidad del simulador PID, incluyendo facilidad de uso, accesibilidad, diseño de interfaz y experiencia de usuario.
+Este documento define los requisitos de usabilidad del PID Playground, incluyendo facilidad de uso, accesibilidad, diseño de interfaz y experiencia de usuario.
 
 ## 🎯 Objetivos de Usabilidad
 
 ### Objetivo Principal
-El simulador debe ser intuitivo y fácil de usar para ingenieros, técnicos y estudiantes, proporcionando una experiencia de usuario fluida y profesional.
+El PID Playground debe ser intuitivo y fácil de usar para ingenieros, técnicos y estudiantes, proporcionando una experiencia de usuario fluida y profesional.
 
 ## 👥 Perfiles de Usuario
 

@@ -2,7 +2,7 @@
 
 ## Resumen
 
-Este documento describe los casos límite y condiciones extremas que se utilizan para validar la robustez del simulador PID. Se enfoca en parámetros extremos, condiciones de borde y escenarios inusuales que pueden revelar problemas en la implementación.
+Este documento describe los casos límite y condiciones extremas que se utilizan para validar la robustez del PID Playground. Se enfoca en parámetros extremos, condiciones de borde y escenarios inusuales que pueden revelar problemas en la implementación.
 
 ## Índice
 

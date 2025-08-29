@@ -2,12 +2,12 @@
 
 ## 📋 Resumen
 
-Este documento define las especificaciones de interfaces del simulador PID, incluyendo APIs públicas, formatos de datos, protocolos de comunicación y contratos de interfaz.
+Este documento define las especificaciones de interfaces del PID Playground, incluyendo APIs públicas, formatos de datos, protocolos de comunicación y contratos de interfaz.
 
 ## 🎯 Objetivos
 
 ### Objetivo Principal
-Definir claramente todas las interfaces públicas del sistema para facilitar la integración, extensión y mantenimiento del simulador PID.
+Definir claramente todas las interfaces públicas del sistema para facilitar la integración, extensión y mantenimiento del PID Playground.
 
 ## 🔌 APIs Públicas
 

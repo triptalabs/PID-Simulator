@@ -256,13 +256,6 @@ pnpm test:ui
 pnpm test --run tests/pid.test.ts
 ```
 
-### Cobertura Mínima
-
-- **Statements**: 90%
-- **Branches**: 85%
-- **Functions**: 90%
-- **Lines**: 90%
-
 ## 📚 Documentación
 
 ### Tipos de Documentación
@@ -279,15 +272,6 @@ pnpm test --run tests/pid.test.ts
 - **Ejemplos de código** - Incluye ejemplos prácticos
 - **Enlaces** - Mantén enlaces actualizados
 
-### Actualizar Documentación
-
-```bash
-# Validar documentación
-node docs/validation/validate-documentation.js
-
-# Generar API docs
-pnpm docs:generate
-```
 
 ## 🚀 Proceso de Pull Request
 
@@ -403,12 +387,7 @@ Closes #123
 - **Hacktoberfest** - Participación anual
 - **Badges** - Reconocimiento en perfiles
 
-### Niveles de Contribución
 
-- **🌱 Novato** - Primeras contribuciones
-- **🌿 Regular** - Contribuciones consistentes
-- **🌳 Experto** - Contribuciones significativas
-- **🏆 Maintainer** - Mantenimiento del proyecto
 
 ## 📞 Contacto
 

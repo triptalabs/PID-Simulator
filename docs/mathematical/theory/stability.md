@@ -1,10 +1,10 @@
-# Análisis de Estabilidad - Simulador PID
+# Análisis de Estabilidad - PID Playground
 
 ## 📖 Descripción General
 
-El análisis de estabilidad es fundamental para garantizar que el sistema de control PID funcione correctamente bajo todas las condiciones operativas. Este documento describe los criterios de estabilidad, métodos de análisis y validación numérica implementados en el simulador.
+El análisis de estabilidad es fundamental para garantizar que el sistema de control PID funcione correctamente bajo todas las condiciones operativas. Este documento describe los criterios de estabilidad, métodos de análisis y validación numérica implementados en el PID Playground.
 
-> **🔬 Estado Actual**: La validación básica de parámetros PID está **implementada** en el simulador. Los análisis avanzados de estabilidad (análisis de polos, márgenes de estabilidad, tests automatizados) son **sugerencias para próximas versiones**.
+> **🔬 Estado Actual**: La validación básica de parámetros PID está **implementada** en el PID Playground. Los análisis avanzados de estabilidad (análisis de polos, márgenes de estabilidad, tests automatizados) son **sugerencias para próximas versiones**.
 
 ## 🔬 Criterios de Estabilidad
 

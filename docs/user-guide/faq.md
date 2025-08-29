@@ -1,6 +1,6 @@
 # ❓ Preguntas Frecuentes (FAQ)
 
-> **Navegación rápida**: Encuentra respuestas a las preguntas más comunes sobre el simulador PID
+> **Navegación rápida**: Encuentra respuestas a las preguntas más comunes sobre PID Playground
 
 ---
 

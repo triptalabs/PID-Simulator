@@ -1,8 +1,8 @@
-# API Reference - Simulador PID
+# API Reference - PID Playground
 
 ## Visión General
 
-Esta documentación describe todas las APIs públicas del Simulador PID, incluyendo interfaces TypeScript, hooks de React, y métodos de los componentes principales.
+Esta documentación describe todas las APIs públicas del PID Playground, incluyendo interfaces TypeScript, hooks de React, y métodos de los componentes principales.
 
 ## Índice
 
@@ -771,7 +771,7 @@ export function getConfig<T extends keyof AppConfig>(key: T): AppConfig[T]
 
 ## Conclusión
 
-Esta API reference proporciona una guía completa para interactuar con el Simulador PID. La arquitectura está diseñada para ser intuitiva y fácil de usar, mientras mantiene la flexibilidad necesaria para casos de uso avanzados.
+Esta API reference proporciona una guía completa para interactuar con el PID Playground. La arquitectura está diseñada para ser intuitiva y fácil de usar, mientras mantiene la flexibilidad necesaria para casos de uso avanzados.
 
 Para ejemplos más específicos y casos de uso, consulta la documentación de usuario y los tutoriales disponibles.
 

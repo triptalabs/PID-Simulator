@@ -2,7 +2,7 @@
 
 ## 📖 Descripción General
 
-Esta sección contiene casos de prueba analíticos que validan la precisión de la implementación del simulador PID contra soluciones matemáticas exactas. Cada caso de prueba incluye la formulación matemática, la implementación en código, y los criterios de validación.
+Esta sección contiene casos de prueba analíticos que validan la precisión de la implementación del PID Playground contra soluciones matemáticas exactas. Cada caso de prueba incluye la formulación matemática, la implementación en código, y los criterios de validación.
 
 ## 🧮 Caso de Prueba 1: Respuesta al Escalón sin Tiempo Muerto
 

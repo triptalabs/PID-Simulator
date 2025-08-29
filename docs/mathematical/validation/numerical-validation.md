@@ -2,7 +2,7 @@
 
 ## Resumen
 
-Este documento describe los métodos de validación numérica utilizados para verificar la precisión y estabilidad numérica del simulador PID. Se enfoca en la validación de algoritmos discretos, análisis de convergencia y pruebas de precisión.
+Este documento describe los métodos de validación numérica utilizados para verificar la precisión y estabilidad numérica del PID Playground. Se enfoca en la validación de algoritmos discretos, análisis de convergencia y pruebas de precisión.
 
 ## Índice
 

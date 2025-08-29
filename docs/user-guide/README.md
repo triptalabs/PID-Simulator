@@ -1,6 +1,6 @@
-# 📖 Documentación de Usuario - Simulador PID
+# 📖 Documentación de Usuario - PID Playground
 
-> **Bienvenido** a la documentación completa del simulador PID. Aquí encontrarás todo lo que necesitas para dominar el control PID.
+> **Bienvenido** a la documentación completa del PID Playground. Aquí encontrarás todo lo que necesitas para dominar el control PID.
 
 ---
 

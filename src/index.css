@@ -3,7 +3,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Industrial PID Simulator Design System */
+/* Industrial PID Playground Design System */
 
 @layer base {
   :root {
@@ -121,7 +121,7 @@
     @apply text-industrial-orange;
   }
 
-  /* CardNav styling for PID Simulator */
+  /* CardNav styling for PID Playground */
   .card-nav-container {
     @apply z-[100] fixed top-0 left-0 right-0;
   }

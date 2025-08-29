@@ -2,7 +2,7 @@
 
 ## 📋 Resumen Ejecutivo
 
-El simulador PID debe proporcionar una simulación en tiempo real de sistemas de control térmico (horno/chiller) con controlador PID ajustable, interfaz web intuitiva y capacidades de análisis avanzadas.
+El PID Playground debe proporcionar una simulación en tiempo real de sistemas de control térmico (horno/chiller) con controlador PID ajustable, interfaz web intuitiva y capacidades de análisis avanzadas.
 
 ## 🎯 Objetivos Funcionales Principales
 

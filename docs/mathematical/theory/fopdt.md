@@ -2,7 +2,7 @@
 
 ## 📖 Descripción General
 
-El modelo **FOPDT** (First Order Plus Dead Time) es la representación matemática de la planta térmica en el simulador PID. Este modelo captura la dinámica de un horno o chiller con precisión suficiente para control educativo y validación de algoritmos PID.
+El modelo **FOPDT** (First Order Plus Dead Time) es la representación matemática de la planta térmica en el PID Playground. Este modelo captura la dinámica de un horno o chiller con precisión suficiente para control educativo y validación de algoritmos PID.
 
 ## 🔬 Ecuación Diferencial Continua
 

@@ -1,8 +1,8 @@
-# Configuración y Despliegue - Simulador PID
+# Configuración y Despliegue - PID Playground
 
 ## Visión General
 
-Esta documentación describe cómo configurar, construir y desplegar el Simulador PID en diferentes entornos, desde desarrollo local hasta producción.
+Esta documentación describe cómo configurar, construir y desplegar el PID Playground en diferentes entornos, desde desarrollo local hasta producción.
 
 ## Índice
 
@@ -20,13 +20,13 @@ Esta documentación describe cómo configurar, construir y desplegar el Simulado
 
 ```bash
 # .env.local (desarrollo local)
-VITE_APP_TITLE=PID Simulator
+VITE_APP_TITLE=PID Playground
 VITE_APP_VERSION=1.0.0
 VITE_API_BASE_URL=http://localhost:3000
 VITE_DEBUG_MODE=true
 
 # .env.production
-VITE_APP_TITLE=PID Simulator
+VITE_APP_TITLE=PID Playground
 VITE_APP_VERSION=1.0.0
 VITE_API_BASE_URL=https://api.pidsimulator.com
 VITE_DEBUG_MODE=false
@@ -950,7 +950,7 @@ netstat -tulpn | grep :443
 
 ## Conclusión
 
-Esta documentación proporciona una guía completa para configurar y desplegar el Simulador PID en diferentes entornos. Siguiendo estas prácticas, se asegura un despliegue robusto y mantenible.
+Esta documentación proporciona una guía completa para configurar y desplegar el PID Playground en diferentes entornos. Siguiendo estas prácticas, se asegura un despliegue robusto y mantenible.
 
 Para problemas específicos o configuraciones adicionales, consulta la documentación técnica o crea un issue en el repositorio.
 

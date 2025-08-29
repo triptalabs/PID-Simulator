@@ -239,8 +239,8 @@ export const Dashboard = () => {
                 state={state} 
                 onStateChange={handleStateChange}
                 onReset={() => actions.reset(true)}
-                onExportWindow={() => actions.exportCSV({ type: 'window', seconds: state.timeWindow })}
-                onExportAll={() => actions.exportCSV({ type: 'all' })}
+                onExportWindow={() => actions.exportCharts({ type: 'window', seconds: state.timeWindow })}
+                onExportAll={() => actions.exportCharts({ type: 'all' })}
                 metrics={simState.metrics || {
                   overshoot: 0,
                   t_peak: 0,
@@ -282,8 +282,8 @@ export const Dashboard = () => {
                   state={state} 
                   onStateChange={handleStateChange}
                   onReset={() => actions.reset(true)}
-                  onExportWindow={() => actions.exportCSV({ type: 'window', seconds: state.timeWindow })}
-                  onExportAll={() => actions.exportCSV({ type: 'all' })}
+                  onExportWindow={() => actions.exportCharts({ type: 'window', seconds: state.timeWindow })}
+                  onExportAll={() => actions.exportCharts({ type: 'all' })}
                   metrics={simState.metrics || {
                     overshoot: 0,
                     t_peak: 0,

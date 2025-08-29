@@ -18,6 +18,7 @@ import type {
   ReadyEvent,
   ErrorEvent
 } from '../lib/simulation/types'
+import html2canvas from 'html2canvas'
 
 // ============================================================================
 // TIPOS DEL CONTEXTO
@@ -82,8 +83,8 @@ export interface SimulationContextActions {
   // Estado del Worker
   getWorkerStatus: () => import('../lib/simulation/worker-manager').WorkerManagerStatus
 
-  // Exportación CSV
-  exportCSV: (range: { type: 'window'; seconds: number } | { type: 'all' }) => void
+  // Exportación de gráficas
+  exportCharts: (range: { type: 'window'; seconds: number } | { type: 'all' }) => void
 }
 
 export interface SimulationContextValue {
@@ -92,6 +93,36 @@ export interface SimulationContextValue {
 }
 
 import { SIMULATION_CONFIG } from '../config/app.config'
+
+// ============================================================================
+// FUNCIÓN DE CAPTURA DE GRÁFICAS
+// ============================================================================
+
+async function captureElementAsCanvas(element: HTMLElement): Promise<HTMLCanvasElement> {
+  return await html2canvas(element, {
+    backgroundColor: '#0f172a',
+    scale: 2,
+    useCORS: true,
+    allowTaint: true,
+    logging: false
+  })
+}
+
+function downloadCanvasAsImage(canvas: HTMLCanvasElement, filename: string): void {
+  canvas.toBlob((blob) => {
+    if (blob) {
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = filename
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+      console.log(`✅ Gráficas combinadas exportadas: ${filename}`)
+    }
+  }, 'image/png')
+}
 
 export interface SimulationProviderProps {
   children: React.ReactNode
@@ -391,49 +422,56 @@ export function SimulationProvider({ children, config = {} }: SimulationProvider
       return workerManagerRef.current.getStatus()
     }, []),
 
-    exportCSV: useCallback((range) => {
-      // Recolectar datos
-      const data = range.type === 'all'
-        ? (workerManagerRef.current?.getBufferData() || [])
-        : (workerManagerRef.current?.getWindowData(range.seconds) || [])
+    exportCharts: useCallback((range) => {
+      setTimeout(async () => {
+        try {
+          const elements = document.querySelectorAll('.recharts-wrapper')
+          console.log(`🔍 Encontrados ${elements.length} elementos .recharts-wrapper`)
+          
+          if (elements.length < 2) {
+            console.warn(`❌ No se encontraron suficientes gráficas. Encontradas: ${elements.length}`)
+            return
+          }
 
-      if (!data.length) {
-        console.warn('Export CSV: no hay datos para exportar')
-        return
-      }
+          // Capturar ambas gráficas
+          const [tempCanvas, outputCanvas] = await Promise.all([
+            captureElementAsCanvas(elements[0] as HTMLElement),
+            captureElementAsCanvas(elements[1] as HTMLElement)
+          ])
 
-      // Metadatos
-      const nowIso = new Date().toISOString()
-      const metaLines = [
-        '# PID Playground CSV Export',
-        `# timestamp: ${nowIso}`,
-        `# timestep: ${state.config.timestep}s`,
-        `# bufferSize: ${state.config.bufferSize}`,
-        `# window: ${range.type === 'all' ? 'all' : `${range.seconds}s`}`
-      ]
+          // Crear canvas combinado
+          const combinedCanvas = document.createElement('canvas')
+          const ctx = combinedCanvas.getContext('2d')
+          
+          if (!ctx) {
+            console.error('❌ No se pudo obtener el contexto del canvas')
+            return
+          }
 
-      // Encabezados
-      const header = ['t','SP','PV','u','PV_clean']
+          // Configurar dimensiones
+          const maxWidth = Math.max(tempCanvas.width, outputCanvas.width)
+          const totalHeight = tempCanvas.height + outputCanvas.height + 20
+          
+          combinedCanvas.width = maxWidth
+          combinedCanvas.height = totalHeight
 
-      // Filas de datos
-      const rows = data.map(d => [
-        d.t.toFixed(3),
-        d.SP.toFixed(3),
-        d.PV.toFixed(3),
-        d.u.toFixed(6),
-        d.PV_clean.toFixed(3)
-      ].join(','))
+          // Dibujar gráficas
+          ctx.fillStyle = '#0f172a'
+          ctx.fillRect(0, 0, maxWidth, totalHeight)
+          ctx.drawImage(tempCanvas, 0, 0)
+          ctx.drawImage(outputCanvas, 0, tempCanvas.height + 20)
 
-      const csv = [...metaLines, header.join(','), ...rows].join('\n')
-      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
-      const url = URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      a.href = url
-              a.download = `pid-playground_${range.type}_${nowIso.replace(/[:.]/g,'-')}.csv`
-      document.body.appendChild(a)
-      a.click()
-      document.body.removeChild(a)
-      URL.revokeObjectURL(url)
+          // Generar nombre y descargar
+          const nowIso = new Date().toISOString().replace(/[:.]/g, '-')
+          const windowSuffix = range.type === 'all' ? 'all' : `${range.seconds}s`
+          const filename = `pid-playground-charts-${windowSuffix}-${nowIso}.png`
+          
+          downloadCanvasAsImage(combinedCanvas, filename)
+          
+        } catch (error) {
+          console.error('❌ Error capturando gráficas combinadas:', error)
+        }
+      }, 100)
     }, [state.config.bufferSize, state.config.timestep])
   }
 

@@ -1,4 +1,6 @@
-# 🎛️ PID-Simulator
+# 🎛️ PID Playground
+
+![PID Playground Banner](public/Banner_Readme.png)
 
 [![React](https://img.shields.io/badge/React-18.3.1-61DAFB?logo=react&logoColor=black)](https://reactjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8.3-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
@@ -10,7 +12,7 @@
 [![Tests](https://img.shields.io/badge/Tests-Vitest-6E56CF?logo=vitest&logoColor=white)](https://vitest.dev/)
 [![Coverage](https://img.shields.io/badge/Coverage-100%25-brightgreen)](https://vitest.dev/guide/coverage.html)
 
-> **Simulador PID Industrial en Tiempo Real** - Una aplicación web avanzada para simular y analizar sistemas de control térmico usando controladores PID con modelo FOPDT.
+> **PID Playground - Simulador PID Industrial en Tiempo Real** - Una aplicación web avanzada para simular y analizar sistemas de control térmico usando controladores PID con modelo FOPDT.
 
 ## 🎯 Características Principales
 
@@ -43,7 +45,7 @@
 
 ## 🚀 Demo en Vivo
 
-**[🌐 Ver Demo Online](https://pid-simulator-demo.vercel.app)**
+**[🌐 Ver Demo Online](https://pid-playground-demo.vercel.app)**
 
 ## 📦 Instalación
 
@@ -55,8 +57,8 @@
 
 ```bash
 # Clonar el repositorio
-git clone https://github.com/triptalabs/pid-simulator.git
-cd pid-simulator
+git clone https://github.com/triptalabs/pid-playground.git
+cd pid-playground
 
 # Instalar dependencias
 pnpm install
@@ -253,7 +255,7 @@ const hornoConfig = {
 ## 🤝 Contribuir
 
 ### 🐛 Reportar Problemas
-1. Buscar en [issues existentes](https://github.com/triptalabs/pid-simulator/issues)
+1. Buscar en [issues existentes](https://github.com/triptalabs/pid-playground/issues)
 2. Crear nuevo issue con template apropiado
 3. Incluir pasos para reproducir y logs
 
@@ -282,7 +284,7 @@ Este proyecto está licenciado bajo la **MIT License** - ver el archivo [LICENSE
 
 - **[FAQ](./docs/user-guide/faq.md)** - Preguntas frecuentes
 - **[Guía de Inicio](./docs/user-guide/getting-started.md)** - Primeros pasos
-- **[Issues de GitHub](https://github.com/triptalabs/pid-simulator/issues)** - Reportar problemas
+- **[Issues de GitHub](https://github.com/triptalabs/pid-playground/issues)** - Reportar problemas
 
 
 ---
@@ -291,10 +293,10 @@ Este proyecto está licenciado bajo la **MIT License** - ver el archivo [LICENSE
 
 **¿Te gusta este proyecto? ¡Dale una ⭐ en GitHub!**
 
-[![GitHub stars](https://img.shields.io/github/stars/triptalabs/pid-simulator?style=social)](https://github.com/triptalabs/pid-simulator)
-[![GitHub forks](https://img.shields.io/github/forks/triptalabs/pid-simulator?style=social)](https://github.com/triptalabs/pid-simulator)
-[![GitHub issues](https://img.shields.io/github/issues/triptalabs/pid-simulator)](https://github.com/triptalabs/pid-simulator/issues)
-[![GitHub pull requests](https://img.shields.io/github/issues-pr/triptalabs/pid-simulator)](https://github.com/triptalabs/pid-simulator/pulls)
+[![GitHub stars](https://img.shields.io/github/stars/triptalabs/pid-playground?style=social)](https://github.com/triptalabs/pid-playground)
+[![GitHub forks](https://img.shields.io/github/forks/triptalabs/pid-playground?style=social)](https://github.com/triptalabs/pid-playground)
+[![GitHub issues](https://img.shields.io/github/issues/triptalabs/pid-playground)](https://github.com/triptalabs/pid-playground/issues)
+[![GitHub pull requests](https://img.shields.io/github/issues-pr/triptalabs/pid-playground)](https://github.com/triptalabs/pid-playground/pulls)
 
 *Desarrollado con ❤️ para la comunidad de control automático*
 

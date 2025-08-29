@@ -428,3 +428,9 @@ Este ejemplo demuestra cómo configurar y optimizar un controlador PID para un h
 - ✅ **Configuración conservadora** evita problemas
 
 **¿Listo para el siguiente ejemplo?** → [Ejemplo 2: Sistema de Enfriamiento](./02-chiller-system.md)
+
+---
+
+**Última actualización**: Agosto 2024
+**Versión**: 1.0
+**Estado**: Documentación completa de ejemplo horno industrial

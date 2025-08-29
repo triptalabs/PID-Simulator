@@ -774,3 +774,9 @@ export function getConfig<T extends keyof AppConfig>(key: T): AppConfig[T]
 Esta API reference proporciona una guía completa para interactuar con el Simulador PID. La arquitectura está diseñada para ser intuitiva y fácil de usar, mientras mantiene la flexibilidad necesaria para casos de uso avanzados.
 
 Para ejemplos más específicos y casos de uso, consulta la documentación de usuario y los tutoriales disponibles.
+
+---
+
+**Última actualización**: Agosto 2024
+**Versión**: 1.0
+**Estado**: Documentación completa de referencia de API

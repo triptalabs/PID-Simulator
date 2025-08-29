@@ -1,4 +1,4 @@
-# Casos de Uso - PID-Simulator
+# Casos de Uso - PID Playground
 
 ## 📋 Resumen
 
@@ -377,6 +377,6 @@ graph TD
 
 ---
 
-**Versión**: 1.0.0  
-**Fecha**: Diciembre 2024  
-**Estado**: Implementado y validado
+**Última actualización**: Agosto 2024
+**Versión**: 1.0
+**Estado**: Documentación completa de casos de uso

@@ -389,3 +389,9 @@ Si tu pregunta no está aquí:
 ---
 
 **¿Te ayudó esta FAQ?** ¡Considera contribuir con nuevas preguntas o mejoras!
+
+---
+
+**Última actualización**: Agosto 2024
+**Versión**: 1.0
+**Estado**: Documentación completa de preguntas frecuentes

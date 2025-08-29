@@ -1,4 +1,4 @@
-# Requisitos de Usabilidad - PID-Simulator
+# Requisitos de Usabilidad - PID Playground
 
 ## 📋 Resumen
 
@@ -284,6 +284,6 @@ stateDiagram-v2
 
 ---
 
-**Versión**: 1.0.0  
-**Fecha**: Diciembre 2024  
-**Estado**: Implementado y validado
+**Última actualización**: Agosto 2024
+**Versión**: 1.0
+**Estado**: Documentación completa de requisitos de usabilidad

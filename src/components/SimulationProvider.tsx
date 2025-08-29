@@ -392,7 +392,7 @@ export function SimulationProvider({ children, config = {} }: SimulationProvider
       // Metadatos
       const nowIso = new Date().toISOString()
       const metaLines = [
-        '# PID-Simulator CSV Export',
+        '# PID Playground CSV Export',
         `# timestamp: ${nowIso}`,
         `# timestep: ${state.config.timestep}s`,
         `# bufferSize: ${state.config.bufferSize}`,
@@ -416,7 +416,7 @@ export function SimulationProvider({ children, config = {} }: SimulationProvider
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
-      a.download = `pid-simulator_${range.type}_${nowIso.replace(/[:.]/g,'-')}.csv`
+              a.download = `pid-playground_${range.type}_${nowIso.replace(/[:.]/g,'-')}.csv`
       document.body.appendChild(a)
       a.click()
       document.body.removeChild(a)

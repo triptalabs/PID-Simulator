@@ -29,7 +29,7 @@ Esta guía proporciona toda la información necesaria para desarrollar y contrib
 ```bash
 # Clonar el repositorio
 git clone <repository-url>
-cd PID-Simulator
+cd PID-Playground
 
 # Instalar dependencias
 pnpm install
@@ -698,3 +698,9 @@ Ninguno
 Esta guía proporciona las bases para desarrollar efectivamente en el Simulador PID. Siguiendo estas convenciones y procesos, se asegura la calidad del código y la mantenibilidad del proyecto.
 
 Para preguntas específicas o clarificaciones, consulta la documentación técnica o crea un issue en el repositorio.
+
+---
+
+**Última actualización**: Agosto 2024
+**Versión**: 1.0
+**Estado**: Documentación completa de desarrollo

@@ -13,7 +13,7 @@ export const DEV_CONFIG = {
   // Configuración del servidor de desarrollo
   server: {
     host: "::",
-    port: 8082,
+    port: 8080,
   },
   
   // Configuración de build

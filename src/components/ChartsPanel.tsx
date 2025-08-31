@@ -59,17 +59,17 @@ export const ChartsPanel = ({ data, timeWindow, isRunning = false }: ChartsPanel
   }, [isVisible]);
 
   return (
-    <Card className="h-full flex flex-col bg-background/50 backdrop-blur-sm border border-border/50 shadow-lg">
+    <Card className="h-full flex flex-col notion-panel">
       <CardHeader className="flex-shrink-0 pb-4">
-        <CardTitle className="text-sm font-semibold text-foreground tracking-wide uppercase flex items-center gap-3">
+        <CardTitle className="text-sm font-semibold text-[hsl(var(--notion-text))] tracking-wide uppercase flex items-center gap-3">
           <div className="flex items-center gap-2">
             <div className={`w-2 h-2 rounded-full transition-colors duration-300 ${
-              isRunning ? 'bg-green-500' : 'bg-red-500'
+              isRunning ? 'status-active pulse-subtle' : 'status-error'
             }`}></div>
-            <span>Gráficas de control</span>
+            <span className="text-[hsl(var(--notion-text))]">Gráficas de control</span>
           </div>
           {data.length > 0 && (
-            <div className="text-xs text-muted-foreground font-normal ml-auto">
+            <div className="text-xs text-[hsl(var(--notion-text-secondary))] font-normal ml-auto notion-badge">
               {data.length > 1 ? `${(data[data.length - 1].time - data[0].time).toFixed(1)}s` : '0.0s'}
             </div>
           )}

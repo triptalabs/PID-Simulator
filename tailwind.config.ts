@@ -53,12 +53,21 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
-				industrial: {
-					'blue': 'hsl(var(--industrial-blue))',
-					'orange': 'hsl(var(--industrial-orange))',
-					'green': 'hsl(var(--industrial-green))',
-					'panel': 'hsl(var(--industrial-panel))',
-					'glass': 'hsl(var(--industrial-glass))'
+				notion: {
+					'bg': 'hsl(var(--notion-bg))',
+					'surface': 'hsl(var(--notion-surface))',
+					'surface-hover': 'hsl(var(--notion-surface-hover))',
+					'border': 'hsl(var(--notion-border))',
+					'text': 'hsl(var(--notion-text))',
+					'text-secondary': 'hsl(var(--notion-text-secondary))',
+					'accent': 'hsl(var(--notion-accent))',
+					'accent-hover': 'hsl(var(--notion-accent-hover))',
+					'blue': 'hsl(var(--notion-blue))',
+					'purple': 'hsl(var(--notion-purple))',
+					'green': 'hsl(var(--notion-green))',
+					'orange': 'hsl(var(--notion-orange))',
+					'red': 'hsl(var(--notion-red))',
+					'gray': 'hsl(var(--notion-gray))'
 				}
 			},
 			borderRadius: {
@@ -85,10 +94,10 @@ export default {
 				},
 				'pulse-glow': {
 					'0%, 100%': {
-						boxShadow: '0 0 5px hsl(var(--industrial-blue)), 0 0 10px hsl(var(--industrial-blue))'
+						boxShadow: '0 0 5px hsl(var(--notion-blue)), 0 0 10px hsl(var(--notion-blue))'
 					},
 					'50%': {
-						boxShadow: '0 0 10px hsl(var(--industrial-blue)), 0 0 20px hsl(var(--industrial-blue))'
+						boxShadow: '0 0 10px hsl(var(--notion-blue)), 0 0 20px hsl(var(--notion-blue))'
 					}
 				},
 				'data-flow': {

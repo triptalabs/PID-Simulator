@@ -136,21 +136,21 @@ export const UnifiedControlPanel = ({
   }
 
   return (
-    <Card className={`industrial-panel ${compact ? 'h-auto' : 'h-full flex flex-col'} transition-all duration-500 ease-in-out`}>
-      <CardHeader className={`flex-shrink-0 ${compact ? 'pb-2' : 'pb-3'} transition-all duration-300 ease-in-out`}>
+    <Card className={`notion-panel ${compact ? 'h-auto' : 'h-full flex flex-col'} transition-all duration-300 ease-in-out`}>
+      <CardHeader className={`flex-shrink-0 ${compact ? 'pb-2' : 'pb-3'} transition-all duration-200 ease-in-out`}>
         <CardTitle className="flex items-center justify-between text-sm">
           <div className="flex items-center gap-2">
-            <Zap className="w-4 h-4 text-industrial-blue transition-transform duration-300" />
-            <span className="font-semibold">Panel de Control</span>
+            <Zap className="w-4 h-4 text-[hsl(var(--notion-blue))] transition-transform duration-200" />
+            <span className="font-semibold text-[hsl(var(--notion-text))]">Panel de Control</span>
           </div>
-          <Badge variant={connectionStatus.variant} className="flex items-center gap-1 text-xs h-5 px-2 transition-all duration-300 ease-in-out">
+          <Badge variant={connectionStatus.variant} className="flex items-center gap-1 text-xs h-5 px-2 transition-all duration-200 ease-in-out notion-badge">
             {connectionStatus.icon}
             {connectionStatus.text}
           </Badge>
         </CardTitle>
       </CardHeader>
 
-      <CardContent className={`${compact ? 'p-3 pt-0' : 'flex-1 min-h-0 overflow-y-auto industrial-scroll p-4 pt-0'} space-y-4 transition-all duration-500 ease-in-out`}>
+      <CardContent className={`${compact ? 'p-3 pt-0' : 'flex-1 min-h-0 overflow-y-auto p-4 pt-0'} space-y-4 transition-all duration-300 ease-in-out`}>
         {compact ? (
           // Layout compacto horizontal con animaciones
           <div className="grid grid-cols-4 gap-4 animate-in fade-in-0 duration-500">
@@ -158,37 +158,37 @@ export const UnifiedControlPanel = ({
             <div className="space-y-2 animate-in slide-in-from-left-2 duration-500 delay-100">
               <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Controles</h4>
               <div className="grid grid-cols-3 gap-1">
-                <Button
-                  onClick={handleStart}
-                  disabled={!isConnected || isRunning}
-                  size="sm"
-                  className="flex items-center gap-1 h-7 text-xs transition-all duration-200 active:scale-95"
-                >
-                  <Play className="h-3 w-3" />
-                  Iniciar
-                </Button>
-                
-                <Button
-                  onClick={handlePause}
-                  disabled={!isConnected || !isRunning}
-                  variant="outline"
-                  size="sm"
-                  className="flex items-center gap-1 h-7 text-xs transition-all duration-200 active:scale-95"
-                >
-                  <Pause className="h-3 w-3" />
-                  Pausar
-                </Button>
-                
-                <Button
-                  onClick={handleReset}
-                  disabled={!isConnected}
-                  variant="outline"
-                  size="sm"
-                  className="flex items-center gap-1 h-7 text-xs transition-all duration-200 active:scale-95"
-                >
-                  <RotateCcw className="h-3 w-3" />
-                  Reset
-                </Button>
+                                 <Button
+                   onClick={handleStart}
+                   disabled={!isConnected || isRunning}
+                   size="sm"
+                   className="flex items-center gap-1 h-7 text-xs transition-all duration-200 active:scale-95 notion-button-primary"
+                 >
+                   <Play className="h-3 w-3" />
+                   Iniciar
+                 </Button>
+                 
+                 <Button
+                   onClick={handlePause}
+                   disabled={!isConnected || !isRunning}
+                   variant="outline"
+                   size="sm"
+                   className="flex items-center gap-1 h-7 text-xs transition-all duration-200 active:scale-95 notion-button"
+                 >
+                   <Pause className="h-3 w-3" />
+                   Pausar
+                 </Button>
+                 
+                 <Button
+                   onClick={handleReset}
+                   disabled={!isConnected}
+                   variant="outline"
+                   size="sm"
+                   className="flex items-center gap-1 h-7 text-xs transition-all duration-200 active:scale-95 notion-button"
+                 >
+                   <RotateCcw className="h-3 w-3" />
+                   Reset
+                 </Button>
               </div>
             </div>
 
@@ -196,21 +196,21 @@ export const UnifiedControlPanel = ({
             <div className="space-y-2 animate-in slide-in-from-left-2 duration-500 delay-200">
               <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Estado</h4>
               <div className="space-y-1 text-xs">
-                <div className="flex justify-between items-center transition-all duration-200 hover:bg-muted/20 rounded px-1 py-0.5">
-                  <span className="text-muted-foreground">Modo:</span>
-                  <Badge variant={state.mode === 'horno' ? 'default' : 'secondary'} className="text-xs h-4 px-2 transition-all duration-200">
-                    <Thermometer className="w-2 h-2 mr-1" />
-                    {state.mode === 'horno' ? 'Horno' : 'Chiller'}
-                  </Badge>
-                </div>
-                <div className="flex justify-between items-center transition-all duration-200 hover:bg-muted/20 rounded px-1 py-0.5">
-                  <span className="text-muted-foreground">SP:</span>
-                  <span className="font-mono font-semibold">{state.setpoint}°C</span>
-                </div>
-                <div className="flex justify-between items-center transition-all duration-200 hover:bg-muted/20 rounded px-1 py-0.5">
-                  <span className="text-muted-foreground">PV:</span>
-                  <span className="font-mono font-semibold">{formatTemperature(currentPV)}</span>
-                </div>
+                                 <div className="flex justify-between items-center transition-all duration-200 hover:bg-[hsl(var(--notion-accent))] rounded px-1 py-0.5">
+                   <span className="text-[hsl(var(--notion-text-secondary))]">Modo:</span>
+                   <Badge variant={state.mode === 'horno' ? 'default' : 'secondary'} className="text-xs h-4 px-2 transition-all duration-200 notion-badge">
+                     <Thermometer className="w-2 h-2 mr-1" />
+                     {state.mode === 'horno' ? 'Horno' : 'Chiller'}
+                   </Badge>
+                 </div>
+                 <div className="flex justify-between items-center transition-all duration-200 hover:bg-[hsl(var(--notion-accent))] rounded px-1 py-0.5">
+                   <span className="text-[hsl(var(--notion-text-secondary))]">SP:</span>
+                   <span className="font-mono font-semibold text-[hsl(var(--notion-text))]">{state.setpoint}°C</span>
+                 </div>
+                 <div className="flex justify-between items-center transition-all duration-200 hover:bg-[hsl(var(--notion-accent))] rounded px-1 py-0.5">
+                   <span className="text-[hsl(var(--notion-text-secondary))]">PV:</span>
+                   <span className="font-mono font-semibold text-[hsl(var(--notion-text))]">{formatTemperature(currentPV)}</span>
+                 </div>
               </div>
             </div>
 
@@ -218,27 +218,27 @@ export const UnifiedControlPanel = ({
             <div className="space-y-2 animate-in slide-in-from-left-2 duration-500 delay-300">
               <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Métricas</h4>
               <div className="space-y-1 text-xs">
-                <div className="flex justify-between items-center transition-all duration-200 hover:bg-muted/20 rounded px-1 py-0.5">
-                  <span className="text-muted-foreground">Overshoot:</span>
-                  <Badge 
-                    variant="outline" 
-                    className={`${getOvershootColor(metrics.overshoot)} text-white border-0 text-xs h-4 px-2 transition-all duration-200`}
-                  >
-                    {formatOvershoot(metrics.overshoot)}
-                  </Badge>
-                </div>
-                <div className="flex justify-between items-center transition-all duration-200 hover:bg-muted/20 rounded px-1 py-0.5">
-                  <span className="text-muted-foreground">T. Est.:</span>
-                  <span className="font-mono font-semibold">
-                    {formatTime(metrics.settling_time > 0 ? metrics.settling_time + 2 : 0)}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center transition-all duration-200 hover:bg-muted/20 rounded px-1 py-0.5">
-                  <span className="text-muted-foreground">Ventana:</span>
-                  <span className="font-mono font-semibold">
-                    {state.timeWindow === 60 ? '1m' : state.timeWindow === 300 ? '5m' : '30m'}
-                  </span>
-                </div>
+                                 <div className="flex justify-between items-center transition-all duration-200 hover:bg-[hsl(var(--notion-accent))] rounded px-1 py-0.5">
+                   <span className="text-[hsl(var(--notion-text-secondary))]">Overshoot:</span>
+                   <Badge 
+                     variant="outline" 
+                     className={`${getOvershootColor(metrics.overshoot)} text-white border-0 text-xs h-4 px-2 transition-all duration-200`}
+                   >
+                     {formatOvershoot(metrics.overshoot)}
+                   </Badge>
+                 </div>
+                 <div className="flex justify-between items-center transition-all duration-200 hover:bg-[hsl(var(--notion-accent))] rounded px-1 py-0.5">
+                   <span className="text-[hsl(var(--notion-text-secondary))]">T. Est.:</span>
+                   <span className="font-mono font-semibold text-[hsl(var(--notion-text))]">
+                     {formatTime(metrics.settling_time > 0 ? metrics.settling_time + 2 : 0)}
+                   </span>
+                 </div>
+                 <div className="flex justify-between items-center transition-all duration-200 hover:bg-[hsl(var(--notion-accent))] rounded px-1 py-0.5">
+                   <span className="text-[hsl(var(--notion-text-secondary))]">Ventana:</span>
+                   <span className="font-mono font-semibold text-[hsl(var(--notion-text))]">
+                     {state.timeWindow === 60 ? '1m' : state.timeWindow === 300 ? '5m' : '30m'}
+                   </span>
+                 </div>
               </div>
             </div>
 

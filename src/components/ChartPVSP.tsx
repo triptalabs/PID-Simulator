@@ -76,33 +76,32 @@ export const ChartPVSP = ({ data, embedded = false, timeWindow }: ChartPVSPProps
     );
   };
 
-  // Glassmorphism tooltip matching CardNav style exactly
-  const GlassmorphismTooltip = ({ active, payload, label }: any) => {
+  // Notion/Cursor style tooltip
+  const NotionTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       return (
         <div
-          className="nav-card select-none relative flex flex-col gap-2 p-3 rounded-lg min-w-0 flex-[1_1_auto] h-auto min-h-[100px] transition-all duration-300 overflow-hidden"
+          className="notion-card select-none relative flex flex-col gap-2 p-3 rounded-lg min-w-0 flex-[1_1_auto] h-auto min-h-[100px] transition-all duration-200 overflow-hidden"
           style={{ 
-            backgroundColor: 'rgba(15, 23, 42, 0.98)', 
-            color: 'rgba(255, 255, 255, 0.9)',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
-            boxShadow: '0 8px 32px -8px rgba(0, 0, 0, 0.2)',
-            backdropFilter: 'blur(20px)',
+            backgroundColor: 'hsl(var(--notion-surface))', 
+            color: 'hsl(var(--notion-text))',
+            border: '1px solid hsl(var(--notion-border))',
+            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
             zIndex: 99999
           }}
         >
-          {/* Header - matching CardNav card header exactly */}
-          <div className="nav-card-label font-bold tracking-tight text-[12px] mb-1 leading-tight">
+          {/* Header - notion style */}
+          <div className="font-semibold tracking-tight text-[12px] mb-1 leading-tight text-[hsl(var(--notion-text))]">
             TIEMPO: {Math.round(label)}s
           </div>
 
-          {/* Content - matching CardNav controls structure exactly */}
-          <div className="nav-card-controls flex flex-col gap-1">
+          {/* Content - notion style */}
+          <div className="flex flex-col gap-1">
             {payload.map((entry: any, index: number) => (
               <div key={`${entry.name}-${index}`} className="control-item">
-                <div className="flex items-center justify-between p-1.5 bg-white/5 rounded hover:bg-white/10 transition-colors">
-                  <span className="text-[10px] font-semibold opacity-90">{entry.name}</span>
-                  <span className="text-[10px] font-bold font-mono opacity-95 bg-white/10 px-1.5 py-0.5 rounded">
+                <div className="flex items-center justify-between p-1.5 bg-[hsl(var(--notion-accent))] rounded-md hover:bg-[hsl(var(--notion-accent-hover))] transition-all duration-200 border border-[hsl(var(--notion-border))]">
+                  <span className="text-[10px] font-medium text-[hsl(var(--notion-text-secondary))]">{entry.name}</span>
+                  <span className="text-[10px] font-bold font-mono text-[hsl(var(--notion-text))] notion-badge">
                     {entry.value.toFixed(1)}°C
                   </span>
                 </div>
@@ -118,11 +117,11 @@ export const ChartPVSP = ({ data, embedded = false, timeWindow }: ChartPVSPProps
   if (embedded) {
     return (
       <div className="h-full min-h-0 flex flex-col">
-        <div className="flex items-center justify-center mb-4">
-          <h3 className="text-sm font-semibold text-foreground tracking-wide uppercase">
-            Temperatura del Proceso
-          </h3>
-        </div>
+                 <div className="flex items-center justify-center mb-4">
+           <h3 className="text-sm font-semibold text-[hsl(var(--notion-text))] tracking-wide uppercase">
+             Temperatura del Proceso
+           </h3>
+         </div>
         <div className="flex-1 min-h-0">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart 
@@ -156,7 +155,7 @@ export const ChartPVSP = ({ data, embedded = false, timeWindow }: ChartPVSPProps
                 axisLine={{ stroke: 'hsl(var(--border))', strokeWidth: 1 }}
                 tickLine={false}
               />
-              <Tooltip content={<GlassmorphismTooltip />} />
+                             <Tooltip content={<NotionTooltip />} />
               <Legend content={<CustomLegend />} />
               <Line
                 type="monotone"

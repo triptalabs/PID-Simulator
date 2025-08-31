@@ -7,7 +7,7 @@ import { useSimulation, useSimulationData, useSimulationControls } from "@/compo
 
 const initialState: SimulatorState = {
   mode: 'horno',
-  setpoint: 60,
+  setpoint: 25,
   pid: {
     kp: 2.00,
     ki: 0.10,

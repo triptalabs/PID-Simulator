@@ -111,7 +111,8 @@ export default {
 			fontFamily: {
 				'mono': ['JetBrains Mono', 'Consolas', 'monospace'],
 				'industrial': ['Inter', 'system-ui', 'sans-serif'],
-				'iceland': ['Iceland', 'cursive']
+				'iceland': ['Iceland', 'cursive'],
+				'turret': ['Turret Road', 'cursive']
 			},
 			backdropBlur: {
 				'xs': '2px'

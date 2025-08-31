@@ -45,7 +45,7 @@ export const Header = ({ state, onStateChange, onExpansionChange }: HeaderProps)
       controls: [
         {
           label: "Setpoint",
-          value: state?.setpoint || 60,
+          value: state?.setpoint || 25,
           min: state?.mode === 'chiller' ? -50 : 0,
           max: state?.mode === 'chiller' ? 50 : 200,
           step: 1,

@@ -123,7 +123,7 @@ const CardNav: React.FC<CardNavProps> = ({
                        <div className="flex justify-center items-center">
               {logoText ? (
                 <GradientText 
-                  className="text-[28px] font-bold font-iceland whitespace-nowrap select-none"
+                  className="text-[28px] font-extrabold font-turret whitespace-nowrap select-none"
                   colors={["#3b82f6", "#8b5cf6", "#06b6d4", "#3b82f6"]}
                   animationSpeed={6}
                   showBorder={false}
